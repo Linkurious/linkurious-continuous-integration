@@ -1,0 +1,16 @@
+version: '2'
+services:
+  linkurious:
+    build:
+      context: .
+      args:
+        ci_folder: ${CI_FOLDER}
+    depends_on:
+     - neo4j
+     - elasticsearch
+  neo4j:
+    image: neo4j:3.0
+    environment:
+     - NEO4J_AUTH=none
+  elasticsearch:
+    image: elasticsearch:2.4
