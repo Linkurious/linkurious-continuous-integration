@@ -5,15 +5,17 @@
  */
 'use strict';
 
-const exec = require('child_process').execSync;
 const rl = require('readline').createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
+const exec = require('./utils').exec;
 const config = require('./config');
 
 rl.question('GitHub Client Secret: ', clientSecret => {
+  exec('sudo service mongod start');
+  exec('sudo service docker start');
   exec('npm start >> strider.log 2>&1 & disown', {
     env:
       Object.assign({
