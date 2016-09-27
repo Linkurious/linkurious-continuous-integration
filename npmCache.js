@@ -52,7 +52,7 @@ module.exports = packageJsonFile => {
       execRetry('npm install', 5);
 
       // we copy the node_modules directory in our bucket
-      exec('cp -r ${ciDir}/app/node_modules ${directory}/node_modules');
+      exec(`cp -r ${ciDir}/app/node_modules ${directory}/node_modules`);
     });
   }
 
