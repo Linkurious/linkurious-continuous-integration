@@ -12,7 +12,7 @@ const changeDir = require('./utils').changeDir;
 /**
  * This script assume to be run on Ubuntu 16.04 x64 with node.js and git installed.
  * The user that runs this script has to be a sudoer.
- * It has to be run from its folder.
+ * It has to be run from its directory.
  *
  * A logout/login of the current user is necessary to make the user logged in the docker group.
  */

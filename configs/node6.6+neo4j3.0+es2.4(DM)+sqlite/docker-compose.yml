@@ -4,7 +4,7 @@ services:
     build:
       context: .
       args:
-        ci_folder: ${CI_FOLDER}
+        ci_directory: ${CI_DIRECTORY}
     depends_on:
      - neo4j
      - elasticsearch

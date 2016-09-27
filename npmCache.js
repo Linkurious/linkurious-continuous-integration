@@ -10,44 +10,49 @@ const exec = require('./utils').exec;
 const execRetry = require('./utils').execRetry;
 const changeDir = require('./utils').changeDir;
 
-const ciDir = process.env['CI_FOLDER'];
+const ciDir = process.env['CI_DIRECTORY'];
 
 /**
- * Hash the package.json file and look up if its node_modules folder was already cached.
+ * Hash the package.json file and look up if its node_modules directory was already cached.
  * If not, run npm install on this package.json.
- * Return the path to the node_modules folder. These node_modules folders will be generated in the
- * path $CI_FOLDER/tmp_app.
+ *
+ * Return the absolute path to the node_modules directory.
+ * The node_modules directory will be generated in the path $CI_DIRECTORY/app. This is done to avoid
+ * breaking absolute paths added by npm3 in the package.json files.
  *
  * @param {string} packageJsonFile
  */
 module.exports = packageJsonFile => {
-  var data = fs.readFileSync(packageJsonFile, 'utf8');
-
   // hash the package.json file
+  var data = fs.readFileSync(packageJsonFile, 'utf8');
   var hashPackageJson = crypto.createHash('md5').update(data).digest('hex');
+
+  // bucket containing the node_modules directory for this package.json
   var directory = ciDir + '/npm-cache/' + hashPackageJson;
 
   try {
+    // does this directory exist?
     fs.lstatSync(directory + '/node_modules');
   } catch(e) {
     if (e.code !== 'ENOENT') {
       throw e;
     }
-    // if the node_modules directory does not exist, run npm install on this package.json
-    // we assume that the npm install that generated this node_modules has exited correctly
+    // it doesn't exist so we have to run npm install for this package.json
+
     exec('mkdir -p ' + directory);
 
-    // we want to call npm install always on the same directory. This way when we copy the
-    // node_modules folder to the docker containers we don't break absolute paths inside the
-    // various package.json. This folder is $CI_FOLDER/tmp_app
-    exec(`rm -rf ${ciDir}/tmp_app`);
-    exec(`mkdir -p ${ciDir}/tmp_app`);
+    // we create the directory $CI_DIRECTORY/app
+    exec(`rm -rf ${ciDir}/app && mkdir -p ${ciDir}/app`);
 
-    exec('cp ' + packageJsonFile + ' ' + ciDir + '/tmp_app');
+    // we copy the package.json in it
+    exec(`cp ${packageJsonFile} ${ciDir}/app`);
 
-    changeDir(ciDir + '/tmp_app', () => {
+    changeDir(ciDir + '/app', () => {
+      // we run npm install
       execRetry('npm install', 5);
-      exec('cp -r ' + ciDir + '/tmp_app/node_modules ' + directory + '/node_modules');
+
+      // we copy the node_modules directory in our bucket
+      exec('cp -r ${ciDir}/app/node_modules ${directory}/node_modules');
     });
   }
 

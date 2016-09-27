@@ -41,14 +41,14 @@ var execRetry = (cmd, nRetry, options) => {
 };
 
 /**
- * Return the array of sub-folders.
+ * Return the array of subdirectories.
  *
- * @param {string} srcFolder
+ * @param {string} srcDir
  * @returns {string[]}
  */
-var getSubFolders = (srcFolder) => {
-  return fs.readdirSync(srcFolder).filter(file => {
-    return fs.statSync(path.join(srcFolder, file)).isDirectory();
+var getSubDirectories = srcDir => {
+  return fs.readdirSync(srcDir).filter(file => {
+    return fs.statSync(path.join(srcDir, file)).isDirectory();
   });
 };
 
@@ -65,4 +65,4 @@ var changeDir = (dir, func) => {
   process.chdir(currentDir);
 };
 
-module.exports = {exec, execRetry, getSubFolders, changeDir};
+module.exports = {exec, execRetry, getSubDirectories, changeDir};
