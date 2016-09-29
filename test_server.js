@@ -54,6 +54,6 @@ for (var config of getSubDirectories('configs')) {
     exec('rm -rf app');
     exec(`cp -al ${repositoryDir} app`);
     exec(`cp -al ${nodeModulesDir} app/node_modules`);
-    exec('docker-compose up --build --abort-on-container-exit');
+    exec('docker-compose run --rm linkurious');
   });
 }
