@@ -12,6 +12,7 @@ const _ = require('lodash');
 const exec = require('./utils').exec;
 const getSubDirectories = require('./utils').getSubDirectories;
 const changeDir = require('./utils').changeDir;
+const deleteNullPropertiesDeep = require('./utils').deleteNullPropertiesDeep;
 const npmCache = require('./npmCache');
 
 const repositoryDir = process.env['PWD'];
@@ -39,6 +40,9 @@ for (var config of getSubDirectories('configs')) {
   // we merge the default test configuration with the particular one for this run
   var testConfig = _.defaultsDeep(require('./configs/' + config + '/test'),
     _.cloneDeep(defaultTestConfig));
+
+  // we remove null properties because we used null to delete properties from the default config
+  deleteNullPropertiesDeep(testConfig);
 
   /**
    * (5) Modify the configuration file for this run

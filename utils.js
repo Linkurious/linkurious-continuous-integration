@@ -65,4 +65,19 @@ var changeDir = (dir, func) => {
   process.chdir(currentDir);
 };
 
-module.exports = {exec, execRetry, getSubDirectories, changeDir};
+/**
+ * Delete all null properties from an object.
+ *
+ * @param {object} obj
+ */
+var deleteNullPropertiesDeep = obj => {
+  for (var key of Object.keys(obj)) {
+    if (obj[key] === null) {
+      delete obj[key];
+    } else if (typeof obj[key] === 'object') {
+      deleteNullPropertiesDeep(obj[key]);
+    }
+  }
+};
+
+module.exports = {exec, execRetry, getSubDirectories, changeDir, deleteNullPropertiesDeep};
