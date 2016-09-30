@@ -3,7 +3,7 @@ module.exports = {
     {
       graphdb: {
         vendor: 'dse',
-        url: 'ws://datastax:9042',
+        url: 'ws://datastax:8182',
         graphName: 'test',
         create: true
       },
