@@ -6,8 +6,8 @@ module.exports = {
         url: 'http://allegro:10035',
         repository: 'test',
         create: true,
-        alternativeNodeId: undefined,
-        alternativeEdgeId: undefined
+        alternativeNodeId: null,
+        alternativeEdgeId: null
       },
       index: {
         vendor: 'elasticSearch',
