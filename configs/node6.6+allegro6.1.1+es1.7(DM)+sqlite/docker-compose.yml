@@ -1,0 +1,14 @@
+version: '2'
+services:
+  linkurious:
+    build:
+      context: .
+      args:
+        ci_directory: ${CI_DIRECTORY}
+    depends_on:
+     - allegro
+     - elasticsearch
+  allegro:
+    image: franzinc/agraph:v6.1.1
+  elasticsearch:
+    image: elasticsearch:1.7
