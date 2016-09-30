@@ -55,7 +55,7 @@ for (var config of getSubDirectories('configs')) {
    */
   changeDir('configs/' + config, () => {
     // at each test we remove all the docker containers
-    exec('docker rm -f $(docker ps -a -q) || true');
+    exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
 
     // we prepare a directory with the src code and the node_modules directory
     exec('rm -rf app');
