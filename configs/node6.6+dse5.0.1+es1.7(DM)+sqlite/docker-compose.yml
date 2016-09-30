@@ -9,6 +9,7 @@ services:
      - datastax
      - elasticsearch
   datastax:
-    image: luketillman/datastax-enterprise:5.0.1
+    build:
+      context: ./dse
   elasticsearch:
     image: elasticsearch:1.7
