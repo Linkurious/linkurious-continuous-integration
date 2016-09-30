@@ -1,0 +1,14 @@
+version: '2'
+services:
+  linkurious:
+    build:
+      context: .
+      args:
+        ci_directory: ${CI_DIRECTORY}
+    depends_on:
+     - datastax
+     - elasticsearch
+  datastax:
+    image: luketillman/datastax-enterprise:5.0.1
+  elasticsearch:
+    image: elasticsearch:1.7
