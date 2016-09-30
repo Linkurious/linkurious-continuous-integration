@@ -5,7 +5,9 @@ module.exports = {
         vendor: 'allegroGraph',
         url: 'http://allegro:10035',
         repository: 'test',
-        create: true
+        create: true,
+        alternativeNodeId: undefined,
+        alternativeEdgeId: undefined
       },
       index: {
         vendor: 'elasticSearch',
