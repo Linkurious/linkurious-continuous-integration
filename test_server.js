@@ -63,5 +63,8 @@ for (var config of getSubDirectories('configs')) {
     exec(`cp -al ${nodeModulesDir} app/node_modules`);
     exec('docker-compose build');
     exec('docker-compose run --rm linkurious');
+
+    // we remove untagged docker images to clean up disk space
+    exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
   });
 }

@@ -6,14 +6,12 @@ services:
       args:
         ci_directory: ${CI_DIRECTORY}
     depends_on:
-     - datastax
+     - dse
      - elasticsearch
-  datastax:
-    image: luketillman/datastax-enterprise:5.0.1
-    command: dse cassandra -g
-    expose:
-     - "8182"
+  dse:
+    build:
+      context: ./dse
     environment:
-     - LISTEN_ADDRESS=datastax
+     - LISTEN_ADDRESS=dse
   elasticsearch:
     image: elasticsearch:1.7
