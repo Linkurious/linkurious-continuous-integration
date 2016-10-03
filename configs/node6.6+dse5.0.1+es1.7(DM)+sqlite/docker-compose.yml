@@ -11,5 +11,7 @@ services:
   datastax:
     build:
       context: ./dse
+    environment:
+      - LISTEN_ADDRESS=0.0.0.0
   elasticsearch:
     image: elasticsearch:1.7
