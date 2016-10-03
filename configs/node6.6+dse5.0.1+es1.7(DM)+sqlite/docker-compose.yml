@@ -14,6 +14,6 @@ services:
     expose:
      - "8182"
     environment:
-     - LISTEN_ADDRESS=0.0.0.0
+     - LISTEN_ADDRESS=datastax
   elasticsearch:
     image: elasticsearch:1.7
