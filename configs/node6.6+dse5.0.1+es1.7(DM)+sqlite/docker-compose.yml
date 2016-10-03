@@ -12,6 +12,6 @@ services:
     image: luketillman/datastax-enterprise:5.0.1
     command: dse cassandra -g
     expose:
-     - 8182
+     - "8182"
   elasticsearch:
     image: elasticsearch:1.7
