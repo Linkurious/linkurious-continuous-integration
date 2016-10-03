@@ -13,5 +13,7 @@ services:
     command: dse cassandra -g
     expose:
      - "8182"
+    environment:
+     - LISTEN_ADDRESS=0.0.0.0
   elasticsearch:
     image: elasticsearch:1.7
