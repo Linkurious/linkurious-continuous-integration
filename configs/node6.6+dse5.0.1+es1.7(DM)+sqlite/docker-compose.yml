@@ -9,9 +9,9 @@ services:
      - datastax
      - elasticsearch
   datastax:
-    build:
-      context: ./dse
-    environment:
-      - LISTEN_ADDRESS=0.0.0.0
+    image: luketillman/datastax-enterprise:5.0.1
+    command: dse cassandra -g
+    expose:
+     - 8182
   elasticsearch:
     image: elasticsearch:1.7
