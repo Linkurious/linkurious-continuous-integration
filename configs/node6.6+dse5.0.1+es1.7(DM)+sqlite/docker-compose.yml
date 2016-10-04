@@ -9,7 +9,8 @@ services:
      - dse
      - elasticsearch
   dse:
-    image: luketillman/datastax-enterprise:5.0.1
+    build:
+      context: ./dse
     command: dse cassandra -gf
     expose:
      - "8182"
