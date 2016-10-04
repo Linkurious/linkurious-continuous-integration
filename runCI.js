@@ -21,7 +21,8 @@ rl.question('GitHub Client Secret: ', clientSecret => {
       Object.assign({
         'SERVER_NAME': config.serverName,
         'PLUGIN_GITHUB_APP_ID': config.githubClientId,
-        'PLUGIN_GITHUB_APP_SECRET': clientSecret
+        'PLUGIN_GITHUB_APP_SECRET': clientSecret,
+        'PORT': config.port
       }, process.env),
     cwd: process.cwd() + '/strider',
     shell: '/bin/bash'});

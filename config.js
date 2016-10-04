@@ -4,5 +4,6 @@
 
 module.exports = {
   githubClientId: 'b201dc77db049f416470',
-  serverName: 'http://10.211.55.8:3000'
+  serverName: 'http://ci.linkurio.us',
+  port: 80
 };
