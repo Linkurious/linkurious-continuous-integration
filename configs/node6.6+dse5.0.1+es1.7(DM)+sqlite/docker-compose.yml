@@ -9,9 +9,8 @@ services:
      - dse
      - elasticsearch
   dse:
-    build:
-      context: ./dse
-    command: dse cassandra -gf
+    image: luketillman/datastax-enterprise:5.0.1
+    command: sed -i 's/Production/Development/g' /opt/dse/resources/dse/conf/dse.yaml; dse cassandra -gf
     expose:
      - "8182"
     environment:
