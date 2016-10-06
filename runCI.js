@@ -22,7 +22,13 @@ rl.question('GitHub Client Secret: ', clientSecret => {
         'SERVER_NAME': config.serverName,
         'PLUGIN_GITHUB_APP_ID': config.githubClientId,
         'PLUGIN_GITHUB_APP_SECRET': clientSecret,
-        'PORT': config.port
+        'PORT': config.port,
+        'SMTP_HOST': config.smtpHost,
+        'SMTP_PORT': config.smtpPort,
+        'SMTP_SECURE': config.smtpSecure,
+        'SMTP_USER': config.smtpUser,
+        'SMTP_PASS': config.smtpPass,
+        'SMTP_FROM': config.smtpFrom
       }, process.env),
     cwd: process.cwd() + '/strider',
     shell: '/bin/bash'});
