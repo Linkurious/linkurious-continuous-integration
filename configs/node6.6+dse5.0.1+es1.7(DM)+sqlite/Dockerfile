@@ -7,4 +7,4 @@ WORKDIR $ci_directory/app
 
 COPY app $ci_directory/app
 
-CMD [ "node", "test/runMocha.js", "--jsonConfig" ]
+CMD sleep 25; node test/runMocha.js --jsonConfig
