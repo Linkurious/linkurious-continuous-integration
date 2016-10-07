@@ -2,11 +2,13 @@ module.exports = {
   dataSources: [
     {
       graphdb: {
-        vendor: 'neo4j',
-        url: 'http://neo4j:7474'
+        vendor: 'dse',
+        url: 'ws://dse:8182',
+        graphName: 'test',
+        create: true
       },
       index: {
-        vendor: 'elasticSearch2',
+        vendor: 'elasticSearch',
         host: 'elasticsearch',
         port: 9200,
         dynamicMapping: true

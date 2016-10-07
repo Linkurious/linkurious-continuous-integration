@@ -6,14 +6,17 @@ services:
       args:
         ci_directory: ${CI_DIRECTORY}
     depends_on:
-     - neo4j
+     - dse
      - elasticsearch
-  neo4j:
-    image: neo4j:3.0
+  dse:
+    image: luketillman/datastax-enterprise:5.0.1
+    command: dse cassandra -gf
+    expose:
+     - "8182"
     environment:
-     - NEO4J_AUTH=none
+     - LISTEN_ADDRESS=auto
   elasticsearch:
-    image: elasticsearch:2.4
+    image: elasticsearch:1.7
   mysql:
     image: mysql:5.7
     environment:
