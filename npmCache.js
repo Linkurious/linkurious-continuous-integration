@@ -39,7 +39,7 @@ module.exports = packageJsonFile => {
 
     exec('mkdir -p ' + directory);
 
-    var packageJsonFolder = packageJsonFile.substring(0, packageJsonFile.lastIndexOf('\\'));
+    var packageJsonFolder = packageJsonFile.substring(0, packageJsonFile.lastIndexOf('/'));
 
     changeDir(packageJsonFolder, () => {
       // we run npm install
