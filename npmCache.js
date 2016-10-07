@@ -17,8 +17,6 @@ const ciDir = process.env['CI_DIRECTORY'];
  * If not, run npm install on this package.json.
  *
  * Return the absolute path to the node_modules directory.
- * The node_modules directory will be generated in the path $CI_DIRECTORY/app. This is done to avoid
- * breaking absolute paths added by npm3 in the package.json files.
  *
  * @param {string} packageJsonFile
  */
@@ -41,18 +39,14 @@ module.exports = packageJsonFile => {
 
     exec('mkdir -p ' + directory);
 
-    // we create the directory $CI_DIRECTORY/app
-    exec(`rm -rf ${ciDir}/app && mkdir -p ${ciDir}/app`);
+    var packageJsonFolder = packageJsonFile.substring(0, packageJsonFile.lastIndexOf('\\'));
 
-    // we copy the package.json in it
-    exec(`cp ${packageJsonFile} ${ciDir}/app`);
-
-    changeDir(ciDir + '/app', () => {
+    changeDir(packageJsonFolder, () => {
       // we run npm install
       execRetry('npm install', 5);
 
       // we copy the node_modules directory in our bucket
-      exec(`cp -r ${ciDir}/app/node_modules ${directory}/node_modules`);
+      exec(`cp -r ${packageJsonFolder}/node_modules ${directory}/node_modules`);
     });
   }
 
