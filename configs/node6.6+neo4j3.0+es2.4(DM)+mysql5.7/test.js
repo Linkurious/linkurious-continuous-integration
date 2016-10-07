@@ -20,7 +20,8 @@ module.exports = {
     options: {
       dialect: 'mysql',
       host: 'mysql',
-      port: 3306
+      port: 3306,
+      storage: null
     }
   }
 };
