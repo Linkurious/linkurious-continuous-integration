@@ -20,3 +20,4 @@ services:
       - MYSQL_DATABASE=linkurious
       - MYSQL_USER=linkurious
       - MYSQL_PASSWORD=pass
+      - MYSQL_ROOT_PASSWORD=pass
