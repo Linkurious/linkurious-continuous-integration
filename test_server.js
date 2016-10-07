@@ -8,6 +8,7 @@
 const fs = require('fs');
 
 const _ = require('lodash');
+const program = require('commander');
 
 const exec = require('./utils').exec;
 const getSubDirectories = require('./utils').getSubDirectories;
@@ -17,6 +18,11 @@ const npmCache = require('./npmCache');
 
 const repositoryDir = process.env['PWD'];
 const ciDir = process.env['CI_DIRECTORY'];
+
+program.option(
+  '--filter',
+  'Test only the configs that match this regex'
+).parse(process.argv);
 
 /**
  * (1) This file is executed inside repositoryDir, we need to change directory to the CI
@@ -37,6 +43,11 @@ var defaultTestConfig = require(repositoryDir + '/server/config/defaults/test');
  * (4) Loop through all the configs
  */
 for (var config of getSubDirectories('configs')) {
+  if (program.filter && !config.match(new RegExp(program.filter, 'g'))) {
+    // if we have a filter, and the filter doesn't match, we skip this configuration
+    continue;
+  }
+
   // we merge the default test configuration with the particular one for this run
   var testConfig = _.defaultsDeep(require('./configs/' + config + '/test'),
     _.cloneDeep(defaultTestConfig));
