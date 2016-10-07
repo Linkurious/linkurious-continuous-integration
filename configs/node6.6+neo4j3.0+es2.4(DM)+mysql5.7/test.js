@@ -12,5 +12,15 @@ module.exports = {
         dynamicMapping: true
       }
     }
-  ]
+  ],
+  db: {
+    name: 'linkurious',
+    username: 'linkurious',
+    password: 'pass',
+    options: {
+      dialect: 'mysql',
+      host: 'mysql',
+      port: 3306
+    }
+  }
 };

@@ -14,3 +14,9 @@ services:
      - NEO4J_AUTH=none
   elasticsearch:
     image: elasticsearch:2.4
+  mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_DATABASE=linkurious
+      - MYSQL_USER=linkurious
+      - MYSQL_PASSWORD=pass
