@@ -20,7 +20,7 @@ const repositoryDir = process.env['PWD'];
 const ciDir = process.env['CI_DIRECTORY'];
 
 program.option(
-  '--filter',
+  '--filter <filter>',
   'Test only the configs that match this regex'
 ).parse(process.argv);
 
