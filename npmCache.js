@@ -19,8 +19,9 @@ const ciDir = process.env['CI_DIRECTORY'];
  * Return the absolute path to the node_modules directory.
  *
  * @param {string} packageJsonFile
+ * @param {string} npmVersion
  */
-module.exports = packageJsonFile => {
+module.exports = (packageJsonFile, npmVersion) => {
   // hash the package.json file
   var data = fs.readFileSync(packageJsonFile, 'utf8');
   var hashPackageJson = crypto.createHash('md5').update(data).digest('hex');
@@ -42,8 +43,11 @@ module.exports = packageJsonFile => {
     var packageJsonFolder = packageJsonFile.substring(0, packageJsonFile.lastIndexOf('/'));
 
     changeDir(packageJsonFolder, () => {
+      // we first install the desired npm version
+      execRetry('npm install npm@' + npmVersion, 5);
+
       // we run npm install
-      execRetry('npm install', 5);
+      execRetry('./node_modules/npm/bin/npm install', 5);
 
       // we copy the node_modules directory in our bucket
       exec(`cp -r ${packageJsonFolder}/node_modules ${directory}/node_modules`);

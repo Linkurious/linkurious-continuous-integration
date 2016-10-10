@@ -29,18 +29,30 @@ program.option(
  */
 process.chdir(ciDir);
 
+var packageJsonFile = repositoryDir + '/package.json';
 /**
- * (2) Generate or retrieve the node_modules directory for this test
+ * (2) Retrieve the node and npm version from the package.json file
  */
-var nodeModulesDir = npmCache(repositoryDir + '/package.json');
+var packageJsonData = JSON.parse(fs.readFileSync(packageJsonFile, 'utf8'));
+
+// We have to use this version of node in the Dockerfiles
+var nodeVersion = packageJsonData.engines.node;
+
+// We have to switch to this version of npm to generate the node_modules folder
+var npmVersion = packageJsonData.engines.npm;
 
 /**
- * (3) Read default test configuration
+ * (3) Generate or retrieve the node_modules directory for this test
+ */
+var nodeModulesDir = npmCache(packageJsonFile, npmVersion);
+
+/**
+ * (4) Read default test configuration
  */
 var defaultTestConfig = require(repositoryDir + '/server/config/defaults/test');
 
 /**
- * (4) Loop through all the configs
+ * (5) Loop through all the configs
  */
 for (var config of getSubDirectories('configs')) {
   if (program.filter && !config.match(new RegExp(program.filter, 'g'))) {
@@ -56,17 +68,20 @@ for (var config of getSubDirectories('configs')) {
   deleteNullPropertiesDeep(testConfig);
 
   /**
-   * (5) Modify the configuration file for this run
+   * (6) Modify the configuration file for this run
    */
   exec(`mkdir -p ${repositoryDir}/data/config`);
   fs.writeFileSync(`${repositoryDir}/data/config/test.json`, JSON.stringify(testConfig));
 
   /**
-   * (6) Start docker containers
+   * (7) Start docker containers
    */
   changeDir('configs/' + config, () => {
     // at each test we remove all the docker containers
     exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
+
+    // we generate the Dockerfile based on the node version
+    exec('sed -e \'s/{node_version}/' + nodeVersion + '/g\' Dockerfile.template > Dockerfile');
 
     // we prepare a directory with the src code and the node_modules directory
     exec('rm -rf app');
