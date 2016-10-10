@@ -58,4 +58,10 @@ changeDir('strider', () => {
   exec('./bin/strider addUser');
 });
 
+/**
+ * (5) Chown /usr/local/lib/node_modules
+ */
+
+exec('sudo chown -R ${USER} /usr/lib/node_modules');
+
 exec('echo Please re-login');
