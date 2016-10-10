@@ -5,4 +5,4 @@ WORKDIR /app
 
 COPY app /app
 
-CMD sleep 30; node test/runMocha.js --jsonConfig
+CMD sleep 40; node test/runMocha.js --jsonConfig

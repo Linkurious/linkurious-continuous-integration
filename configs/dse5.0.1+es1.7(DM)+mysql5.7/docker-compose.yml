@@ -6,7 +6,6 @@ services:
     depends_on:
      - dse
      - elasticsearch
-     - mysql
   dse:
     image: luketillman/datastax-enterprise:5.0.1
     command: dse cassandra -gf
@@ -16,10 +15,3 @@ services:
      - LISTEN_ADDRESS=auto
   elasticsearch:
     image: elasticsearch:1.7
-  mysql:
-    image: mysql:5.7
-    environment:
-      - MYSQL_DATABASE=linkurious
-      - MYSQL_USER=linkurious
-      - MYSQL_PASSWORD=pass
-      - MYSQL_ROOT_PASSWORD=pass
