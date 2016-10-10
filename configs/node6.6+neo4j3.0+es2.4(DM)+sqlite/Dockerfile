@@ -1,10 +1,8 @@
 FROM node:6.6
 
-ARG ci_directory
+RUN mkdir -p /app
+WORKDIR /app
 
-RUN mkdir -p $ci_directory/app
-WORKDIR $ci_directory/app
-
-COPY app $ci_directory/app
+COPY app /app
 
 CMD [ "node", "test/runMocha.js", "--jsonConfig" ]

@@ -3,8 +3,6 @@ services:
   linkurious:
     build:
       context: .
-      args:
-        ci_directory: ${CI_DIRECTORY}
     depends_on:
      - allegro
      - elasticsearch
