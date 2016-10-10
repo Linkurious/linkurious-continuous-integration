@@ -45,6 +45,10 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
 
     changeDir(packageJsonFolder, () => {
       // we switch to the desired node version
+      changeDir('~/.nvm', () => {
+        // load nvm
+        exec('./nvm.sh');
+      });
       exec('nvm install ' + nodeVersion);
       exec('nvm use ' + nodeVersion);
 
