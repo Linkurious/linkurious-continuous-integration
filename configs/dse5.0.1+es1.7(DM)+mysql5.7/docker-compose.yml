@@ -6,6 +6,7 @@ services:
     depends_on:
      - dse
      - elasticsearch
+     - mysql
   dse:
     image: luketillman/datastax-enterprise:5.0.1
     command: dse cassandra -gf
