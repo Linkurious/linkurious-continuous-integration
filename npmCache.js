@@ -44,10 +44,10 @@ module.exports = (packageJsonFile, npmVersion) => {
 
     changeDir(packageJsonFolder, () => {
       // we first install the desired npm version
-      execRetry('npm install npm@' + npmVersion, 5);
+      execRetry('npm install -g npm@' + npmVersion, 5);
 
       // we run npm install
-      execRetry('./node_modules/npm/bin/npm install', 5);
+      execRetry('npm install', 5);
 
       // we copy the node_modules directory in our bucket
       exec(`cp -r ${packageJsonFolder}/node_modules ${directory}/node_modules`);
