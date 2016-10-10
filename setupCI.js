@@ -61,7 +61,11 @@ changeDir('strider', () => {
 /**
  * (5) Chown /usr/local/lib/node_modules
  */
-
 exec('sudo chown -R ${USER} /usr/lib/node_modules');
+
+/**
+ * (6) Install nvm
+ */
+exec('curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash');
 
 exec('echo Please re-login');

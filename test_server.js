@@ -44,7 +44,7 @@ var npmVersion = packageJsonData.engines.npm;
 /**
  * (3) Generate or retrieve the node_modules directory for this test
  */
-var nodeModulesDir = npmCache(packageJsonFile, npmVersion);
+var nodeModulesDir = npmCache(packageJsonFile, nodeVersion, npmVersion);
 
 /**
  * (4) Read default test configuration
