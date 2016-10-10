@@ -59,14 +59,14 @@ changeDir('strider', () => {
 });
 
 /**
- * (5) Chown /usr/local/ and /usr/lib/node_modules
+ * (5) Install n
  */
-exec('sudo chown -R ${USER} /usr/local');
-exec('sudo chown -R ${USER} /usr/lib/node_modules');
+exec('sudo npm install -g n');
 
-/**
- * (6) Install n
- */
-exec('npm install -g n');
+// Necessary to run n without sudo
+exec('sudo chown -R ${USER} /usr/local');
+
+// Necessary to change npm version globally without sudo
+exec('sudo chown -R ${USER} /usr/lib/node_modules');
 
 exec('echo Please re-login');

@@ -50,8 +50,9 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
       // we install the desired npm version
       execRetry('npm install -g npm@' + npmVersion, 5);
 
-      // we run npm install
-      execRetry('npm install', 5);
+      // we run npm install (the right node version is in /usr/local/bin)
+      execRetry('npm install', 5, {
+        env: Object.assign({ 'PATH': '/usr/local/bin:' + process.env['PATH']}, process.env)});
 
       // we copy the node_modules directory in our bucket
       exec(`cp -r ${packageJsonFolder}/node_modules ${directory}/node_modules`);
