@@ -13,6 +13,6 @@ services:
       - elasticsearch
       - cassandra
   elasticsearch:
-    image: elasticsearch:2.4
+    image: elasticsearch:1.7
   cassandra:
     image: elubow/cassandra:latest

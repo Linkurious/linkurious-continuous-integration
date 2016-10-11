@@ -7,7 +7,7 @@ module.exports = {
         configurationPath: '/conf/titan-cassandra-es.properties'
       },
       index: {
-        vendor: 'elasticSearch2',
+        vendor: 'elasticSearch',
         host: 'elasticsearch',
         port: 9200,
         dynamicMapping: true
