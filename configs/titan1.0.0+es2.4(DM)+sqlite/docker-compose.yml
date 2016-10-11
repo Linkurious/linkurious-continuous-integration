@@ -6,7 +6,13 @@ services:
     depends_on:
      - titan
      - elasticsearch
+     - cassandra
   titan:
     image: elubow/titan-gremlin:latest
+    depends_on:
+      - elasticsearch
+      - cassandra
   elasticsearch:
     image: elasticsearch:2.4
+  cassandra:
+    image: elubow/cassandra:latest
