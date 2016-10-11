@@ -1,4 +1,4 @@
-#!/bin/bssh
+#!/bin/bash
 
 BIN=./bin
 
