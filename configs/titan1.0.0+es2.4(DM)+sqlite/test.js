@@ -3,7 +3,8 @@ module.exports = {
     {
       graphdb: {
         vendor: 'titan',
-        url: 'ws://titan:8182'
+        url: 'ws://titan:8182',
+        configurationPath: '/conf/titan-cassandra-es.properties'
       },
       index: {
         vendor: 'elasticSearch2',
