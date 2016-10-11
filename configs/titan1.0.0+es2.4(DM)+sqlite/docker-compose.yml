@@ -1,0 +1,12 @@
+version: '2'
+services:
+  linkurious:
+    build:
+      context: .
+    depends_on:
+     - titan
+     - elasticsearch
+  titan:
+    image: elubow/titan-gremlin:latest
+  elasticsearch:
+    image: elasticsearch:2.4
