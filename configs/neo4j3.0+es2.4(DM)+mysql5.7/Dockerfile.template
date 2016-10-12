@@ -10,4 +10,4 @@ WORKDIR /app
 
 COPY app /app
 
-CMD dockerize -wait tcp://mysql:3306 -timeout 60s; node test/runMocha.js --jsonConfig
+CMD dockerize -wait tcp://mysql:3306 -timeout 60s; node test/runMocha.js --jsonConfig --color

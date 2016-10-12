@@ -5,4 +5,4 @@ WORKDIR /app
 
 COPY app /app
 
-CMD node test/runMocha.js --jsonConfig
+CMD node test/runMocha.js --jsonConfig --color
