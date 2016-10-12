@@ -16,6 +16,6 @@ sed -i "s/titan-berkeleyje-server.properties/titan-cassandra-server.properties/g
 # create the backing file
 echo "gremlin.graph=com.thinkaurelius.titan.core.TitanFactory
 storage.backend=cassandra
-storage.hostname=$CASSANDRA_PORT_9160_TCP_ADDR" > conf/gremlin-server/titan-cassandra-server.properties
+storage.hostname=cassandra" > conf/gremlin-server/titan-cassandra-server.properties
 
-$BIN/gremlin-server.sh conf/gremlin-server/gremlin-server-secure.yaml
+$BIN/gremlin-server.sh conf/gremlin-server/gremlin-server.yaml
