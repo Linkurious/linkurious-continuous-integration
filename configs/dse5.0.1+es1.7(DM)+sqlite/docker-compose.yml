@@ -6,6 +6,8 @@ services:
     depends_on:
      - dse
      - elasticsearch
+    volumes:
+     - ./coverage:/app/coverage
   dse:
     image: luketillman/datastax-enterprise:5.0.1
     command: dse cassandra -gf
