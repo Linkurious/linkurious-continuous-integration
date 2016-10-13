@@ -101,16 +101,16 @@ for (let config of getSubDirectories('configs')) {
     // we remove untagged docker images to clean up disk space
     exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
   });
-
-  /**
-   * (8) Generate unified code coverage report and upload it
-   */
-  // the app directory is required by istanbul to do its job
-  exec(`cp -al ${repositoryDir} ${coverageDir}/app`);
-
-  changeDir(`${coverageDir}`, () => {
-    exec(`istanbul report --root .`);
-    exec(`scp -r coverage ${configuration.coverageScpDestDir}/${new Date().toISOString()}
-     -p ${configuration.coverageScpPort}`);
-  });
 }
+
+/**
+ * (8) Generate unified code coverage report and upload it
+ */
+// the app directory (with an absolute path) is required by istanbul to do its job
+exec(`rm -rf /app/*; cp -al ${repositoryDir} /app`);
+
+changeDir(`${coverageDir}`, () => {
+  exec(`istanbul report --root .`);
+  exec(`scp -r coverage ${configuration.coverageScpDestDir}/${new Date().toISOString()}
+     -p ${configuration.coverageScpPort}`);
+});
