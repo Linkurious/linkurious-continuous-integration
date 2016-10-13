@@ -15,6 +15,7 @@ const getSubDirectories = require('./utils').getSubDirectories;
 const changeDir = require('./utils').changeDir;
 const deleteNullPropertiesDeep = require('./utils').deleteNullPropertiesDeep;
 const npmCache = require('./npmCache');
+const config = require('./config');
 
 const repositoryDir = process.env['PWD'];
 const ciDir = process.env['CI_DIRECTORY'];
@@ -112,5 +113,7 @@ for (var config of getSubDirectories('configs')) {
 
   changeDir(`${coverageDir}`, () => {
     exec(`istanbul report --root .`);
+    exec(`scp -r coverage ${config.coverageScpDestDir}/${new Date().toISOString()}
+     -p ${config.coverageScpPort}`);
   });
 }
