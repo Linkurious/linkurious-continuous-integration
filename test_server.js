@@ -95,14 +95,14 @@ for (var config of getSubDirectories('configs')) {
     exec('docker-compose run --rm linkurious');
 
     // copy the code coverage for this config to the main code coverage directory
-    exec(`cp -al coverage ${coverageDir}/${config}`);
+    exec(`cp -al coverage '${coverageDir}/${config}'`);
 
     // we remove untagged docker images to clean up disk space
     exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
   });
 
   /**
-   * (8) Generate unified code coverage report
+   * (8) Generate unified code coverage report and upload it
    */
   // the app directory is required by istanbul to do its job
   exec(`cp -al ${repositoryDir} ${coverageDir}/app`);
