@@ -84,16 +84,17 @@ async.each(getSubDirectories('configs'), (config, callback) => {
         console.log(`err: ${err}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
-        callback(err);
-      } else {
-        console.log(config + ' was successful.');
+        return callback(err);
       }
+
+      console.log(config + ' was successful.');
 
       // copy the code coverage for this config to the main code coverage directory
       changeDir('configs/' + config, () => {
         exec(`cp -R coverage '${coverageDir}/${config}'`);
       });
 
+      callback();
     });
 
 }, err => {
