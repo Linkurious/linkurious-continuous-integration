@@ -5,4 +5,4 @@ WORKDIR /app
 
 COPY app /app
 
-CMD node node_modules/istanbul/lib/cli.js cover ./test/runMocha.js -- --jsonConfig --color; chown -R nobody coverage
+CMD node node_modules/istanbul/lib/cli.js cover ./test/runMocha.js -- --jsonConfig --color

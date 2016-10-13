@@ -10,4 +10,4 @@ WORKDIR /app
 
 COPY app /app
 
-CMD dockerize -wait tcp://titan:8182 -timeout 60s; node node_modules/istanbul/lib/cli.js cover ./test/runMocha.js -- --jsonConfig --color; chown -R nobody coverage
+CMD dockerize -wait tcp://titan:8182 -timeout 60s; node node_modules/istanbul/lib/cli.js cover ./test/runMocha.js -- --jsonConfig --color
