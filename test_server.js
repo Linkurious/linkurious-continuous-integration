@@ -15,7 +15,6 @@ const getSubDirectories = require('./utils').getSubDirectories;
 const changeDir = require('./utils').changeDir;
 const deleteNullPropertiesDeep = require('./utils').deleteNullPropertiesDeep;
 const npmCache = require('./npmCache');
-const configuration = require('./config');
 
 const repositoryDir = process.env['PWD'];
 const ciDir = process.env['CI_DIRECTORY'];
@@ -102,15 +101,3 @@ for (let config of getSubDirectories('configs')) {
     exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
   });
 }
-
-/**
- * (8) Generate unified code coverage report and upload it
- */
-// the app directory (with an absolute path) is required by istanbul to do its job
-exec(`rm -rf /app/*; cp -al ${repositoryDir} /app`);
-
-changeDir(`${coverageDir}`, () => {
-  exec(`istanbul report --root .`);
-  exec(`scp -r coverage ${configuration.coverageScpDestDir}/${new Date().toISOString()}
-     -p ${configuration.coverageScpPort}`);
-});
