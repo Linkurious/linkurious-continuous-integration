@@ -24,6 +24,5 @@ exec(`rm -rf /app/*; cp -a ${repositoryDir}/. /app`);
 
 changeDir(`${coverageDir}`, () => {
   exec(`istanbul report --root .`);
-  exec(`scp -r coverage ${configuration.coverageScpDestDir}/${new Date().toISOString()}
-     -p ${configuration.coverageScpPort}`);
+  exec(`scp -r coverage ${configuration.coverageScpDestDir}/${new Date().toISOString()} -p ${configuration.coverageScpPort}`);
 });
