@@ -87,6 +87,9 @@ for (var config of getSubDirectories('configs')) {
     // we generate the Dockerfile based on the node version
     exec('sed -e \'s/{node_version}/' + nodeVersion + '/g\' Dockerfile.template > Dockerfile');
 
+    // ensure the coverage folder exists
+    exec(`rm -rf coverage; mkdir -p coverage`);
+
     // we prepare a directory with the src code and the node_modules directory
     exec('rm -rf app');
     exec(`cp -al ${repositoryDir} app`);
