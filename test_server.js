@@ -11,6 +11,7 @@ const async = require('async');
 const _ = require('lodash');
 
 const exec = require('./utils').exec;
+const execAsync = require('./utils').execAsync;
 const getSubDirectories = require('./utils').getSubDirectories;
 const changeDir = require('./utils').changeDir;
 const deleteNullPropertiesDeep = require('./utils').deleteNullPropertiesDeep;
