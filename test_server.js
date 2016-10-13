@@ -29,6 +29,10 @@ program.option(
  */
 process.chdir(ciDir);
 
+// ensure code coverage directory is clean
+var coverageDir = ciDir + '/coverages';
+exec(`rm -rf ${coverageDir}; mkdir -p ${coverageDir}`);
+
 var packageJsonFile = repositoryDir + '/package.json';
 /**
  * (2) Retrieve the node and npm version from the package.json file
@@ -38,7 +42,7 @@ var packageJsonData = JSON.parse(fs.readFileSync(packageJsonFile, 'utf8'));
 // We have to use this version of node in the Dockerfiles
 var nodeVersion = packageJsonData.engines.node;
 
-// We have to switch to this version of npm to generate the node_modules folder
+// We have to switch to this version of npm to generate the node_modules directory
 var npmVersion = packageJsonData.engines.npm;
 
 /**
@@ -90,7 +94,20 @@ for (var config of getSubDirectories('configs')) {
     exec('docker-compose build');
     exec('docker-compose run --rm linkurious');
 
+    // copy the code coverage for this config to the main code coverage directory
+    exec(`cp -al coverage ${coverageDir}/${config}`);
+
     // we remove untagged docker images to clean up disk space
     exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
+  });
+
+  /**
+   * (8) Generate unified code coverage report
+   */
+  // the app directory is required by istanbul to do its job
+  exec(`cp -al ${repositoryDir} ${coverageDir}/app`);
+
+  changeDir(`${coverageDir}`, () => {
+    exec(`istanbul report --root .`);
   });
 }
