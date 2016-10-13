@@ -77,13 +77,11 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     fs.writeFileSync(`app/data/config/test.json`, JSON.stringify(testConfig));
   });
 
-  execAsync('docker-compose build; docker-compose run --rm linkurious',
+  execAsync('docker-compose build; docker-compose run --rm linkurious | sed s/^/\x1b[0m/ >> myLogfile) 2>&1 | sed s/^/\x1b[33m/',
     {cwd: ciDir + '/configs/' + config},
     (err, stdout, stderr) => {
       if (err) {
-        console.log(`err: ${err}`);
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
+        console.log(stdout);
         return callback(err);
       }
 
