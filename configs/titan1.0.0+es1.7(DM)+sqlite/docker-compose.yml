@@ -12,9 +12,6 @@ services:
   titan:
     build:
       context: ./titan
-    depends_on:
-      - elasticsearch
-      - cassandra
   elasticsearch:
     image: elasticsearch:1.7
   cassandra:
