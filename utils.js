@@ -22,6 +22,20 @@ var exec = (cmd, options) => {
 };
 
 /**
+ * Execute `cmd` asynchronously.
+ *
+ * @param {string} cmd
+ * @param {object} [options]
+ * @param {function} [callback]
+ */
+var execAsync = (cmd, options, callback) => {
+  console.log('\x1b[31m', '> ' + cmd, '\x1b[0m');
+  require('child_process').exec(cmd,
+    _.defaults(options, {stdio: [0, 1, 2], shell: '/bin/bash'}), callback);
+  console.log('');
+};
+
+/**
  * Execute `nRetry` times `cmd` synchronously.
  *
  * @param {string} cmd
@@ -80,4 +94,4 @@ var deleteNullPropertiesDeep = obj => {
   }
 };
 
-module.exports = {exec, execRetry, getSubDirectories, changeDir, deleteNullPropertiesDeep};
+module.exports = {exec, execAsync, execRetry, getSubDirectories, changeDir, deleteNullPropertiesDeep};
