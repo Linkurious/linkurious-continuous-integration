@@ -103,5 +103,5 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   // we remove untagged docker images to clean up disk space
   exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
 
-  process.exit(err);
+  process.exit(err ? 1 : 0);
 });
