@@ -20,7 +20,7 @@ const coverageDir = ciDir + '/coverages';
  * (8) Generate unified code coverage report and upload it
  */
 // the app directory (with an absolute path) is required by istanbul to do its job
-exec(`rm -rf /app/*; cp -a ${repositoryDir}/. /app`);
+exec(`find /app -mindepth 1 -delete; cp -al ${repositoryDir}/. /app`);
 
 changeDir(`${coverageDir}`, () => {
   exec(`istanbul report --root .`);
