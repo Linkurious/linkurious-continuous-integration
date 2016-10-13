@@ -11,5 +11,7 @@ module.exports = {
   smtpSecure: true,
   smtpUser: '<user>',
   smtpPass: '<pass>',
-  smtpFrom: '<from>'
+  smtpFrom: '<from>',
+  coverageScpDestDir: '<covDestDir>',
+  coverageScpPort: '<covPort>'
 };

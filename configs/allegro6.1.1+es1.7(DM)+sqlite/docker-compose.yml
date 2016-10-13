@@ -6,6 +6,8 @@ services:
     depends_on:
      - allegro
      - elasticsearch
+    volumes:
+     - ./coverage:/app/coverage
   allegro:
     image: franzinc/agraph:v6.1.1
   elasticsearch:

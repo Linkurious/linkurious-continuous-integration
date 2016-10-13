@@ -7,6 +7,8 @@ services:
      - titan
      - elasticsearch
      - cassandra
+    volumes:
+     - ./coverage:/app/coverage
   titan:
     build:
       context: ./titan

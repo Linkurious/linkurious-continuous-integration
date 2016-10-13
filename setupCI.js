@@ -69,4 +69,12 @@ exec('sudo chown -R ${USER} /usr/local');
 // Necessary to change npm version globally without sudo
 exec('sudo chown -R ${USER} /usr/lib/node_modules');
 
+/**
+ * (6) Install istanbul
+ */
+exec('sudo npm install -g istanbul');
+exec('sudo mkdir /app');
+// necessary folder for istanbul to merge the reports (the code will end up here)
+exec('sudo chown -R ${USER} /app');
+
 exec('echo Please re-login');
