@@ -15,7 +15,7 @@ const path = require('path');
  * @param {object} [options]
  */
 var exec = (cmd, options) => {
-  console.log('\x1b[33m', '> ' + cmd, '\x1b[0m');
+  console.log('\x1b[34m', '> ' + cmd, '\x1b[0m');
   require('child_process').execSync(cmd,
     _.defaults(options, {stdio: [0, 1, 2], shell: '/bin/bash'}));
 };
