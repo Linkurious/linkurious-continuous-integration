@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * LINKURIOUS CONFIDENTIAL
  * Copyright Linkurious SAS 2012 - 2016

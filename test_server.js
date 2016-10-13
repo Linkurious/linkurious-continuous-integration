@@ -29,9 +29,9 @@ program.option(
  */
 process.chdir(ciDir);
 
-// ensure code coverage directory is clean
+// ensure code coverage directory exists
 const coverageDir = ciDir + '/coverages';
-exec(`rm -rf ${coverageDir}; mkdir -p ${coverageDir}`);
+exec(`mkdir -p ${coverageDir}`);
 
 const packageJsonFile = repositoryDir + '/package.json';
 /**
