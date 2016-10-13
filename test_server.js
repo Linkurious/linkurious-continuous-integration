@@ -90,7 +90,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
 
       // copy the code coverage for this config to the main code coverage directory
       changeDir('configs/' + config, () => {
-        exec(`cp -R coverage '${coverageDir}/${config}'`,);
+        exec(`cp -R coverage '${coverageDir}/${config}'`);
       });
 
     });
