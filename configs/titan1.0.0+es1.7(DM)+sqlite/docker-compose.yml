@@ -6,7 +6,6 @@ services:
     depends_on:
      - titan
      - elasticsearch
-     - cassandra
     volumes:
      - ./coverage:/app/coverage
   titan:
@@ -14,5 +13,3 @@ services:
       context: ./titan
   elasticsearch:
     image: elasticsearch:1.7
-  cassandra:
-    image: elubow/cassandra:latest
