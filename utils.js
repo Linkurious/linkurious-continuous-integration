@@ -24,9 +24,10 @@ var exec = (cmd, options) => {
  *
  * @param {string} cmd
  * @param {object} [options]
+ * @returns {ChildProcess}
  */
 var execAsync = (cmd, options) => {
-  require('child_process').spawn(cmd,
+  return require('child_process').spawn(cmd,
     _.defaults(options, {shell: '/bin/bash'}));
 };
 
