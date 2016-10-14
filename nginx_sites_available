@@ -37,7 +37,7 @@ server {
     # Allow only TLS, disable the old SSL protocols.
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     # The SSL certificate this server should use.
-    ssl_certificate /etc/letsencrypt/live/ci.linkurio.us/cert.pem;
+    ssl_certificate /etc/letsencrypt/live/ci.linkurio.us/fullchain.pem;
     # The private key this server should use.
     ssl_certificate_key /etc/letsencrypt/live/ci.linkurio.us/privkey.pem;
 
