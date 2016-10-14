@@ -48,7 +48,7 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
       exec('n ' + nodeVersion);
 
       // we install the desired npm version
-      execRetry('npm install -g npm@' + npmVersion, 5);
+      execRetry('export PATH=/usr/local/bin:${PATH}; npm install -g npm@' + npmVersion, 5);
 
       // we run npm install (the right node version is in /usr/local/bin)
       execRetry('export PATH=/usr/local/bin:${PATH}; npm install', 5);
