@@ -23,6 +23,7 @@ rl.question('GitHub Client Secret: ', clientSecret => {
         'SERVER_NAME': config.serverName,
         'PLUGIN_GITHUB_APP_ID': config.githubClientId,
         'PLUGIN_GITHUB_APP_SECRET': clientSecret,
+        'HOST': config.host,
         'PORT': config.port,
         'SMTP_HOST': config.smtpHost,
         'SMTP_PORT': config.smtpPort,
