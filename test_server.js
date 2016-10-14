@@ -83,17 +83,17 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   let output = '';
 
   dockerBuildRun.stdout.on('data', data => {
-    output += data + '\n';
+    output += data;
   });
 
   dockerBuildRun.stderr.on('data', data => {
-    output += '\x1b[31m' + data + '\x1b[0m\n';
+    output += '\x1b[31m' + data + '\x1b[0m';
   });
 
   dockerBuildRun.on('close', code => {
     if (code !== 0) {
       console.log(config + ` was unsuccessful (exited with code ${code}).`);
-      console.log(output.replace(new RegExp('\\n+', 'g'), '\\n')); // we remove multiple \n
+      console.log(output);
 
       return callback(code);
     } else {
