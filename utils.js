@@ -15,6 +15,7 @@ const path = require('path');
  * @param {object} [options]
  */
 var exec = (cmd, options) => {
+  console.log('\x1b[35m', '> ' + cmd, '\x1b[0m');
   require('child_process').execSync(cmd,
     _.defaults(options, {stdio: [0, 1, 2], shell: '/bin/bash'}));
 };
@@ -27,6 +28,7 @@ var exec = (cmd, options) => {
  * @returns {ChildProcess}
  */
 var execAsync = (cmd, options) => {
+  console.log('\x1b[35m', '> ' + cmd, '\x1b[0m');
   return require('child_process').spawn(cmd,
     _.defaults(options, {shell: '/bin/bash'}));
 };
