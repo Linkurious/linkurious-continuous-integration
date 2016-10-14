@@ -11,8 +11,8 @@ Its purpose is to test Linkurious against various setups automatically.
 
 ## Installation
 
-Run the `setupCI.js` script on your Ubuntu 16.04 machine. This script is going to setup *MongoDB*, *Docker*, *StriderCD*, *n* and *istanbul*.
-It requires to be runned by a **sudoer**. At the end, it's going to ask you to create an admin user for the CI.
+Run the `setupCI.js` script on your Ubuntu 16.04 machine. This script is going to setup *MongoDB*, *Docker*, *StriderCD*, *n*, *istanbul* and *nginx*.
+It requires to be runned by a **sudoer**. At the end, it's going to ask you to create an admin user for the CI. It will also configure a new SSL certificate with https://letsencrypt.org.
 
 ## Configuration
 
