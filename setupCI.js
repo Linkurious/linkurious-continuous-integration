@@ -81,6 +81,7 @@ exec('sudo chown -R ${USER} /app');
  * (7) Install Nginx
  */
 exec('sudo apt-get install -y nginx');
-exec('sudo cp nginx_sites /etc/nginx/sites-available/nginx_sites');
+exec('sudo cp nginx_sites_available /etc/nginx/sites-available/default');
+exec('sudo letsencrypt certonly --standalone -d ci.linkurio.us');
 
 exec('echo Please re-login');

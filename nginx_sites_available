@@ -37,9 +37,9 @@ server {
     # Allow only TLS, disable the old SSL protocols.
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     # The SSL certificate this server should use.
-    ssl_certificate /etc/ssl/certs/ci.linkurio.us.crt;
+    ssl_certificate /etc/letsencrypt/live/ci.linkurio.us/cert.pem;
     # The private key this server should use.
-    ssl_certificate_key /etc/ssl/private/ci.linkurio.us.key;
+    ssl_certificate_key /etc/letsencrypt/live/ci.linkurio.us/chain.pem;
     # Tell the server to use a customized version of the Diffie-Hellman key exchange parameters.
     # See: https://weakdh.org/sysadmin.html
     ssl_dhparam /etc/ssl/dhparams.pem;
