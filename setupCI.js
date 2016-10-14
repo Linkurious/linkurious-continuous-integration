@@ -77,4 +77,9 @@ exec('sudo mkdir /app');
 // necessary folder for istanbul to merge the reports (the code will end up here)
 exec('sudo chown -R ${USER} /app');
 
+/**
+ * (7) Install Nginx
+ */
+exec('sudo apt-get install -y nginx');
+
 exec('echo Please re-login');
