@@ -92,12 +92,12 @@ async.each(getSubDirectories('configs'), (config, callback) => {
 
   dockerBuildRun.on('close', code => {
     if (code !== 0) {
-      console.log(config + ` was unsuccessful (exited with code ${code}).`);
+      console.log('\x1b[41m$' + config + ` was unsuccessful (exited with code ${code}).\x1b[0m`);
       console.log(output);
 
       return callback(code);
     } else {
-      console.log(config + ' was successful.');
+      console.log('\x1b[42m$' + config + ' was successful.\x1b[0m');
 
       // copy the code coverage for this config to the main code coverage directory
       changeDir('configs/' + config, () => {
