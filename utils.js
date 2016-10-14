@@ -29,7 +29,7 @@ var exec = (cmd, options) => {
  */
 var execAsync = (cmd, options) => {
   console.log('\x1b[32m$ \x1b[0m' + cmd);
-  return require('child_process').spawn(cmd,
+  return require('child_process').exec(cmd,
     _.defaults(options, {shell: '/bin/bash'}));
 };
 
