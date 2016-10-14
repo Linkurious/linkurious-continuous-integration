@@ -40,9 +40,6 @@ server {
     ssl_certificate /etc/letsencrypt/live/ci.linkurio.us/cert.pem;
     # The private key this server should use.
     ssl_certificate_key /etc/letsencrypt/live/ci.linkurio.us/privkey.pem;
-    # Tell the server to use a customized version of the Diffie-Hellman key exchange parameters.
-    # See: https://weakdh.org/sysadmin.html
-    ssl_dhparam /etc/ssl/dhparams.pem;
 
     # SSL session parameters may be reused by the client for the given time.
     ssl_session_timeout 5m;
