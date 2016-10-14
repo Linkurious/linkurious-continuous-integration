@@ -16,6 +16,7 @@ const config = require('./config');
 rl.question('GitHub Client Secret: ', clientSecret => {
   exec('sudo service mongod start');
   exec('sudo service docker start');
+  exec('sudo service nginx start');
   exec('npm start >> strider.log 2>&1 & disown', {
     env:
       Object.assign({
