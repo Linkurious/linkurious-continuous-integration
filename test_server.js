@@ -93,7 +93,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   dockerBuildRun.on('close', code => {
     if (code !== 0) {
       console.log(config + ` was unsuccessful (exited with code ${code}).`);
-      console.log(output);
+      console.log(output.replace(new RegExp('\\n+', 'g'), '\\n')); // we remove multiple \n
 
       return callback(code);
     } else {
