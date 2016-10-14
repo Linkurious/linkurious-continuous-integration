@@ -77,14 +77,26 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     fs.writeFileSync(`app/data/config/test.json`, JSON.stringify(testConfig));
   });
 
-  execAsync('docker-compose build; docker-compose run --rm linkurious | sed s/^/\\x1b[0m/ >> myLogfile) 2>&1 | sed s/^/\\x1b[33m/',
-    {cwd: ciDir + '/configs/' + config},
-    (err, stdout, stderr) => {
-      if (err) {
-        console.log(stdout);
-        return callback(err);
-      }
+  let dockerBuildRun = execAsync('docker-compose build; docker-compose run --rm linkurious',
+    {cwd: ciDir + '/configs/' + config});
 
+  let output = '';
+
+  dockerBuildRun.stdout.on('data', data => {
+    output += data + '\n';
+  });
+
+  dockerBuildRun.stderr.on('data', data => {
+    output += '\x1b[31m' + data + '\x1b[0m\n';
+  });
+
+  dockerBuildRun.on('close', code => {
+    if (code !== 0) {
+      console.log(config + ` was unsuccessful (exited with code ${code}).`);
+      console.log(output);
+
+      return callback(code);
+    } else {
       console.log(config + ' was successful.');
 
       // copy the code coverage for this config to the main code coverage directory
@@ -92,14 +104,14 @@ async.each(getSubDirectories('configs'), (config, callback) => {
         exec(`cp -R coverage '${coverageDir}/${config}'`);
       });
 
-      callback();
-    });
-
+      return callback();
+    }
+  });
 }, err => {
   // we remove all the existing docker containers
   exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
   // we remove untagged docker images to clean up disk space
   exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
 
-  process.exit(err ? 1 : 0);
+  process.exit(err ? err : 0);
 });
