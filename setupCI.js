@@ -81,5 +81,6 @@ exec('sudo chown -R ${USER} /app');
  * (7) Install Nginx
  */
 exec('sudo apt-get install -y nginx');
+exec('sudo cp nginx_sites /etc/nginx/sites-available/nginx_sites');
 
 exec('echo Please re-login');
