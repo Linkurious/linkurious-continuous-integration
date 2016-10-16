@@ -73,8 +73,8 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     exec('rm -rf app');
     exec(`cp -al ${repositoryDir} app`);
     exec(`cp -al ${nodeModulesDir} app/node_modules`);
-    exec(`mkdir -p app/data/config`);
-    fs.writeFileSync(`app/data/config/test.json`, JSON.stringify(testConfig));
+    exec('mkdir -p app/data/config');
+    fs.writeFileSync('app/data/config/test.json', JSON.stringify(testConfig));
   });
 
   let dockerBuildRun = execAsync('docker-compose build; docker-compose run --rm linkurious',
