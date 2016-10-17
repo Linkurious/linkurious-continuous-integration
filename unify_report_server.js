@@ -12,7 +12,7 @@ const exec = require('./utils').exec;
 const changeDir = require('./utils').changeDir;
 
 const configuration = require('./config');
-const repositoryDir = process.env['PWD'];
+const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 const coverageDir = ciDir + '/coverages';
 

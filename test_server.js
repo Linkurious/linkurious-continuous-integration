@@ -17,7 +17,7 @@ const changeDir = require('./utils').changeDir;
 const deleteNullPropertiesDeep = require('./utils').deleteNullPropertiesDeep;
 const npmCache = require('./npmCache');
 
-const repositoryDir = process.env['PWD'];
+const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 
 /**

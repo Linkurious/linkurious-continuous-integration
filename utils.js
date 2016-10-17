@@ -46,7 +46,7 @@ var execRetry = (cmd, nRetry, options) => {
   } else {
     try {
       return exec(cmd, options);
-    } catch (e) {
+    } catch(e) {
       return execRetry(cmd, nRetry - 1, options);
     }
   }
