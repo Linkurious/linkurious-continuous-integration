@@ -44,4 +44,4 @@ In the branch `*`:
 
 #### Setup Linkurious Client
 
-Do as for Linkurious Server, except that the 
+Do as for Linkurious Server, except that the test script is `$CI_DIRECTORY/test_client.js`.
