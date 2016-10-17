@@ -7,10 +7,12 @@
 
 const exec = require('./utils').exec;
 const changeDir = require('./utils').changeDir;
+const npmCache = require('./npmCache');
+
+const fs = require('fs');
 
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
-const npmCache = require('./npmCache');
 
 /**
  * (1) Detect client and server branch
