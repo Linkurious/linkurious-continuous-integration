@@ -18,7 +18,7 @@ const ciDir = process.env['CI_DIRECTORY'];
  *
  * Return the absolute path to the node_modules directory.
  *
- * @param {string} packageJsonFile
+ * @param {string} packageJsonFile absolute path to the package.json file
  * @param {string} [nodeVersion]
  * @param {string} [npmVersion]
  */

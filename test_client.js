@@ -37,8 +37,8 @@ exec('rm -rf linkurious.js');
 exec('git clone -b develop git@github.com:Linkurious/linkurious.js.git');
 
 changeDir('linkurious.js', () => {
-  var nodeModulesDir = npmCache('package.json');
-  exec(`cp -al ${nodeModulesDir} node_modules`);
+  var nodeModulesDir = npmCache(ciDir + '/linkurious.js/package.json');
+  exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
   exec('grunt build');
 });
 
