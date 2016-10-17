@@ -21,7 +21,7 @@ const clientBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toSt
   .replace('\n', '');
 const serverBranch = exec('git ls-remote' +
   ' --heads git@github.com:Linkurious/linkurious-server.git ' +
-  clientBranch + ' | wc -l').toString('utf8') === '1'
+  clientBranch + ' | wc -l', {stdio: null}).toString('utf8') === '1'
   ? clientBranch
   : 'develop';
 
