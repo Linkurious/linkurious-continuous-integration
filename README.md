@@ -36,8 +36,9 @@ Press `Add` and then `custom` on the project you want to configure.
 
 First, check that the SSH key in the project settings is authorized to clone the repository.
 
-Add 3 active plugins: `Environment`, `Custom Scripts`, `Github Status`. The latter must be installed first by adding it under *Admin/Plugins* in the UI.
+In the branch `*`:
+ - Add 3 active plugins: `Environment`, `Custom Scripts`, `Github Status`. The latter must be installed first by adding it under *Admin/Plugins* in the UI.
+ - Under `Environment` add a variable `CI_DIRECTORY` with value the working directory name of this repository.
+ - Under `Custom Scripts`, `Test` add `$CI_DIRECTORY/test_server.js`.
 
-Under `Environment` add a variable `CI_DIRECTORY` with value the working directory name of this repository.
-
-Under `Custom Scripts`, `Test` add `$CI_DIRECTORY/test_server.js`.
+#### Setup Linkurious Client
