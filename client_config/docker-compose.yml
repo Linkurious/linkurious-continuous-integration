@@ -1,0 +1,14 @@
+version: '2'
+services:
+  linkurious:
+    build:
+      context: .
+    depends_on:
+     - neo4j
+     - elasticsearch
+  neo4j:
+    image: neo4j:3.0
+    environment:
+     - NEO4J_AUTH=none
+  elasticsearch:
+    image: elasticsearch:1.7

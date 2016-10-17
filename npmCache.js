@@ -19,8 +19,8 @@ const ciDir = process.env['CI_DIRECTORY'];
  * Return the absolute path to the node_modules directory.
  *
  * @param {string} packageJsonFile
- * @param {string} nodeVersion
- * @param {string} npmVersion
+ * @param {string} [nodeVersion]
+ * @param {string} [npmVersion]
  */
 module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
   // hash the package.json file
@@ -45,10 +45,14 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
 
     changeDir(packageJsonFolder, () => {
       // we install the desired node version
-      exec('n ' + nodeVersion);
+      if (nodeVersion) {
+        exec('n ' + nodeVersion);
+      }
 
       // we install the desired npm version
-      execRetry('export PATH=/usr/local/bin:${PATH}; npm install -g npm@' + npmVersion, 5);
+      if (npmVersion) {
+        execRetry('export PATH=/usr/local/bin:${PATH}; npm install -g npm@' + npmVersion, 5);
+      }
 
       // we run npm install (the right node version is in /usr/local/bin)
       execRetry('export PATH=/usr/local/bin:${PATH}; npm install', 5);
