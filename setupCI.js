@@ -59,7 +59,7 @@ changeDir('strider', () => {
 });
 
 /**
- * (5) Install n
+ * (5) Install n and setup directory permissions for changing node and npm version without sudo
  */
 exec('sudo npm install -g n');
 
@@ -78,12 +78,22 @@ exec('sudo mkdir /app');
 exec('sudo chown -R ${USER} /app');
 
 /**
- * (7) Install Nginx
+ * (7) Install Nginx and setup SSL certificate
  */
 exec('sudo apt-get install -y nginx');
 exec('sudo apt-get install -y letsencrypt');
 exec('sudo cp nginx_sites_available /etc/nginx/sites-available/default');
 exec('sudo letsencrypt certonly --standalone -d ci.linkurio.us');
 exec('sudo cp renew_cert.sh /etc/cron.daily');
+
+/**
+ * (8) Install Grunt
+ */
+exec('sudo npm install -g grunt');
+
+/**
+ * (9) Install Bower
+ */
+exec('sudo npm install -g bower');
 
 exec('echo Please re-login');
