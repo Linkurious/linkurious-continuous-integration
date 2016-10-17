@@ -40,5 +40,8 @@ In the branch `*`:
  - Add 3 active plugins: `Environment`, `Custom Scripts`, `Github Status`. The latter must be installed first by adding it under *Admin/Plugins* in the UI.
  - Under `Environment` add a variable `CI_DIRECTORY` with value the working directory name of this repository.
  - Under `Custom Scripts`, `Test` add `$CI_DIRECTORY/test_server.js`.
+ - Under `Custom Scripts`, `Test` add `$CI_DIRECTORY/unify_report_server.js` (needed if you want to upload the unified code coverage)
 
 #### Setup Linkurious Client
+
+Do as for Linkurious Server, except that the 
