@@ -42,4 +42,16 @@ changeDir('linkurious.js', () => {
   exec('grunt build');
 });
 
+/**
+ * (3) Download the latest Linkurious Server at the branch `serverBranch`
+ */
+exec('rm -rf linkurious-server');
+exec('git clone git@github.com:Linkurious/linkurious-server.git --branch ' +
+  serverBranch + ' --single-branch');
+
+changeDir('linkurious-server', () => {
+  var nodeModulesDir = npmCache(ciDir + '/linkurious-server/package.json');
+  exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
+});
+
 exec('echo ' + clientBranch);
