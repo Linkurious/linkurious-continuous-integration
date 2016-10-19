@@ -16,7 +16,7 @@ const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 
 commander.option(
-  '--noServer',
+  '--serverCI',
   'Don\'t download the server, use the one already available in the tmp directory'
 ).parse(process.argv);
 
@@ -54,7 +54,7 @@ changeDir('tmp', () => {
   /**
    * (4) Download the latest Linkurious Server at the branch `serverBranch`
    */
-  if (!commander.noServer) {
+  if (!commander.serverCI) {
     exec('rm -rf linkurious-server');
     exec('git clone git@github.com:Linkurious/linkurious-server.git --branch ' +
       serverBranch + ' --single-branch');
