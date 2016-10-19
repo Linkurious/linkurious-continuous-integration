@@ -70,6 +70,7 @@ const defaultTestConfig = require(repositoryDir + '/server/config/defaults/test'
 exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
 
 async.each(getSubDirectories('configs'), (config, callback) => {
+  return callback();
   // we merge the default test configuration with the particular one for this run
   let testConfig = _.defaultsDeep(require('./configs/' + config + '/test'),
     _.cloneDeep(defaultTestConfig));
@@ -134,7 +135,16 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   /**
    * (8) Call the test_client.js plugin forcing to use this branch
    */
-  exec('./test_client.js --noServer --clientBranch ' + clientBranch);
+  // download the Linkurious Client first
+  exec('rm -rf tmp/linkurious-client');
+  changeDir('tmp', () => {
+    exec('git clone git@github.com:Linkurious/linkurious-client.git --branch ' +
+      clientBranch + ' --single-branch');
+
+    changeDir('linkurious-client', () => {
+      exec('./test_client.js --noServer --clientBranch ' + clientBranch);
+    });
+  });
 
   /**
    * (9) Call grunt build

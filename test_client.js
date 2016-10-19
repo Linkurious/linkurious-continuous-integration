@@ -18,17 +18,13 @@ const ciDir = process.env['CI_DIRECTORY'];
 commander.option(
   '--noServer',
   'Don\'t download the server, use the one already available in the tmp directory'
-).option(
-  '--clientBranch <branch>',
-  'Use this client branch'
 ).parse(process.argv);
 
 /**
  * (1) Detect client and server branch
  */
-const clientBranch = commander.clientBranch
-  ? commander.clientBranch
-  : exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8').replace('\n', '');
+const clientBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
+  .replace('\n', '');
 
 const serverBranch = exec('git ls-remote' +
   ' --heads git@github.com:Linkurious/linkurious-server.git ' +
