@@ -142,7 +142,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
       clientBranch + ' --single-branch');
 
     changeDir('linkurious-client', () => {
-      exec('./test_client.js --serverCI');
+      exec(ciDir + '/test_client.js --serverCI');
     });
   });
 
