@@ -17,7 +17,7 @@ const ciDir = process.env['CI_DIRECTORY'];
 
 commander.option(
   '--noServer',
-  'Don\'t download the server, use the one already available in the tmp folder'
+  'Don\'t download the server, use the one already available in the tmp directory'
 ).option(
   '--clientBranch <branch>',
   'Use this client branch'
