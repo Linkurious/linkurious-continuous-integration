@@ -72,7 +72,11 @@ changeDir(repositoryDir, () => {
   var nodeModulesDir = npmCache(repositoryDir + '/package.json');
   exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
   var bowerComponentsDir = bowerCache(repositoryDir + '/bower.json');
-  exec(`rm -rf src/vendor; cp -al ${bowerComponentsDir}/. src/vendor`);
-});
+  exec(`cp -al ${bowerComponentsDir}/. src/vendor`);
+  exec('cp -al ' + ciDir + '/tmp/linkurious.js src/vendor');
 
-exec('echo ' + clientBranch);
+  /**
+   * (7) Call grunt build
+   */
+  exec('grunt build');
+});
