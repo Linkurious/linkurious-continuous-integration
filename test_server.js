@@ -21,7 +21,19 @@ const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 
 /**
- * (1) This file is executed inside repositoryDir, we need to change directory to the CI
+ * (1) Detect client and server branch
+ */
+const serverBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
+  .replace('\n', '');
+const clientBranch = exec('git ls-remote' +
+  ' --heads git@github.com:Linkurious/linkurious-client.git ' +
+  serverBranch + ' | wc -l', {stdio: null}).toString('utf8') === '1'
+  ? serverBranch
+  : 'develop';
+
+
+/**
+ * (2) This file is executed inside repositoryDir, we need to change directory to the CI
  */
 process.chdir(ciDir);
 
@@ -31,7 +43,7 @@ exec(`mkdir -p ${coverageDir}`);
 
 const packageJsonFile = repositoryDir + '/package.json';
 /**
- * (2) Retrieve the node and npm version from the package.json file
+ * (3) Retrieve the node and npm version from the package.json file
  */
 const packageJsonData = JSON.parse(fs.readFileSync(packageJsonFile, 'utf8'));
 
@@ -42,17 +54,17 @@ const nodeVersion = packageJsonData.engines.node;
 const npmVersion = packageJsonData.engines.npm;
 
 /**
- * (3) Generate or retrieve the node_modules directory for this test
+ * (4) Generate or retrieve the node_modules directory for this test
  */
 const nodeModulesDir = npmCache(packageJsonFile, nodeVersion, npmVersion);
 
 /**
- * (4) Read default test configuration
+ * (5) Read default test configuration
  */
 const defaultTestConfig = require(repositoryDir + '/server/config/defaults/test');
 
 /**
- * (5) Loop through all the configs
+ * (6) Loop through all the configs
  */
 // we remove all the existing docker containers
 exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
@@ -114,9 +126,20 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
 
   /**
-   * (6) Call grunt build
+   * (7) Copy the linkurious-server directory to tmp
    */
-  changeDir(repositoryDir, () => {
+  exec('rm -rf tmp/linkurious-server');
+  exec('cp -al ' + repositoryDir + ' tmp/linkurious-server');
+
+  /**
+   * (8) Call the test_client.js plugin forcing to use this branch
+   */
+  exec('test_client.js --noServer --clientBranch' + clientBranch);
+
+  /**
+   * (9) Call grunt build
+   */
+  changeDir('tmp/linkurious-server', () => {
     exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
     exec('grunt lint');
     exec('grunt build');

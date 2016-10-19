@@ -5,6 +5,8 @@
  */
 'use strict';
 
+const commander = require('commander');
+
 const exec = require('./utils').exec;
 const changeDir = require('./utils').changeDir;
 const npmCache = require('./npmCache');
@@ -13,11 +15,21 @@ const bowerCache = require('./bowerCache');
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 
+commander.option(
+  '--noServer',
+  'Don\'t download the server, use the one already available in the tmp folder'
+).option(
+  '--clientBranch <branch>',
+  'Use this client branch'
+).parse(process.argv);
+
 /**
  * (1) Detect client and server branch
  */
-const clientBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
-  .replace('\n', '');
+const clientBranch = commander.clientBranch
+  ? commander.clientBranch
+  : exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8').replace('\n', '');
+
 const serverBranch = exec('git ls-remote' +
   ' --heads git@github.com:Linkurious/linkurious-server.git ' +
   clientBranch + ' | wc -l', {stdio: null}).toString('utf8') === '1'
@@ -46,18 +58,20 @@ changeDir('tmp', () => {
   /**
    * (4) Download the latest Linkurious Server at the branch `serverBranch`
    */
-  exec('rm -rf linkurious-server');
-  exec('git clone git@github.com:Linkurious/linkurious-server.git --branch ' +
-    serverBranch + ' --single-branch');
+  if (!commander.noServer) {
+    exec('rm -rf linkurious-server');
+    exec('git clone git@github.com:Linkurious/linkurious-server.git --branch ' +
+      serverBranch + ' --single-branch');
 
-  changeDir('linkurious-server', () => {
-    var nodeModulesDir = npmCache(ciDir + '/tmp/linkurious-server/package.json');
-    exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
-  });
+    changeDir('linkurious-server', () => {
+      var nodeModulesDir = npmCache(ciDir + '/tmp/linkurious-server/package.json');
+      exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
+    });
+  }
 });
 
 /**
- * (5) Link the linkurious-client directory
+ * (5) Copy the linkurious-client directory to tmp
  */
 exec('rm -rf tmp/linkurious-client');
 exec('cp -al ' + repositoryDir + ' tmp/linkurious-client');
