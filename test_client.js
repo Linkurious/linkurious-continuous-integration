@@ -72,8 +72,8 @@ changeDir(repositoryDir, () => {
   var nodeModulesDir = npmCache(repositoryDir + '/package.json');
   exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
   var bowerComponentsDir = bowerCache(repositoryDir + '/bower.json');
-  exec(`cp -al ${bowerComponentsDir}/. src/vendor`);
-  exec('cp -al ' + ciDir + '/tmp/linkurious.js src/vendor | true'); // `| true` because npm install calls bower install
+  exec(`cp -al ${bowerComponentsDir}/. src/vendor | true`);  // `| true` because npm install calls bower install too
+  exec('cp -al ' + ciDir + '/tmp/linkurious.js src/vendor');
 
   /**
    * (7) Start Neo4j and elasticsearch
