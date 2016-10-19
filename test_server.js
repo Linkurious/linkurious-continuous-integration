@@ -156,7 +156,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     });
 
     /**
-     * (9) Call grunt build
+     * (9) Build LKE
      */
     changeDir('tmp/linkurious-server', () => {
       exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);

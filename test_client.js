@@ -32,6 +32,9 @@ const serverBranch = exec('git ls-remote' +
   ? clientBranch
   : 'develop';
 
+// we read the last commit message to decide if we have to build or not
+const commitMessage = exec('git log -1 --pretty=%B', {stdio: null}).toString('utf8');
+
 /**
  * (2) This file is executed inside repositoryDir, we need to change directory to the CI
  */
@@ -102,3 +105,17 @@ changeDir('tmp/linkurious-client', () => {
    */
   exec('export PHANTOMJS_BIN=/usr/local/bin/phantomjs; grunt build');
 });
+
+/**
+ * (9) Build LKE
+ */
+if (!commander.serverCI && commitMessage.indexOf('[build]') !== -1) {
+  changeDir('tmp/linkurious-server', () => {
+    exec('grunt build');
+
+    /**
+     * (10) Upload the build remotely
+     */
+    // TODO
+  });
+}
