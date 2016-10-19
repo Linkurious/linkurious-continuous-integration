@@ -115,3 +115,10 @@ async.each(getSubDirectories('configs'), (config, callback) => {
 
   process.exit(err ? err : 0);
 });
+
+/**
+ * (6) Call grunt build
+ */
+changeDir(repositoryDir, () => {
+  exec('grunt build');
+});
