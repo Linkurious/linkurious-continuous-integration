@@ -132,32 +132,32 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     process.exit(err);
   }
 
-  /**
-   * (7) Copy the linkurious-server directory to tmp
-   */
-  exec('rm -rf tmp/linkurious-server');
-  exec('cp -al ' + repositoryDir + ' tmp/linkurious-server');
-  exec('rm -rf tmp/linkurious-server/node_modules');
-  exec('cp -al ' + nodeModulesDir + ' tmp/linkurious-server/node_modules');
-
-  /**
-   * (8) Call the test_client.js plugin forcing this branch
-   */
-  // download the Linkurious Client first
-  exec('rm -rf tmp/linkurious-client');
-  changeDir('tmp', () => {
-    exec('git clone git@github.com:Linkurious/linkurious-client.git --branch ' +
-      clientBranch + ' --single-branch');
-
-    changeDir('linkurious-client', () => {
-      exec(ciDir + '/test_client.js --serverCI');
-    });
-  });
-
-  /**
-   * (9) Call grunt build if commit message contains `[build]`
-   */
+  // do the following steps only if we want to build
   if (commitMessage.indexOf('[build]') !== -1) {
+    /**
+     * (7) Copy the linkurious-server directory to tmp
+     */
+    exec('rm -rf tmp/linkurious-server');
+    exec('cp -al ' + repositoryDir + ' tmp/linkurious-server');
+    exec('rm -rf tmp/linkurious-server/node_modules');
+    exec('cp -al ' + nodeModulesDir + ' tmp/linkurious-server/node_modules');
+
+    /**
+     * (8) Download the Linkurious Client and call the test_client.js plugin forcing the server branch
+     */
+    exec('rm -rf tmp/linkurious-client');
+    changeDir('tmp', () => {
+      exec('git clone git@github.com:Linkurious/linkurious-client.git --branch ' +
+        clientBranch + ' --single-branch');
+
+      changeDir('linkurious-client', () => {
+        exec(ciDir + '/test_client.js --serverCI');
+      });
+    });
+
+    /**
+     * (9) Call grunt build
+     */
     changeDir('tmp/linkurious-server', () => {
       exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
       exec('grunt lint');
