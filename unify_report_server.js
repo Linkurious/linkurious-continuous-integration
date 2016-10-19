@@ -14,7 +14,7 @@ const changeDir = require('./utils').changeDir;
 const configuration = require('./config');
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
-const coverageDir = ciDir + '/coverages';
+const coverageDir = ciDir + '/tmp/coverages';
 
 /**
  * (8) Generate unified code coverage report and upload it

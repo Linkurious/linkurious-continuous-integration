@@ -75,6 +75,7 @@ changeDir(repositoryDir, () => {
   exec(`cp -al ${bowerComponentsDir}/. src/vendor`);
   exec('cp -al ' + ciDir + '/tmp/linkurious.js src/vendor');
 
+  // TODO start neo4j and elasticsearch via docker
   /**
    * (7) Call grunt build
    */

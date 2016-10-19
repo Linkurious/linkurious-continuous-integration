@@ -26,7 +26,7 @@ const ciDir = process.env['CI_DIRECTORY'];
 process.chdir(ciDir);
 
 // ensure code coverage directory exists
-const coverageDir = ciDir + '/coverages';
+const coverageDir = ciDir + '/tmp/coverages';
 exec(`mkdir -p ${coverageDir}`);
 
 const packageJsonFile = repositoryDir + '/package.json';
