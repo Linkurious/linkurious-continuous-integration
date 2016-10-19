@@ -26,7 +26,7 @@ module.exports = (bowerJsonFile) => {
   var hashBowerJson = crypto.createHash('md5').update(data).digest('hex');
 
   // bucket containing the bower_components directory for this bower.json
-  var directory = ciDir + 'tmp/bower-cache/' + hashBowerJson;
+  var directory = ciDir + '/tmp/bower-cache/' + hashBowerJson;
 
   try {
     // does this directory exist?

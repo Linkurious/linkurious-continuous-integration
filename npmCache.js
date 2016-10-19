@@ -28,7 +28,7 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
   var hashPackageJson = crypto.createHash('md5').update(data).digest('hex');
 
   // bucket containing the node_modules directory for this package.json
-  var directory = ciDir + 'tmp/npm-cache/' + hashPackageJson;
+  var directory = ciDir + '/tmp/npm-cache/' + hashPackageJson;
 
   try {
     // does this directory exist?
