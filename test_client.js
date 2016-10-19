@@ -8,6 +8,7 @@
 const exec = require('./utils').exec;
 const changeDir = require('./utils').changeDir;
 const npmCache = require('./npmCache');
+const bowerCache = require('./bowerCache');
 
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
@@ -58,10 +59,20 @@ changeDir('tmp', () => {
 /**
  * (5) Link the linkurious-server directory
  */
-changeDir('repositoryDir/..', () => {
+changeDir(repositoryDir + '/..', () => {
   // in this directory, grunt build expects to find the linkurious-server directory
   exec('rm -rf linkurious-server');
   exec('cp -al ' + ciDir + '/tmp/linkurious-server linkurious-server');
+});
+
+/**
+ * (6) Install Linkurious Client dependencies
+ */
+changeDir(repositoryDir, () => {
+  var nodeModulesDir = npmCache(repositoryDir + '/package.json');
+  exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
+  var bowerComponentsDir = bowerCache(repositoryDir + '/bower.json');
+  exec(`rm -rf src/vendor; cp -al ${bowerComponentsDir}/. src/vendor`);
 });
 
 exec('echo ' + clientBranch);

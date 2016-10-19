@@ -18,7 +18,7 @@ const ciDir = process.env['CI_DIRECTORY'];
  *
  * Return the absolute path to the node_modules directory.
  *
- * @param {string} packageJsonFile absolute path to the package.json file
+ * @param {string} packageJsonFile
  * @param {string} [nodeVersion]
  * @param {string} [npmVersion]
  */
@@ -28,7 +28,7 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
   var hashPackageJson = crypto.createHash('md5').update(data).digest('hex');
 
   // bucket containing the node_modules directory for this package.json
-  var directory = ciDir + '/npm-cache/' + hashPackageJson;
+  var directory = ciDir + 'tmp/npm-cache/' + hashPackageJson;
 
   try {
     // does this directory exist?
@@ -42,10 +42,7 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
     exec('mkdir -p ' + directory);
 
     var packageJsonFolder = packageJsonFile.substring(0, packageJsonFile.lastIndexOf('/'));
-
-    if (packageJsonFolder === '') {
-      packageJsonFolder = '.';
-    }
+    if (packageJsonFolder === '') { packageJsonFolder = '.'; }
 
     changeDir(packageJsonFolder, () => {
       // we install the desired node version
