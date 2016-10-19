@@ -63,14 +63,20 @@ changeDir('tmp', () => {
       var nodeModulesDir = npmCache(ciDir + '/tmp/linkurious-server/package.json');
       exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
     });
+  } else {
+    // tmp/linkurious-server already exists
   }
 });
 
 /**
  * (5) Copy the linkurious-client directory to tmp
  */
-exec('rm -rf tmp/linkurious-client');
-exec('cp -al ' + repositoryDir + ' tmp/linkurious-client');
+if (!commander.serverCI) {
+  exec('rm -rf tmp/linkurious-client');
+  exec('cp -al ' + repositoryDir + ' tmp/linkurious-client');
+} else {
+  // tmp/linkurious-client already exists
+}
 
 /**
  * (6) Install Linkurious Client dependencies
