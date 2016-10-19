@@ -39,16 +39,11 @@ module.exports = (bowerJsonFile) => {
 
     exec('mkdir -p ' + directory);
 
-    var bowerJsonFolder = bowerJsonFile.substring(0, bowerJsonFile.lastIndexOf('/'));
-    if (bowerJsonFolder === '') { bowerJsonFolder = '.'; }
+    exec('cp ' + bowerJsonFile + ' ' + directory);
 
-    changeDir(bowerJsonFolder, () => {
-
+    changeDir(directory, () => {
       // we run bower install
       execRetry('bower install', 5);
-
-      // we copy the bower_components directory in our bucket
-      exec(`cp -r ${bowerJsonFolder}/bower_components ${directory}/bower_components`);
     });
   }
 
