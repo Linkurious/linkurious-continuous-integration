@@ -1,8 +1,0 @@
-FROM node:{node_version}
-
-RUN mkdir -p /app
-WORKDIR /app
-
-COPY app /app
-
-CMD
