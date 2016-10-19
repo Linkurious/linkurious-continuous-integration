@@ -43,6 +43,10 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
 
     var packageJsonFolder = packageJsonFile.substring(0, packageJsonFile.lastIndexOf('/'));
 
+    if (packageJsonFolder === '') {
+      packageJsonFolder = '.';
+    }
+
     changeDir(packageJsonFolder, () => {
       // we install the desired node version
       if (nodeVersion) {

@@ -22,10 +22,13 @@ const changeDir = require('./utils').changeDir;
  */
 // MongoDB
 exec('sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927');
-exec('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list');
+exec('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" |' +
+  ' sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list');
 // Docker
-exec('sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D');
-exec('echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list');
+exec('sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80' +
+  ' --recv-keys 58118E89F3A912897C070ADBF76221572C52609D');
+exec('echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" |' +
+  ' sudo tee /etc/apt/sources.list.d/docker.list');
 
 exec('sudo apt-get update');
 
@@ -74,7 +77,7 @@ exec('sudo chown -R ${USER} /usr/lib/node_modules');
  */
 exec('sudo npm install -g istanbul');
 exec('sudo mkdir /app');
-// necessary folder for istanbul to merge the reports (the code will end up here)
+// necessary directory for istanbul to merge the reports (the code will end up here)
 exec('sudo chown -R ${USER} /app');
 
 /**

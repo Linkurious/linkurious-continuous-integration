@@ -3,10 +3,10 @@
  */
 'use strict';
 
-const _ = require('lodash');
-
 const fs = require('fs');
 const path = require('path');
+
+const _ = require('lodash');
 
 /**
  * Execute `cmd` synchronously.
@@ -92,4 +92,5 @@ var deleteNullPropertiesDeep = obj => {
   }
 };
 
-module.exports = {exec, execAsync, execRetry, getSubDirectories, changeDir, deleteNullPropertiesDeep};
+module.exports = {exec, execAsync, execRetry, getSubDirectories, changeDir,
+  deleteNullPropertiesDeep};

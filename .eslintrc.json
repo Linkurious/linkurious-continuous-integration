@@ -4,10 +4,16 @@
     "node": true,
     "mocha": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:import-order/recommended"
+  ],
   "parserOptions": {
-    "sourceType": "module"
+    "sourceType": "script"
   },
+  "plugins": [
+    "import-order"
+  ],
   "rules": {
     "indent": [ // indentation is 2 spaces
       "error",
@@ -16,44 +22,40 @@
         "SwitchCase": 1  // indent case clauses with 2 spaces with respect to switch statements
       }
     ],
-    /*
-    "strict": [ // use strict mode // TODO enable
+    "strict": [ // use strict mode
       "error",
       "global"
-    ],*/
+    ],
     /*"valid-jsdoc": [ // enforce valid JSDoc comments // TODO enable
       "error"
     ],*/
-    "no-unused-vars": 0, /*[ // TODO enable
+    "no-unused-vars": [
       "error"
-    ],*/
-    "no-constant-condition": 0, /*[ // TODO enable
+    ],
+    "no-constant-condition": [
       "error"
-    ],*/
+    ],
     "semi": [ // semicolons are required
       "error",
       "always"
     ],
-    "max-len": 0, /*[ // max line length is 100 chars (except for comments) // TODO enable
+    "max-len": [ // max line length is 100 chars (except for comments)
       "error",
-      100,
-      {
+      100, {
         "ignoreComments": true
       }
-    ],*/
+    ],
     "eol-last": [ // \n is required at the end of the file
       "error",
       "always"
     ],
     "camelcase": [ // enforce camelcase style for variable names and property names
-      "error",
-      {
+      "error", {
         "properties": "always"
       }
     ],
     "dot-notation": [ // always use the dot notation to access properties, except if property contains '_'
-      "error",
-      {
+      "error", {
         "allowPattern": "^.*_.*$"
       }
     ],
@@ -83,20 +85,16 @@
     ],
     "brace-style": [ // use K&R style
       "error",
-      "1tbs",
-      {
+      "1tbs", {
         "allowSingleLine": true // `if (foo) {foo++}` is allowed
       }
     ],
     "keyword-spacing": [ // in `} else {` both spaces are required (in general, around keywords)
-      "error",
-      {
+      "error", {
         "before": true,
         "after": true,
-        "overrides":
-        {
-          "catch":
-          {
+        "overrides": {
+          "catch": {
             "before": true,
             "after": false
           }
@@ -108,30 +106,25 @@
       "always"
     ],
     "arrow-spacing": [ // in `(foo) => {` both spaces are required
-      "error",
-      {
+      "error", {
         "before": true,
         "after": true
       }
     ],
     "operator-linebreak": [ // linebreak goes after the operator except for '?' and ':'
       "error",
-      "after",
-      {
-        "overrides":
-        {
+      "after", {
+        "overrides": {
           "?": "before",
           ":": "before"
         }
       }
     ],
     "space-unary-ops": [ // space is required for new, delete, etc. but not for +, -, ++, --, etc.
-      "error",
-      {
+      "error", {
         "words": true,
         "nonwords": false,
-        "overrides":
-        {
+        "overrides": {
           "typeof": false // also no space for typeof(...)
         }
       }
@@ -140,8 +133,7 @@
       "error"
     ],
     "comma-spacing": [ // space is required after a comma
-      "error",
-      {
+      "error", {
         "after": true
       }
     ],
@@ -154,8 +146,7 @@
       "never"
     ],
     "key-spacing": [ // `{property :'value'}` is not allowed, use `{property: 'value'}`
-      "error",
-      {
+      "error", {
         "beforeColon": false,
         "afterColon": true,
         "mode": "strict"
@@ -180,8 +171,7 @@
       "never"
     ],
     "space-before-function-paren": [ // no space between the function name and the opening parenthesis on declaration
-      "error",
-      {
+      "error", {
         "anonymous": "never",
         "named": "never"
       }
@@ -190,6 +180,9 @@
       "error",
       "except-parens"
     ],
-    "no-console": 0 // `console.log(...)` is allowed
+    "no-console": 0, // `console.log(...)` is allowed
+    "import-order/import-order": [ // enforce import order ("builtin", "external", "parent", "sibling", "index")
+      "error"
+    ]
   }
 }

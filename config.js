@@ -1,6 +1,7 @@
 /**
  * Created by francesco on 2016-09-22.
  */
+'use strict';
 
 module.exports = {
   githubClientId: '<clientId>',

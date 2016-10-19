@@ -9,8 +9,6 @@ const exec = require('./utils').exec;
 const changeDir = require('./utils').changeDir;
 const npmCache = require('./npmCache');
 
-const fs = require('fs');
-
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 
@@ -30,28 +28,39 @@ const serverBranch = exec('git ls-remote' +
  */
 process.chdir(ciDir);
 
-/**
- * (3) Build the latest linkurious.js
- */
-exec('rm -rf linkurious.js');
-exec('git clone -b develop git@github.com:Linkurious/linkurious.js.git');
+changeDir('tmp', () => {
+  /**
+   * (3) Build the latest linkurious.js
+   */
+  exec('rm -rf linkurious.js');
+  exec('git clone git@github.com:Linkurious/linkurious.js.git --branch develop --single-branch');
 
-changeDir('linkurious.js', () => {
-  var nodeModulesDir = npmCache(ciDir + '/linkurious.js/package.json');
-  exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
-  exec('grunt build');
+  changeDir('linkurious.js', () => {
+    var nodeModulesDir = npmCache(ciDir + '/tmp/linkurious.js/package.json');
+    exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
+    exec('grunt build');
+  });
+
+  /**
+   * (4) Download the latest Linkurious Server at the branch `serverBranch`
+   */
+  exec('rm -rf linkurious-server');
+  exec('git clone git@github.com:Linkurious/linkurious-server.git --branch ' +
+    serverBranch + ' --single-branch');
+
+  changeDir('linkurious-server', () => {
+    var nodeModulesDir = npmCache(ciDir + '/tmp/linkurious-server/package.json');
+    exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
+  });
 });
 
 /**
- * (3) Download the latest Linkurious Server at the branch `serverBranch`
+ * (5) Link the linkurious-server directory
  */
-exec('rm -rf linkurious-server');
-exec('git clone git@github.com:Linkurious/linkurious-server.git --branch ' +
-  serverBranch + ' --single-branch');
-
-changeDir('linkurious-server', () => {
-  var nodeModulesDir = npmCache(ciDir + '/linkurious-server/package.json');
-  exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
+changeDir('repositoryDir/..', () => {
+  // in this directory, grunt build expects to find the linkurious-server directory
+  exec('rm -rf linkurious-server');
+  exec('cp -al ' + ciDir + '/tmp/linkurious-server linkurious-server');
 });
 
 exec('echo ' + clientBranch);

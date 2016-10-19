@@ -24,5 +24,6 @@ exec(`find /app -mindepth 1 -delete; cp -al ${repositoryDir}/. /app`);
 
 changeDir(`${coverageDir}`, () => {
   exec('istanbul report --root .');
-  exec(`scp -P ${configuration.coverageScpPort} -r coverage/lcov-report ${configuration.coverageScpDestDir}/${new Date().toISOString()}`);
+  exec('scp -P ' + configuration.coverageScpPort + ' -r coverage/lcov-report ' +
+    configuration.coverageScpDestDir + '/' + new Date().toISOString());
 });
