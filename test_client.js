@@ -28,6 +28,7 @@ const serverBranch = exec('git ls-remote' +
  */
 process.chdir(ciDir);
 
+exec('mkdir -p test');
 changeDir('tmp', () => {
   /**
    * (3) Build the latest linkurious.js

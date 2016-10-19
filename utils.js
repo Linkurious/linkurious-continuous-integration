@@ -66,13 +66,11 @@ var getSubDirectories = srcDir => {
 
 /**
  * Execute a function under another directory.
- * If the directory doesn't exist, it will create it.
  *
  * @param {string} dir
  * @param {function} func
  */
 var changeDir = (dir, func) => {
-  exec(`mkdir -p ${dir}`);
   var currentDir = process.cwd();
   process.chdir(dir);
   func();
