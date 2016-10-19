@@ -69,10 +69,10 @@ changeDir(repositoryDir + '/..', () => {
  * (6) Install Linkurious Client dependencies
  */
 changeDir(repositoryDir, () => {
-  var nodeModulesDir = npmCache(repositoryDir + '/package.json');
+  var nodeModulesDir = npmCache(repositoryDir + '/package.json', undefined, '2', true);
   exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
   var bowerComponentsDir = bowerCache(repositoryDir + '/bower.json');
-  exec(`cp -al ${bowerComponentsDir}/. src/vendor | true`);  // `| true` because npm install calls bower install too
+  exec(`cp -al ${bowerComponentsDir}/. src/vendor`);
   exec('cp -al ' + ciDir + '/tmp/linkurious.js src/vendor');
 
   /**

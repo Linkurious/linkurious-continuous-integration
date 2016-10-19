@@ -21,9 +21,10 @@ const ciDir = process.env['CI_DIRECTORY'];
  * @param {string} packageJsonFile path to the package.json file
  * @param {string} [nodeVersion]   node version
  * @param {string} [npmVersion]    npm version
+ * @param {boolean} [ignoreScripts]   whether to call npm install with the flag --ignore-scripts
  * @returns {string} absolute      path to the node_modules directory
  */
-module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
+module.exports = (packageJsonFile, nodeVersion, npmVersion, ignoreScripts) => {
   // hash the package.json file
   var data = fs.readFileSync(packageJsonFile, 'utf8');
   var hashPackageJson = crypto.createHash('md5').update(data).digest('hex');
@@ -56,8 +57,14 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
         execRetry('export PATH=/usr/local/bin:${PATH}; npm install -g npm@' + npmVersion, 5);
       }
 
+      var flags = '';
+
+      if (ignoreScripts) {
+        flags += ' --ignore-scripts';
+      }
+
       // we run npm install (the right node version is in /usr/local/bin)
-      execRetry('export PATH=/usr/local/bin:${PATH}; npm install', 5);
+      execRetry('export PATH=/usr/local/bin:${PATH}; npm install' + flags, 5);
 
       // we copy the node_modules directory in our bucket
       exec(`cp -r ${packageJsonFolder}/node_modules ${directory}/node_modules`);
