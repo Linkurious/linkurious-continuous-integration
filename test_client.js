@@ -57,21 +57,18 @@ changeDir('tmp', () => {
 });
 
 /**
- * (5) Link the linkurious-server directory
+ * (5) Link the linkurious-client directory
  */
-changeDir(repositoryDir + '/..', () => {
-  // in this directory, grunt build expects to find the linkurious-server directory
-  exec('rm -rf linkurious-server');
-  exec('cp -al ' + ciDir + '/tmp/linkurious-server linkurious-server');
-});
+exec('rm -rf tmp/linkurious-client');
+exec('cp -al ' + repositoryDir + ' tmp/linkurious-client');
 
 /**
  * (6) Install Linkurious Client dependencies
  */
-changeDir(repositoryDir, () => {
-  var nodeModulesDir = npmCache(repositoryDir + '/package.json', undefined, '2', true);
+changeDir('tmp/linkurious-client', () => {
+  var nodeModulesDir = npmCache('package.json', undefined, '2', true);
   exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
-  var bowerComponentsDir = bowerCache(repositoryDir + '/bower.json');
+  var bowerComponentsDir = bowerCache('bower.json');
   exec(`cp -al ${bowerComponentsDir}/. src/vendor`);
   exec('cp -al ' + ciDir + '/tmp/linkurious.js src/vendor');
 
