@@ -18,8 +18,9 @@ const changeDir = require('./utils').changeDir;
  */
 
 /**
- * (1) Configure APT for both MongoDB and Docker
+ * (1) Configure APT for both MongoDB, Docker and Java
  */
+exec('sudo apt-get install -y software-properties-common python-software-properties');
 // MongoDB
 exec('sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927');
 exec('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" |' +
@@ -29,6 +30,8 @@ exec('sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80' +
   ' --recv-keys 58118E89F3A912897C070ADBF76221572C52609D');
 exec('echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" |' +
   ' sudo tee /etc/apt/sources.list.d/docker.list');
+// Java
+exec('sudo add-apt-repository ppa:webupd8team/java');
 
 exec('sudo apt-get update');
 
@@ -98,5 +101,10 @@ exec('sudo npm install -g grunt');
  * (9) Install Bower
  */
 exec('sudo npm install -g bower');
+
+/**
+ * (10) Install Java 8
+ */
+exec('sudo apt-get install oracle-java8-installer');
 
 exec('echo Please re-login');
