@@ -157,7 +157,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   /**
    * (9) Call grunt build if commit message contains `[build]`
    */
-  if (commitMessage.contains('[build]')) {
+  if (commitMessage.indexOf('[build]') !== -1) {
     changeDir('tmp/linkurious-server', () => {
       exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
       exec('grunt lint');
