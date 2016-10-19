@@ -103,7 +103,12 @@ exec('sudo npm install -g grunt');
 exec('sudo npm install -g bower');
 
 /**
- * (10) Install Java 8
+ * (10) Install PhantomJS
+ */
+exec('sudo npm install -g phantomjs');
+
+/**
+ * (11) Install Java 8
  */
 exec('sudo apt-get install oracle-java8-installer');
 

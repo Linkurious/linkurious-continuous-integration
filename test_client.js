@@ -87,5 +87,5 @@ changeDir(repositoryDir, () => {
   /**
    * (8) Call grunt build
    */
-  exec('grunt build');
+  exec('export PHANTOMJS_BIN=/usr/local/bin/phantomjs; grunt build');
 });
