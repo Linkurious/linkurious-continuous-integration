@@ -81,8 +81,8 @@ changeDir(repositoryDir, () => {
   // we remove all the existing docker containers
   exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
 
-  exec('docker run -d -P -e NEO4J_AUTH=none neo4j:3.0');
-  exec('docker run -d -P elasticsearch:1.7');
+  exec('docker run -d -p 7474:7484 -e NEO4J_AUTH=none neo4j:3.0');
+  exec('docker run -d -p 9200:9200 elasticsearch:1.7');
 
   /**
    * (8) Call grunt build
