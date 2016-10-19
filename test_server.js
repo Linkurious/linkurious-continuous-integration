@@ -31,6 +31,8 @@ const clientBranch = exec('git ls-remote' +
   ? serverBranch
   : 'develop';
 
+// we read the last commit message to decide if we have to build or not
+const commitMessage = exec('git log -1 --pretty=%B', {stdio: null}).toString('utf8');
 
 /**
  * (2) This file is executed inside repositoryDir, we need to change directory to the CI
@@ -126,6 +128,10 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   // we remove untagged docker images to clean up disk space
   exec('docker rmi $(docker images | grep \'^<none>\' | awk \'{print $3}\') 2>/dev/null || true');
 
+  if (err) {
+    process.exit(err);
+  }
+
   /**
    * (7) Copy the linkurious-server directory to tmp
    */
@@ -135,7 +141,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   exec('cp -al ' + nodeModulesDir + ' tmp/linkurious-server/node_modules');
 
   /**
-   * (8) Call the test_client.js plugin forcing to use this branch
+   * (8) Call the test_client.js plugin forcing this branch
    */
   // download the Linkurious Client first
   exec('rm -rf tmp/linkurious-client');
@@ -149,13 +155,18 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   });
 
   /**
-   * (9) Call grunt build
+   * (9) Call grunt build if commit message contains `[build]`
    */
-  changeDir('tmp/linkurious-server', () => {
-    exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
-    exec('grunt lint');
-    exec('grunt build');
-  });
+  if (commitMessage.contains('[build]')) {
+    changeDir('tmp/linkurious-server', () => {
+      exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
+      exec('grunt lint');
+      exec('grunt build');
+    });
 
-  process.exit(err ? err : 0);
+    /**
+     * (10) Upload the build remotely
+     */
+    // TODO
+  }
 });
