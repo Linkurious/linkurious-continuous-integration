@@ -26,9 +26,9 @@
       "error",
       "global"
     ],
-    /*"valid-jsdoc": [ // enforce valid JSDoc comments // TODO enable
+    "valid-jsdoc": [ // enforce valid JSDoc comments
       "error"
-    ],*/
+    ],
     "no-unused-vars": [
       "error"
     ],

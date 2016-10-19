@@ -18,9 +18,10 @@ const ciDir = process.env['CI_DIRECTORY'];
  *
  * Return the absolute path to the node_modules directory.
  *
- * @param {string} packageJsonFile
- * @param {string} [nodeVersion]
- * @param {string} [npmVersion]
+ * @param {string} packageJsonFile path to the package.json file
+ * @param {string} [nodeVersion]   node version
+ * @param {string} [npmVersion]    npm version
+ * @returns {string} absolute      path to the node_modules directory
  */
 module.exports = (packageJsonFile, nodeVersion, npmVersion) => {
   // hash the package.json file

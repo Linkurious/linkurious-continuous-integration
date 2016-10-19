@@ -18,7 +18,8 @@ const ciDir = process.env['CI_DIRECTORY'];
  *
  * Return the absolute path to the bower_components directory.
  *
- * @param {string} bowerJsonFile
+ * @param {string}   bowerJsonFile path to the bower.json file
+ * @returns {string} absolute path to the bower_components directory
  */
 module.exports = (bowerJsonFile) => {
   // hash the bower.json file
