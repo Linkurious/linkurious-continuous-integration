@@ -131,6 +131,8 @@ async.each(getSubDirectories('configs'), (config, callback) => {
    */
   exec('rm -rf tmp/linkurious-server');
   exec('cp -al ' + repositoryDir + ' tmp/linkurious-server');
+  exec('rm -rf tmp/linkurious-server/node_modules');
+  exec('cp -al ' + nodeModulesDir + ' tmp/linkurious-server/node_modules');
 
   /**
    * (8) Call the test_client.js plugin forcing to use this branch
