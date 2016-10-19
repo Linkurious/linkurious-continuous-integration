@@ -134,7 +134,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   /**
    * (8) Call the test_client.js plugin forcing to use this branch
    */
-  exec('./test_client.js --noServer --clientBranch' + clientBranch);
+  exec('./test_client.js --noServer --clientBranch ' + clientBranch);
 
   /**
    * (9) Call grunt build
