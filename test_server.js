@@ -161,7 +161,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
 
       for (var containerId of containerIds) {
         var imageName = exec('docker inspect --format \'{{.Config.Image}}\' ' + containerId,
-          {stdio: null}).toString('utf8').replace('\n', ' ');
+          {stdio: null}).toString('utf8').replace(/[\s]+/g, '');
 
         exec('docker logs ' + containerId + ' > \'' + imageName + ':' + shortid.generate() +
           '\' 2>&1');
