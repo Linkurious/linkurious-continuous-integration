@@ -79,7 +79,6 @@ const defaultTestConfig = require(repositoryDir + '/server/config/defaults/test'
 exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
 
 async.each(getSubDirectories('configs'), (config, callback) => {
-  return callback();
   // we merge the default test configuration with the particular one for this run
   let testConfig = _.defaultsDeep(require('./configs/' + config + '/test'),
     _.cloneDeep(defaultTestConfig));
