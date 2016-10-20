@@ -169,7 +169,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     });
 
     changeDir('tmp', () => {
-      exec('rm logs.zip');
+      exec('rm -f logs.zip');
       exec('zip -qr logs logs');
 
       var userAtHost = configuration.scpDestDir.split(':')[0];
