@@ -50,7 +50,7 @@ const commitFlags = commitMessage.match(/\[\w*]/g) || [];
 // the test flag is a special flag (it has 'test:' as prefix)
 // it's used to test only one config
 var testFlag = (commitMessage.match(/\[test:\w*]/g) || []);
-testFlag = testFlag[0].substring(6, testFlag[0].length - 1);
+testFlag = testFlag[0] ? testFlag[0].substring(6, testFlag[0].length - 1) : undefined;
 
 /**
  * (2) This file is executed inside repositoryDir, we need to change directory to the CI
