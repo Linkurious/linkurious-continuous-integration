@@ -146,6 +146,36 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     }
   });
 }, err => {
+  if (err) {
+    // retrieve all the logs from docker, make a zip and upload it
+
+    exec('rm -rf tmp/logs');
+    exec('mkdir -p tmp/logs');
+    changeDir('tmp/logs', () => {
+      var containerIds = exec('docker images | awk \'{print $3}\'', {stdio: null}).toString('utf8')
+        .split('\n');
+
+      // remove first and last (garbage)
+      containerIds = containerIds.slice(1, containerIds.length - 1);
+
+      for (var containerId in containerIds) {
+        exec('docker logs ' + containerId + ' > ' + containerId);
+      }
+    });
+
+    changeDir('tmp', () => {
+      exec('rm logs.zip');
+      exec('zip -qr logs logs');
+
+      var userAtHost = configuration.scpDestDir.split(':')[0];
+      var baseDir = configuration.scpDestDir.split(':')[1];
+      var dir = baseDir + '/logs/' + new Date().toISOString();
+
+      exec(`ssh -p ${configuration.scpPort} ${userAtHost} "mkdir -p '${dir}'"`);
+      exec(`scp -P ${configuration.scpPort} ./logs.zip ${userAtHost}:'${dir}'`);
+    });
+  }
+
   // we remove all the existing docker containers
   exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
   // we remove untagged docker images to clean up disk space
