@@ -120,7 +120,6 @@ if (!commander.serverCI && commitMessage.indexOf('[build]') !== -1) {
     /**
      * (10) Upload the build remotely
      */
-    // TODO move this code elsewhere
     changeDir('builds', () => {
       exec('zip -qr linkurious-windows linkurious-windows');
       exec('zip -qr linkurious-linux linkurious-linux');

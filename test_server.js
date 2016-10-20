@@ -176,7 +176,6 @@ async.each(getSubDirectories('configs'), (config, callback) => {
       /**
        * (10) Upload the build remotely
        */
-      // TODO move this code elsewhere
       changeDir('builds', () => {
         exec('zip -qr linkurious-windows linkurious-windows');
         exec('zip -qr linkurious-linux linkurious-linux');
