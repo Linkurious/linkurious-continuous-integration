@@ -102,26 +102,25 @@ var deleteNullPropertiesDeep = obj => {
  * @returns {string} name of the current branch
  */
 var getCurrentBranch = () => {
-  var currentBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
-    .replace('\n', '');
+  var currentBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8');
 
-  if (currentBranch === 'HEAD') { // we are in a detached head
+  if (currentBranch.indexOf('HEAD') !== -1) { // we are in a detached head
     const gitBranchOutput = exec('git branch', {stdio: null}).toString('utf8').split('\n');
-    if (gitBranchOutput.length !== 2) {
+    if (gitBranchOutput.length !== 3) {
       console.log('\x1b[31mCritical error: impossible to detect branch name among these:\x1b[0m');
       exec('git branch');
       process.exit(1);
     }
     if (gitBranchOutput[0].indexOf('* (HEAD detached at') !== -1) {
       // we use the second line
-      currentBranch = gitBranchOutput[1].replace('\n', '').replace(' ', '');
+      currentBranch = gitBranchOutput[1];
     } else {
       // we use the first line
-      currentBranch = gitBranchOutput[0].replace('\n', '').replace(' ', '');
+      currentBranch = gitBranchOutput[0];
     }
   }
 
-  return currentBranch;
+  return currentBranch.replace('\n', '').replace(' ', '');
 };
 
 module.exports = {exec, execAsync, execRetry, getSubDirectories, changeDir,
