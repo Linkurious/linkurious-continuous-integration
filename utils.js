@@ -120,7 +120,7 @@ var getCurrentBranch = () => {
     }
   }
 
-  return currentBranch.replace('\n', '').replace(' ', '');
+  return currentBranch.replace('\n', '').replace('\t', '').replace(' ', '');
 };
 
 module.exports = {exec, execAsync, execRetry, getSubDirectories, changeDir,
