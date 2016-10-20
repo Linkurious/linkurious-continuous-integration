@@ -112,4 +112,9 @@ exec('sudo npm install -g phantomjs');
  */
 exec('sudo apt-get install oracle-java8-installer');
 
+/**
+ * (12) Install zip
+ */
+exec('sudo apt-get install -y zip');
+
 exec('echo Please re-login');
