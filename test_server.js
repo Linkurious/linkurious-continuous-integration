@@ -38,6 +38,8 @@ const clientBranch = exec('git ls-remote' +
   ? serverBranch
   : 'develop';
 
+exec(`echo Test Linkurious Server: ${serverBranch} and Linkurious Client: ${clientBranch}`);
+
 // we read the last commit message to decide if we have to build or not
 const commitMessage = exec('git log -1 --pretty=%B', {stdio: null}).toString('utf8');
 
