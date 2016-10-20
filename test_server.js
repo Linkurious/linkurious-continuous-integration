@@ -177,7 +177,6 @@ async.each(getSubDirectories('configs'), (config, callback) => {
         exec('zip -qr linkurious-windows linkurious-windows');
         exec('zip -qr linkurious-linux linkurious-linux');
         exec('zip -qr linkurious-osx linkurious-osx');
-        exec('tar -cvzf builds.tar.gz ./*.zip');
 
         var userAtHost = configuration.buildScpDestDir.split(':')[0];
         var baseDir = configuration.buildScpDestDir.split(':')[1];
@@ -186,7 +185,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
         var dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
 
         exec(`ssh -p ${configuration.buildScpPort} ${userAtHost} "mkdir -p '${dir}'"`);
-        exec(`scp -P ${configuration.buildScpPort} ./*.zip ${userAtHost}:'${dir}'"`);
+        exec(`scp -P ${configuration.buildScpPort} ./*.zip ${userAtHost}:'${dir}'`);
       });
     });
   }
