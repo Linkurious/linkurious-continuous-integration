@@ -39,7 +39,7 @@ const clientBranch = exec('git ls-remote' +
   ? serverBranch
   : 'develop';
 
-console.log('\x1b[32m Test Linkurious Server: ' + serverBranch +
+console.log('\x1b[32mTest Linkurious Server: ' + serverBranch +
   ' and Test Linkurious Client: ' + clientBranch + '\x1b[0m');
 
 // we read the last commit message to decide if we have to build or not
