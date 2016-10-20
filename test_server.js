@@ -157,7 +157,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
         .split('\n');
 
       // remove first and last (garbage)
-      containerIds = containerIds.slice(1, containerIds.length);
+      containerIds = containerIds.slice(1, containerIds.length - 1);
 
       for (var containerId of containerIds) {
         var imageName = exec('docker inspect --format \'{{.Config.Image}}\' ' + containerId,
