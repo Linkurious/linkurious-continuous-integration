@@ -30,7 +30,7 @@ commander.option(
 /**
  * (1) Detect client and server branch
  */
-const serverBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
+const serverBranch = exec('git symbolic-ref --short HEAD', {stdio: null}).toString('utf8')
   .replace('\n', '');
 const clientBranch = exec('git ls-remote' +
   ' --heads git@github.com:Linkurious/linkurious-client.git ' +

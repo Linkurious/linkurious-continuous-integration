@@ -24,7 +24,7 @@ commander.option(
 /**
  * (1) Detect client and server branch
  */
-const clientBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
+const clientBranch = exec('git symbolic-ref --short HEAD', {stdio: null}).toString('utf8')
   .replace('\n', '');
 
 const serverBranch = exec('git ls-remote' +
