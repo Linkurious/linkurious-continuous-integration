@@ -15,5 +15,7 @@ module.exports = {
   smtpPass: '<pass>',
   smtpFrom: '<from>',
   coverageScpDestDir: '<covDestDir>',
-  coverageScpPort: '<covPort>'
+  coverageScpPort: '<covPort>',
+  buildScpDestDir: '<buildDestDir>',
+  buildScpPort: '<buildPort>'
 };

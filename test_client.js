@@ -11,6 +11,7 @@ const exec = require('./utils').exec;
 const changeDir = require('./utils').changeDir;
 const npmCache = require('./npmCache');
 const bowerCache = require('./bowerCache');
+const configuration = require('./config');
 
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
@@ -116,6 +117,20 @@ if (!commander.serverCI && commitMessage.indexOf('[build]') !== -1) {
     /**
      * (10) Upload the build remotely
      */
-    // TODO
+    changeDir('builds', () => {
+      exec('zip -qr linkurious-windows linkurious-windows');
+      exec('zip -qr linkurious-linux linkurious-linux');
+      exec('zip -qr linkurious-osx linkurious-osx');
+      exec('tar -cvzf builds.tar.gz ./*.zip');
+
+      var userAtHost = configuration.buildScpDestDir.split(':')[0];
+      var baseDir = configuration.buildScpDestDir.split(':')[1];
+      var branchDir = 's:' + serverBranch + '-c:' + clientBranch;
+
+      var dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
+
+      exec(`ssh -p ${configuration.buildScpPort} ${userAtHost} "mkdir -p '${dir}'"`);
+      exec(`scp -P ${configuration.buildScpPort} ./*.zip ${userAtHost}:'${dir}'"`);
+    });
   });
 }

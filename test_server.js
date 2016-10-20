@@ -8,6 +8,7 @@
 const fs = require('fs');
 const async = require('async');
 
+const commander = require('commander');
 const _ = require('lodash');
 
 const exec = require('./utils').exec;
@@ -16,9 +17,15 @@ const getSubDirectories = require('./utils').getSubDirectories;
 const changeDir = require('./utils').changeDir;
 const deleteNullPropertiesDeep = require('./utils').deleteNullPropertiesDeep;
 const npmCache = require('./npmCache');
+const configuration = require('./config');
 
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
+
+commander.option(
+  '--build',
+  'Build even if the commit message doesn\'t contain \'[build]\''
+).parse(process.argv);
 
 /**
  * (1) Detect client and server branch
@@ -133,7 +140,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   }
 
   // do the following steps only if we want to build
-  if (commitMessage.indexOf('[build]') !== -1) {
+  if (commitMessage.indexOf('[build]') !== -1 || commander.build) {
     /**
      * (7) Copy the linkurious-server directory to tmp
      */
@@ -162,11 +169,25 @@ async.each(getSubDirectories('configs'), (config, callback) => {
       exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
       exec('grunt lint');
       exec('grunt build');
-    });
 
-    /**
-     * (10) Upload the build remotely
-     */
-    // TODO
+      /**
+       * (10) Upload the build remotely
+       */
+      changeDir('builds', () => {
+        exec('zip -qr linkurious-windows linkurious-windows');
+        exec('zip -qr linkurious-linux linkurious-linux');
+        exec('zip -qr linkurious-osx linkurious-osx');
+        exec('tar -cvzf builds.tar.gz ./*.zip');
+
+        var userAtHost = configuration.buildScpDestDir.split(':')[0];
+        var baseDir = configuration.buildScpDestDir.split(':')[1];
+        var branchDir = 's:' + serverBranch + '-c:' + clientBranch;
+
+        var dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
+
+        exec(`ssh -p ${configuration.buildScpPort} ${userAtHost} "mkdir -p '${dir}'"`);
+        exec(`scp -P ${configuration.buildScpPort} ./*.zip ${userAtHost}:'${dir}'"`);
+      });
+    });
   }
 });
