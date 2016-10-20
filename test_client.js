@@ -34,7 +34,7 @@ const serverBranch = exec('git ls-remote' +
   : 'develop';
 
 console.log('\x1b[32mTest Linkurious Server: ' + serverBranch +
-  ' and Test Linkurious Client: ' + clientBranch + '\x1b[0m');
+  ' and Linkurious Client: ' + clientBranch + '\x1b[0m');
 
 // we read the last commit message to decide if we have to build or not
 const commitMessage = exec('git log -1 --pretty=%B', {stdio: null}).toString('utf8');
