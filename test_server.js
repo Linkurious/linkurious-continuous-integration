@@ -8,6 +8,7 @@
 const fs = require('fs');
 const async = require('async');
 
+const shortid = require('shortid');
 const commander = require('commander');
 const _ = require('lodash');
 
@@ -162,7 +163,8 @@ async.each(getSubDirectories('configs'), (config, callback) => {
         var imageName = exec('docker inspect --format \'{{.Config.Image}}\' ' + containerId,
           {stdio: null}).toString('utf8').replace('\n', ' ');
 
-        exec('docker logs ' + containerId + ' > ' + imageName);
+        exec('docker logs ' + containerId + ' > \'' + imageName + ':' + shortid.generate() +
+          '\' 2>&1');
       }
     });
 
