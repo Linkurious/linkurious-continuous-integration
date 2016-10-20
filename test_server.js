@@ -44,6 +44,13 @@ console.log('\x1b[32mTest Linkurious Server: ' + serverBranch +
 
 // we read the last commit message to decide if we have to build or not
 const commitMessage = exec('git log -1 --pretty=%B', {stdio: null}).toString('utf8');
+// flags are words wrapped in square brackets
+const commitFlags = commitMessage.match(/\[(\w*)]/g) || [];
+
+// the test flag is a special flag (it has 'test:' as prefix)
+// it's used to test only one config
+var testFlag = (commitMessage.match(/\[test:(\w*)]/g) || []);
+testFlag = testFlag[0];
 
 /**
  * (2) This file is executed inside repositoryDir, we need to change directory to the CI
@@ -83,6 +90,12 @@ const defaultTestConfig = require(repositoryDir + '/server/config/defaults/test'
 exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
 
 async.each(getSubDirectories('configs'), (config, callback) => {
+  // we check if we can skip this test
+  if (testFlag && config.indexOf(testFlag) === -1) {
+    console.log('\x1b[43m$' + config + ' was skipped.\x1b[0m');
+    return callback();
+  }
+
   // we merge the default test configuration with the particular one for this run
   let testConfig = _.defaultsDeep(require('./configs/' + config + '/test'),
     _.cloneDeep(defaultTestConfig));
@@ -143,7 +156,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
   }
 
   // do the following steps only if we want to build
-  if (commitMessage.indexOf('[build]') !== -1 || commander.build) {
+  if (commitFlags.indexOf('[build]') !== -1 || commander.build) {
     /**
      * (7) Copy the linkurious-server directory to tmp
      */
