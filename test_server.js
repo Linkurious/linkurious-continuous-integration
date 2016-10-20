@@ -152,7 +152,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     exec('rm -rf tmp/logs');
     exec('mkdir -p tmp/logs');
     changeDir('tmp/logs', () => {
-      var containerIds = exec('docker images | awk \'{print $3}\'', {stdio: null}).toString('utf8')
+      var containerIds = exec('docker ps -a | awk \'{print $1}\'', {stdio: null}).toString('utf8')
         .split('\n');
 
       // remove first and last (garbage)
