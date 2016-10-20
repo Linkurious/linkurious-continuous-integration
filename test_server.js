@@ -156,7 +156,8 @@ async.each(getSubDirectories('configs'), (config, callback) => {
       var containerIds = exec('docker ps -a | awk \'{print $1}\'', {stdio: null}).toString('utf8')
         .split('\n');
 
-      containerIds = containerIds.slice(1);
+      // remove first and last (garbage)
+      containerIds = containerIds.slice(1, containerIds.length);
 
       for (var containerId of containerIds) {
         var imageName = exec('docker inspect --format \'{{.Config.Image}}\' ' + containerId,
