@@ -16,6 +16,7 @@ const execAsync = require('./utils').execAsync;
 const getSubDirectories = require('./utils').getSubDirectories;
 const changeDir = require('./utils').changeDir;
 const deleteNullPropertiesDeep = require('./utils').deleteNullPropertiesDeep;
+const getCurrentBranch = require('./utils').getCurrentBranch;
 const npmCache = require('./npmCache');
 const configuration = require('./config');
 
@@ -30,24 +31,7 @@ commander.option(
 /**
  * (1) Detect client and server branch
  */
-// TODO move this code elsewhere
-var serverBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
-  .replace('\n', '');
-if (serverBranch === 'HEAD') { // we are in a detached head
-  const gitBranchOutput = exec('git branch', {stdio: null}).toString('utf8').split('\n');
-  if (gitBranchOutput.length !== 3) {
-    console.log('Critical error: impossible to detect branch name among these:');
-    exec('git branch');
-    process.exit(1);
-  }
-  if (gitBranchOutput[0].indexOf('* (HEAD detached at') !== -1) {
-    // we use the first line
-    serverBranch = gitBranchOutput[1].replace('\n', '').replace(' ', '');
-  } else {
-    // we use the second line
-    serverBranch = gitBranchOutput[0].replace('\n', '').replace(' ', '');
-  }
-}
+const serverBranch = getCurrentBranch();
 
 const clientBranch = exec('git ls-remote' +
   ' --heads git@github.com:Linkurious/linkurious-client.git ' +
@@ -55,7 +39,7 @@ const clientBranch = exec('git ls-remote' +
   ? serverBranch
   : 'develop';
 
-console.log('\x1b[32m$',
+console.log('\x1b[32m',
   `Linkurious Server: ${serverBranch} and Test Linkurious Client: ${clientBranch}`, '\x1b[0m');
 
 // we read the last commit message to decide if we have to build or not

@@ -96,5 +96,33 @@ var deleteNullPropertiesDeep = obj => {
   }
 };
 
+/**
+ * Return the name of the current branch in the current working directory.
+ *
+ * @returns {string} name of the current branch
+ */
+var getCurrentBranch = () => {
+  var currentBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
+    .replace('\n', '');
+
+  if (currentBranch === 'HEAD') { // we are in a detached head
+    const gitBranchOutput = exec('git branch', {stdio: null}).toString('utf8').split('\n');
+    if (gitBranchOutput.length !== 2) {
+      console.log('\x1b[31mCritical error: impossible to detect branch name among these:\x1b[0m');
+      exec('git branch');
+      process.exit(1);
+    }
+    if (gitBranchOutput[0].indexOf('* (HEAD detached at') !== -1) {
+      // we use the second line
+      currentBranch = gitBranchOutput[1].replace('\n', '').replace(' ', '');
+    } else {
+      // we use the first line
+      currentBranch = gitBranchOutput[0].replace('\n', '').replace(' ', '');
+    }
+  }
+
+  return currentBranch;
+};
+
 module.exports = {exec, execAsync, execRetry, getSubDirectories, changeDir,
-  deleteNullPropertiesDeep};
+  deleteNullPropertiesDeep, getCurrentBranch};
