@@ -30,8 +30,25 @@ commander.option(
 /**
  * (1) Detect client and server branch
  */
-const serverBranch = exec('git symbolic-ref --short HEAD', {stdio: null}).toString('utf8')
+// TODO move this code elsewhere
+var serverBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8')
   .replace('\n', '');
+if (serverBranch === 'HEAD') { // we are in a detached head
+  const gitBranchOutput = exec('git branch', {stdio: null}).toString('utf8').split('\n');
+  if (gitBranchOutput.length !== 3) {
+    console.log('Critical error: impossible to detect branch name among these:');
+    exec('git branch');
+    process.exit(1);
+  }
+  if (gitBranchOutput[0].indexOf('* (HEAD detached at') !== -1) {
+    // we use the first line
+    serverBranch = gitBranchOutput[1].replace('\n', '').replace(' ', '');
+  } else {
+    // we use the second line
+    serverBranch = gitBranchOutput[0].replace('\n', '').replace(' ', '');
+  }
+}
+
 const clientBranch = exec('git ls-remote' +
   ' --heads git@github.com:Linkurious/linkurious-client.git ' +
   serverBranch + ' | wc -l', {stdio: null}).toString('utf8').indexOf('1') === 0
@@ -175,6 +192,7 @@ async.each(getSubDirectories('configs'), (config, callback) => {
       /**
        * (10) Upload the build remotely
        */
+      // TODO move this code elsewhere
       changeDir('builds', () => {
         exec('zip -qr linkurious-windows linkurious-windows');
         exec('zip -qr linkurious-linux linkurious-linux');
