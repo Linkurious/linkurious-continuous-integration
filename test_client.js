@@ -39,7 +39,7 @@ console.log('\x1b[32mTest Linkurious Server: ' + serverBranch +
 // we read the last commit message to decide if we have to build or not
 const commitMessage = exec('git log -1 --pretty=%B', {stdio: null}).toString('utf8');
 // flags are words wrapped in square brackets
-const commitFlags = commitMessage.match(/\[(\w*)]/g);
+const commitFlags = commitMessage.match(/\[\w*]/g) || [];
 
 /**
  * (2) This file is executed inside repositoryDir, we need to change directory to the CI
