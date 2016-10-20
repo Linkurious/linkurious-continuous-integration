@@ -159,7 +159,10 @@ async.each(getSubDirectories('configs'), (config, callback) => {
       containerIds = containerIds.slice(1, containerIds.length - 1);
 
       for (var containerId in containerIds) {
-        exec('docker logs ' + containerId + ' > ' + containerId);
+        var imageName = exec('docker inspect --format \'{{.Config.Image}}\' ' + containerId,
+          {stdio: null}).toString('utf8').replace('\n', ' ');
+
+        exec('docker logs ' + containerId + ' > ' + imageName);
       }
     });
 
