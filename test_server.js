@@ -219,6 +219,8 @@ async.each(getSubDirectories('configs'), (config, callback) => {
     changeDir('tmp/linkurious-server', () => {
       exec(`rm -rf node_modules; cp -al ${nodeModulesDir} node_modules`);
       exec('grunt lint');
+      // we call npmCache for the only purpose of changing node and npm version TODO hack to remove
+      npmCache(packageJsonFile, nodeVersion, npmVersion);
       exec('grunt build');
 
       /**

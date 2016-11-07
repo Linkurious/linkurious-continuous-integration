@@ -112,30 +112,31 @@ changeDir('tmp/linkurious-client', () => {
   exec('export PHANTOMJS_BIN=/usr/local/bin/phantomjs; grunt build');
 });
 
-/**
- * (9) Build LKE
- */
-if (!commander.serverCI && commitFlags.indexOf('[build]') !== -1) {
-  changeDir('tmp/linkurious-server', () => {
-    exec('grunt build');
-
-    /**
-     * (10) Upload the build remotely
-     */
-    changeDir('builds', () => {
-      exec('zip -qr linkurious-windows linkurious-windows');
-      exec('zip -qr linkurious-linux linkurious-linux');
-      exec('zip -qr linkurious-osx linkurious-osx');
-      exec('tar -cvzf builds.tar.gz ./*.zip');
-
-      var userAtHost = configuration.buildScpDestDir.split(':')[0];
-      var baseDir = configuration.buildScpDestDir.split(':')[1];
-      var branchDir = 's:' + serverBranch + '-c:' + clientBranch;
-
-      var dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
-
-      exec(`ssh -p ${configuration.buildScpPort} ${userAtHost} "mkdir -p '${dir}'"`);
-      exec(`scp -P ${configuration.buildScpPort} ./*.zip ${userAtHost}:'${dir}'"`);
-    });
-  });
-}
+// TODO this is actually broken because grunt build of the server fails if it doesn't have the right node and npm version
+// /**
+//  * (9) Build LKE
+//  */
+// if (!commander.serverCI && commitFlags.indexOf('[build]') !== -1) {
+//   changeDir('tmp/linkurious-server', () => {
+//     exec('grunt build');
+//
+//     /**
+//      * (10) Upload the build remotely
+//      */
+//     changeDir('builds', () => {
+//       exec('zip -qr linkurious-windows linkurious-windows');
+//       exec('zip -qr linkurious-linux linkurious-linux');
+//       exec('zip -qr linkurious-osx linkurious-osx');
+//       exec('tar -cvzf builds.tar.gz ./*.zip');
+//
+//       var userAtHost = configuration.buildScpDestDir.split(':')[0];
+//       var baseDir = configuration.buildScpDestDir.split(':')[1];
+//       var branchDir = 's:' + serverBranch + '-c:' + clientBranch;
+//
+//       var dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
+//
+//       exec(`ssh -p ${configuration.buildScpPort} ${userAtHost} "mkdir -p '${dir}'"`);
+//       exec(`scp -P ${configuration.buildScpPort} ./*.zip ${userAtHost}:'${dir}'"`);
+//     });
+//   });
+// }
