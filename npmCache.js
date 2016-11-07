@@ -13,18 +13,29 @@ const changeDir = require('./utils').changeDir;
 const ciDir = process.env['CI_DIRECTORY'];
 
 /**
+ * First, switch to the right node and npm version.
  * Hash the package.json file and look up if its node_modules directory was already cached.
  * If not, run npm install on this package.json.
  *
  * Return the absolute path to the node_modules directory.
  *
- * @param {string} packageJsonFile path to the package.json file
- * @param {string} [nodeVersion]   node version
- * @param {string} [npmVersion]    npm version
- * @param {boolean} [ignoreScripts]   whether to call npm install with the flag --ignore-scripts
- * @returns {string} absolute      path to the node_modules directory
+ * @param {string} packageJsonFile  path to the package.json file
+ * @param {string} [nodeVersion]    node version
+ * @param {string} [npmVersion]     npm version
+ * @param {boolean} [ignoreScripts] whether to call npm install with the flag --ignore-scripts
+ * @returns {string} absolute       path to the node_modules directory
  */
 module.exports = (packageJsonFile, nodeVersion, npmVersion, ignoreScripts) => {
+  // we install the desired node version
+  if (nodeVersion) {
+    exec('n ' + nodeVersion);
+  }
+
+  // we install the desired npm version
+  if (npmVersion) {
+    execRetry('export PATH=/usr/local/bin:${PATH}; npm install -g npm@' + npmVersion, 5);
+  }
+
   // hash the package.json file
   var data = fs.readFileSync(packageJsonFile, 'utf8');
   var hashPackageJson = crypto.createHash('md5').update(data).digest('hex');
@@ -47,16 +58,6 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion, ignoreScripts) => {
     if (packageJsonFolder === '') { packageJsonFolder = '.'; }
 
     changeDir(packageJsonFolder, () => {
-      // we install the desired node version
-      if (nodeVersion) {
-        exec('n ' + nodeVersion);
-      }
-
-      // we install the desired npm version
-      if (npmVersion) {
-        execRetry('export PATH=/usr/local/bin:${PATH}; npm install -g npm@' + npmVersion, 5);
-      }
-
       var flags = '';
 
       if (ignoreScripts) {
