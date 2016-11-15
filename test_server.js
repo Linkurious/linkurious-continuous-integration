@@ -24,6 +24,8 @@ const configuration = require('./config');
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 
+const MAX_CONCURRENT_CONFIGS = 4;
+
 commander.option(
   '--build',
   'Build even if the commit message doesn\'t contain \'[build]\''
@@ -90,7 +92,7 @@ const defaultTestConfig = require(repositoryDir + '/server/config/defaults/test'
 // we remove all the existing docker containers
 exec('docker rm -f $(docker ps -a -q) 2>/dev/null || true');
 
-async.each(getSubDirectories('configs'), (config, callback) => {
+async.eachLimit(getSubDirectories('configs'), MAX_CONCURRENT_CONFIGS, (config, callback) => {
   // we check if we can skip this test
   if (testFlag && config.indexOf(testFlag) === -1) {
     console.log('\x1b[43m$' + config + ' was skipped.\x1b[0m');
