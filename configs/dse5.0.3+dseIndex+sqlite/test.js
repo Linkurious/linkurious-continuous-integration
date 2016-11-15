@@ -10,7 +10,15 @@ module.exports = {
         create: true
       },
       index: {
-        vendor: 'dseIndex'
+        vendor: 'dseIndex',
+        host: null,
+        port: null,
+        forceReindex: null,
+        dynamicMapping: null,
+        user: null,
+        password: null,
+        https: null,
+        analyzer: null
       }
     }
   ]
