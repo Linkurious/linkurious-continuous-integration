@@ -1,0 +1,16 @@
+version: '2'
+services:
+  linkurious:
+    build:
+      context: .
+    depends_on:
+     - dse
+    volumes:
+     - ./coverage:/app/coverage
+  dse:
+    image: luketillman/datastax-enterprise:5.0.3
+    command: dse cassandra -gsf
+    expose:
+     - "8182"
+    environment:
+     - LISTEN_ADDRESS=auto
