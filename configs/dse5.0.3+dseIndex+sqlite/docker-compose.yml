@@ -9,7 +9,7 @@ services:
      - ./coverage:/app/coverage
   dse:
     image: luketillman/datastax-enterprise:5.0.3
-    command: dse cassandra -gsf
+    command: dse cassandra -gsfk
     expose:
      - "8182"
     environment:
