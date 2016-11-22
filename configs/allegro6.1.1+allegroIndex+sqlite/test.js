@@ -14,7 +14,15 @@ module.exports = {
         alternativeEdgeId: null
       },
       index: {
-        vendor: 'allegroIndex'
+        vendor: 'allegroIndex',
+        host: null,
+        port: null,
+        forceReindex: null,
+        dynamicMapping: null,
+        user: null,
+        password: null,
+        https: null,
+        analyzer: null
       }
     }
   ]
