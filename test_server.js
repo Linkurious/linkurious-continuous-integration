@@ -24,7 +24,7 @@ const configuration = require('./config');
 const repositoryDir = process.env.PWD;
 const ciDir = process.env['CI_DIRECTORY'];
 
-const MAX_CONCURRENT_CONFIGS = 4;
+const MAX_CONCURRENT_CONFIGS = 3;
 
 commander.option(
   '--build',
