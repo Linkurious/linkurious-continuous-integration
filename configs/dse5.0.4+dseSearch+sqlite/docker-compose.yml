@@ -5,15 +5,12 @@ services:
       context: .
     depends_on:
      - dse
-     - elasticsearch
     volumes:
      - ./coverage:/app/coverage
   dse:
-    image: luketillman/datastax-enterprise:5.0.1
-    command: dse cassandra -gf
+    image: luketillman/datastax-enterprise:5.0.4
+    command: dse cassandra -gsfk
     expose:
      - "8182"
     environment:
      - LISTEN_ADDRESS=auto
-  elasticsearch:
-    image: elasticsearch:1.7
