@@ -11,6 +11,7 @@ module.exports = {
       },
       index: {
         vendor: 'dseIndex',
+        disableIndexExistCheck: true,
         host: null,
         port: null,
         forceReindex: null,
