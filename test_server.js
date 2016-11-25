@@ -118,7 +118,8 @@ async.eachLimit(getSubDirectories('configs'), MAX_CONCURRENT_CONFIGS, (config, c
     fs.writeFileSync('app/data/config/test.json', JSON.stringify(testConfig));
   });
 
-  let dockerBuildRun = execAsync('docker-compose build; docker-compose run --rm linkurious',
+  let dockerBuildRun = execAsync('docker-compose build; ' +
+    'env COMPOSE_HTTP_TIMEOUT=200 docker-compose run --rm linkurious',
     {cwd: ciDir + '/configs/' + config});
 
   let output = '';
