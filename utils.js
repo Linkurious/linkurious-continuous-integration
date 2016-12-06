@@ -3,22 +3,30 @@
  */
 'use strict';
 
+// internal libs
 const fs = require('fs');
 const path = require('path');
 
+// external libs
 const _ = require('lodash');
 
 /**
  * Execute `cmd` synchronously.
  *
- * @param {string} cmd       command to execute
- * @param {object} [options] options to pass to child_process.execSync
- * @returns {Buffer|String}  stdout from the command
+ * @param {string} cmd        command to execute
+ * @param {object} [options]  options to pass to child_process.execSync
+ * @param {boolean} [silent]  whether to not print output to stdout/err but return it instead
+ * @returns {Buffer | String} stdout from the command
  */
-var exec = (cmd, options) => {
-  console.log('\x1b[32m$ \x1b[0m' + cmd);
-  return require('child_process').execSync(cmd,
-    _.defaults(options, {stdio: [0, 1, 2], shell: '/bin/bash'}));
+var exec = (cmd, options, silent) => {
+  if (silent) {
+    return require('child_process').execSync(cmd,
+      _.defaults(options, {stdio: null, encoding: 'utf8'}));
+  } else {
+    console.log('\x1b[32m$ \x1b[0m' + cmd);
+    return require('child_process').execSync(cmd,
+      _.defaults(options, {stdio: [0, 1, 2], shell: '/bin/bash'}));
+  }
 };
 
 /**
