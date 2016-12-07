@@ -105,7 +105,7 @@ file "${file}" was not found`);
     /**
      * 1) read the echidna.json of the current project
      */
-    let echidnaJson = Echidna.validateEchidnaJson('.');
+    let echidnaJson = Echidna.validateEchidnaJson(repositoryDir);
     if (!echidnaJson) {
       process.exit(1);
     }
