@@ -119,7 +119,6 @@ file "${file}" was not found`);
     /**
      * 3) copy the repository in the workspace
      */
-    exec(`mkdir -p ${workspaceDir}/${echidnaJson.name}`);
     exec(`cp -al ${repositoryDir} ${workspaceDir}/${echidnaJson.name}`);
 
     /**
