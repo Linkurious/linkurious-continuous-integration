@@ -20,15 +20,15 @@ const repositoryDir = process.env.PWD;
 class Echidna {
   constructor(name, scripts, workspaceDir) {
     this.name = name;
+    this.workspaceDir = workspaceDir;
     this.scripts = _.mapKeys(scripts, (file, script) => {
       try {
-        return require(file);
+        return require(workspaceDir + '/' + file);
       } catch(e) {
         console.log(`WARNING: unable to add script "${script}" for project "${name}" because \
 file "${file}" was not found`);
       }
     });
-    this.workspaceDir = workspaceDir;
   }
 
   /**
@@ -39,7 +39,7 @@ file "${file}" was not found`);
   run(script, callback) {
     let func = this.scripts[script];
     if (func) {
-      func(echidna, callback);
+      func(this, callback);
     } else {
       console.log(`skipping script "${script}" because it's not defined in echidna.json`);
       callback(1);
@@ -68,7 +68,7 @@ file "${file}" was not found`);
 
   /**
    * @param {string} path where to look for the echidna.json file
-   * @return {object | undefined} object represantion of the echidna.json file
+   * @return {object | undefined} object representation of the echidna.json file
    */
   static validateEchidnaJson(path) {
     const file = path + '/echidna.json';
