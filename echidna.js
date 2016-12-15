@@ -21,7 +21,7 @@ class Echidna {
   constructor(name, scripts, workspaceDir) {
     this.name = name;
     this.workspaceDir = workspaceDir;
-    this.scripts = _.mapKeys(scripts, (file, script) => {
+    this.scripts = _.mapValues(scripts, (file, script) => {
       let _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
       try {
         return require(_requireFile);
