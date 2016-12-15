@@ -22,11 +22,12 @@ class Echidna {
     this.name = name;
     this.workspaceDir = workspaceDir;
     this.scripts = _.mapKeys(scripts, (file, script) => {
+      let _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
       try {
-        return require(workspaceDir + '/' + file);
+        return require(_requireFile);
       } catch(e) {
         console.log(`WARNING: unable to add script "${script}" for project "${name}" because \
-file "${file}" was not found`);
+file "${_requireFile}" was not found`);
       }
     });
   }
