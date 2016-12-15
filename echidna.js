@@ -130,7 +130,9 @@ file "${_requireFile}" was not found`);
     const scriptsToRun = new Set();
     const commandLineArguments = _.filter(process.argv, arg => arg.indexOf('--') === 0)
       .map(arg => arg.slice(2));
-    scriptsToRun.add.apply(scriptsToRun, commandLineArguments);
+    _.forEach(commandLineArguments, s => {
+      scriptsToRun.add(s);
+    });
 
     /**
      * 5) parse commit message arguments
@@ -140,7 +142,9 @@ file "${_requireFile}" was not found`);
     const commitMessage = exec('git log -1 --pretty=%B', null, true);
 // flags are words prefixed with `run:` wrapped in square brackets, e.g.: '[run:build]'
     const commitFlags = commitMessage.match(/\[run:\w*]/g) || [];
-    scriptsToRun.add.apply(scriptsToRun, commitFlags);
+    _.forEach(commitFlags, s => {
+      scriptsToRun.add(s);
+    });
 
     /**
      * 6) we first execute scripts coming from cla, then scripts coming from commits
