@@ -146,7 +146,7 @@ file "${_requireFile}" was not found`);
      * 6) we first execute scripts coming from cla, then scripts coming from commits
      */
     const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, workspaceDir);
-    const functionsToRun = scriptsToRun.map(script => echidna.run.bind(echidna, script));
+    const functionsToRun = Array.from(scriptsToRun).map(s => echidna.run.bind(echidna, s));
 
     async.series(functionsToRun, () => {
       /**
