@@ -10,7 +10,7 @@ module.exports = {
         create: true
       },
       index: {
-        vendor: 'dseIndex',
+        vendor: 'dseSearch',
         disableIndexExistCheck: true,
         host: null,
         port: null,

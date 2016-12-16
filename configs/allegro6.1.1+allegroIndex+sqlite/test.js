@@ -14,7 +14,7 @@ module.exports = {
         alternativeEdgeId: null
       },
       index: {
-        vendor: 'allegroIndex',
+        vendor: 'allegroGraphSearch',
         host: null,
         port: null,
         forceReindex: null,
