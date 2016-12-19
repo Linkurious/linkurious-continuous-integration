@@ -11,7 +11,7 @@ const shortid = require('shortid');
 const async = require('async');
 
 // locals
-const exec = require('./utils').exec;
+const utils = require('./utils');
 
 // constants
 const ciDir = process.env['CI_DIRECTORY'];
@@ -67,6 +67,10 @@ file "${_requireFile}" was not found`);
     return 'TODO';
   }
 
+  get utils() {
+    return utils;
+  }
+
   /**
    * @param {string} path where to look for the echidna.json file
    * @return {object | undefined} object representation of the echidna.json file
@@ -115,12 +119,12 @@ file "${_requireFile}" was not found`);
      * 2) create a workspace directory
      */
     const workspaceDir = ciDir + '/workspaces/' + shortid.generate();
-    exec(`mkdir -p ${workspaceDir}`);
+    utils.exec(`mkdir -p ${workspaceDir}`);
 
     /**
      * 3) copy the repository in the workspace
      */
-    exec(`cp -al ${repositoryDir} ${workspaceDir}/${echidnaJson.name}`);
+    utils.exec(`cp -al ${repositoryDir} ${workspaceDir}/${echidnaJson.name}`);
 
     /**
      * 4) parse command line arguments (only double-dash arguments are taken into account)
@@ -139,7 +143,7 @@ file "${_requireFile}" was not found`);
      *
      * e.g.: '#892 solved issues [run:build]'
      */
-    const commitMessage = exec('git log -1 --pretty=%B', null, true);
+    const commitMessage = utils.exec('git log -1 --pretty=%B', null, true);
 // flags are words prefixed with `run:` wrapped in square brackets, e.g.: '[run:build]'
     const commitFlags = commitMessage.match(/\[run:\w*]/g) || [];
     _.forEach(commitFlags, s => {
@@ -156,7 +160,7 @@ file "${_requireFile}" was not found`);
       /**
        * 7) delete the workspace directory
        */
-      exec(`rm -rf ${workspaceDir}`);
+      utils.exec(`rm -rf ${workspaceDir}`);
     });
   }
 }
