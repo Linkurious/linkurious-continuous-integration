@@ -78,8 +78,8 @@ file "${_requireFile}" was not found`);
 
     // clone the repository in a temporary folder
     utils.changeDir(this.workspaceDir + '/_tmp', () => {
-      utils.exec(`git clone git@github.com:${repository}.git --branch ` + branchToUse +
-        ' --single-branch');
+      utils.exec(`git clone git@github.com:${repository}.git --branch "` + branchToUse +
+        '" --single-branch');
     });
     const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
 
