@@ -21,7 +21,7 @@ const _ = require('lodash');
 const exec = (cmd, silent, options) => {
   if (silent) {
     return require('child_process').execSync(cmd,
-      _.defaults(options, {stdio: null, encoding: 'utf8'}));
+      _.defaults(options, {stdio: null, encoding: 'utf8', shell: '/bin/bash'}));
   } else {
     console.log('\x1b[32m$ \x1b[0m' + cmd);
     return require('child_process').execSync(cmd,
@@ -47,17 +47,18 @@ const execAsync = (cmd, options) => {
  *
  * @param {string} cmd       command to execute
  * @param {number} nRetry    number of retries before throwing an error
+ * @param {boolean} [silent] whether to not print output to stdout/err but return it instead
  * @param {object} [options] options to pass to child_process.execSync
- * @returns {Buffer|String}  stdout from the command
+ * @returns {Buffer | String}  stdout from the command
  */
-const execRetry = (cmd, nRetry, options) => {
+const execRetry = (cmd, nRetry, silent, options) => {
   if (nRetry <= 0) {
-    return exec(cmd, options);
+    return exec(cmd, silent, options);
   } else {
     try {
-      return exec(cmd, options);
+      return exec(cmd, silent, options);
     } catch(e) {
-      return execRetry(cmd, nRetry - 1, options);
+      return execRetry(cmd, nRetry - 1, silent, options);
     }
   }
 };

@@ -12,6 +12,7 @@ const async = require('async');
 
 // locals
 const utils = require('./utils');
+const npmCache = require('./npmCache');
 
 // constants
 const ciDir = process.env['CI_DIRECTORY'];
@@ -35,7 +36,15 @@ file "${_requireFile}" was not found`);
 
     utils.changeDir(this.repositoryDir, () => {
       this.branch = utils.getCurrentBranch();
+      try {
+        this.packageJsonData = require('package.json');
+      } catch(e) {
+        console.log(`\x1b[33m Unable to load package.json for project "${name}"\x1b[0m`);
+      }
     });
+
+    // directory containing desired node and npm (etc.) binaries
+    this.binDir = this.repositoryDir + '/_bin';
   }
 
   /**
@@ -45,16 +54,24 @@ file "${_requireFile}" was not found`);
    */
   run(script, callback) {
     const func = this.scripts[script];
+
     // save cwd
     const currentWorkingDirectory = process.cwd();
+    // save current PATH environment variable
+    const pathEnv = process.env.PATH;
+
     // set the repository directory as cwd
     process.chdir(this.repositoryDir);
+    // add 'this.binDir' to PATH
+    process.env.PATH = this.binDir + ':' + pathEnv;
+
     if (func) {
       console.log(`Running script \x1b[32m${script}\x1b[0m for project ` +
           `\x1b[32m${this.name}\x1b[0m, branch \x1b[32m${this.branch}\x1b[0m`);
       func(this, err => {
-        // restore previous cwd
+        // restore previous cwd and PATH
         process.chdir(currentWorkingDirectory);
+        process.env.PATH = pathEnv;
         callback(err);
       });
     } else {
@@ -78,7 +95,7 @@ file "${_requireFile}" was not found`);
       ? this.branch
       : 'develop';
 
-    // clone the repository in a temporary folder
+    // clone the repository in a temporary directory
     utils.changeDir(this.workspaceDir + '/_tmp', () => {
       utils.exec(`git clone git@github.com:${repository}.git --branch "` + branchToUse +
         '" --single-branch', true);
@@ -91,18 +108,22 @@ file "${_requireFile}" was not found`);
     // copy the repository in the workspace
     utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${echidnaJson.name}`, true);
 
-    // remove the temporary folder
+    // remove the temporary directory
     utils.exec('rm -rf _tmp', true);
 
     return new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
   }
 
   get npm() {
-    return 'TODO';
+    return {
+      version: this.packageJsonData ? this.packageJsonData.engines.npm : null
+    };
   }
 
   get node() {
-    return 'TODO';
+    return {
+      version: this.packageJsonData ? this.packageJsonData.engines.node : null
+    };
   }
 
   get bower() {
