@@ -76,7 +76,9 @@ class npmCache {
       return;
     }
 
+    console.log('noisy');
     utils.exec(`npm install npm@${npmVersion}`, true);
+    console.log('noisy2');
     utils.exec(`ln -sf ./node_modules/.bin/npm ${this.binDir}`, true);
   }
 
@@ -119,7 +121,7 @@ class npmCache {
       }
       // it doesn't exist we have to run npm install for this package.json
 
-      utils.exec('mkdir -p ' + bucketDir);
+      utils.exec('mkdir -p ' + bucketDir, true);
 
       utils.changeDir(packageJsonDir, () => {
         let flags = '';
