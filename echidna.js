@@ -50,10 +50,10 @@ file "${_requireFile}" was not found`);
     // set the repository directory as cwd
     process.chdir(this.repositoryDir);
     if (func) {
-      func(this, () => {
+      func(this, err => {
         // restore previous cwd
         process.chdir(currentWorkingDirectory);
-        callback();
+        callback(err);
       });
     } else {
       console.log(`skipping script "${script}" because it's not defined in echidna.json`);
