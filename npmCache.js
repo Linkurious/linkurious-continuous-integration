@@ -111,9 +111,8 @@ class npmCache {
       // does this directory exist?
       fs.lstatSync(bucketDir + '/node_modules');
 
-      console.log('using cache');
       // copy from the bucket to the packageJsonDir
-      utils.exec(`cp -r ${bucketDir}/node_modules ${packageJsonDir}/node_modules`);
+      utils.exec(`cp -r ${bucketDir}/node_modules ${packageJsonDir}/node_modules`, true);
     } catch(e) {
       if (e.code !== 'ENOENT') {
         throw e;
@@ -133,9 +132,8 @@ class npmCache {
         utils.execRetry('npm install' + flags, 5);
 
         // we copy the node_modules directory in our bucket
-        utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`);
+        utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
 
-        console.log('installing');
         // there is no need to copy from the bucket to the repository since node_modules
         // was created there
       });
