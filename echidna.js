@@ -127,12 +127,12 @@ file "${_requireFile}" was not found`);
      * 2) create a workspace directory
      */
     const workspaceDir = ciDir + '/workspaces/' + shortid.generate();
-    utils.exec(`mkdir -p ${workspaceDir}`);
+    utils.exec(`mkdir -p ${workspaceDir}`, null, true);
 
     /**
      * 3) copy the repository in the workspace
      */
-    utils.exec(`cp -al ${repositoryDir} ${workspaceDir}/${echidnaJson.name}`);
+    utils.exec(`cp -al ${repositoryDir} ${workspaceDir}/${echidnaJson.name}`, null, true);
 
     /**
      * 4) parse command line arguments (only double-dash arguments are taken into account)
@@ -168,7 +168,7 @@ file "${_requireFile}" was not found`);
       /**
        * 7) delete the workspace directory
        */
-      utils.exec(`rm -rf ${workspaceDir}`);
+      utils.exec(`rm -rf ${workspaceDir}`, null, true);
     });
   }
 }
