@@ -39,8 +39,16 @@ file "${_requireFile}" was not found`);
    */
   run(script, callback) {
     let func = this.scripts[script];
+    // save cwd
+    let currentWorkingDirectory = process.cwd();
+    // set the repository directory as cwd
+    process.chdir(this.workspaceDir + '/' + this.name);
     if (func) {
-      func(this, callback);
+      func(this, () => {
+        // restore previous cwd
+        process.chdir(currentWorkingDirectory);
+        callback();
+      });
     } else {
       console.log(`skipping script "${script}" because it's not defined in echidna.json`);
       callback(1);
@@ -144,7 +152,7 @@ file "${_requireFile}" was not found`);
      * e.g.: '#892 solved issues [run:build]'
      */
     const commitMessage = utils.exec('git log -1 --pretty=%B', null, true);
-// flags are words prefixed with `run:` wrapped in square brackets, e.g.: '[run:build]'
+    // flags are words prefixed with `run:` wrapped in square brackets, e.g.: '[run:build]'
     const commitFlags = commitMessage.match(/\[run:\w*]/g) || [];
     _.forEach(commitFlags, s => {
       scriptsToRun.add(s.substring(5, s.length - 1));
