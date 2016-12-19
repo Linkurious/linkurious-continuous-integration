@@ -76,9 +76,7 @@ class npmCache {
       return;
     }
 
-    console.log('noisy');
     utils.exec(`npm install npm@${npmVersion}`, true);
-    console.log('noisy2');
     utils.exec(`ln -sf ./node_modules/.bin/npm ${this.binDir}`, true);
   }
 
