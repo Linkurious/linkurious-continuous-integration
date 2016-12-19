@@ -12,6 +12,33 @@ const changeDir = require('./utils').changeDir;
 
 const ciDir = process.env['CI_DIRECTORY'];
 
+class npmCache {
+  /**
+   * @param {string} packageJsonFile path to the package.json file
+   * @param {string} binDir          desired path for binaries
+   * @param {string} nodeModulesDir  destination path of npm.install
+   */
+  constructor(packageJsonFile, binDir, nodeModulesDir) {
+    this.packageJsonData = require(packageJsonFile);
+    this.binDir = binDir;
+    this.nodeModulesDir = nodeModulesDir;
+  }
+
+  get nodeVersion() {
+    if (this.packageJsonData && this.packageJsonData.engines) {
+      return this.packageJsonData.engines.node;
+    }
+  }
+
+  get npmVersion() {
+    if (this.packageJsonData && this.packageJsonData.engines) {
+      return this.packageJsonData.engines.npm;
+    }
+  }
+}
+
+module.exports = npmCache;
+
 /**
  * First, switch to the right node and npm version.
  * Hash the package.json file and look up if its node_modules directory was already cached.
@@ -24,7 +51,7 @@ const ciDir = process.env['CI_DIRECTORY'];
  * @param {string} [npmVersion]     npm version
  * @param {boolean} [ignoreScripts] whether to call npm install with the flag --ignore-scripts
  * @returns {string} absolute       path to the node_modules directory
- */
+
 module.exports = (packageJsonFile, nodeVersion, npmVersion, ignoreScripts) => {
   // we install the desired node version
   if (nodeVersion) {
@@ -74,3 +101,4 @@ module.exports = (packageJsonFile, nodeVersion, npmVersion, ignoreScripts) => {
 
   return directory + '/node_modules';
 };
+*/

@@ -36,11 +36,6 @@ file "${_requireFile}" was not found`);
 
     utils.changeDir(this.repositoryDir, () => {
       this.branch = utils.getCurrentBranch();
-      try {
-        this.packageJsonData = require('package.json');
-      } catch(e) {
-        console.log(`\x1b[33m Unable to load package.json for project "${name}"\x1b[0m`);
-      }
     });
 
     // directory containing desired node and npm (etc.) binaries
@@ -115,15 +110,14 @@ file "${_requireFile}" was not found`);
   }
 
   get npm() {
-    return {
-      version: this.packageJsonData ? this.packageJsonData.engines.npm : null
-    };
-  }
-
-  get node() {
-    return {
-      version: this.packageJsonData ? this.packageJsonData.engines.node : null
-    };
+    if (!this._npm) {
+      this._npm = new npmCache(
+        this.repositoryDir + '/package.json',
+        this.binDir,
+        this.repositoryDir + '/node_modules'
+      );
+    }
+    return this._npm;
   }
 
   get bower() {
@@ -169,6 +163,8 @@ file "${_requireFile}" was not found`);
     /**
      * 1) read the echidna.json of the current project
      */
+
+    throw new Error('prova');
     const echidnaJson = Echidna.validateEchidnaJson(rootRepositoryDir);
 
     /**
