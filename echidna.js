@@ -70,12 +70,17 @@ file "${_requireFile}" was not found`);
 
     utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, null, true);
 
+    // decide whether to match the branch or to use 'develop'
+    const branchToUse = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
+      this.branch + '" | wc -l', null, true).indexOf('1') === 0
+      ? this.branch
+      : 'develop';
+
     // clone the repository in a temporary folder
     utils.changeDir(this.workspaceDir + '/_tmp', () => {
-      utils.exec(`git clone git@github.com:${repository}.git --branch ` + this.branch +
+      utils.exec(`git clone git@github.com:${repository}.git --branch ` + branchToUse +
         ' --single-branch');
     });
-
     const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
 
     // read the echidna.json file
@@ -87,9 +92,7 @@ file "${_requireFile}" was not found`);
     // remove the temporary folder
     utils.exec('rm -rf _tmp', null, true);
 
-    const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
-
-    return echidna;
+    return new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
   }
 
   get npm() {
