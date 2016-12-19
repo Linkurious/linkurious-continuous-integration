@@ -50,6 +50,8 @@ file "${_requireFile}" was not found`);
     // set the repository directory as cwd
     process.chdir(this.repositoryDir);
     if (func) {
+      console.log(`Running \x1b[32m${script}\x1b[0m for project \x1b[32m${this.name}\x1b[0m,` +
+        `branch ${this.branch}`);
       func(this, err => {
         // restore previous cwd
         process.chdir(currentWorkingDirectory);
