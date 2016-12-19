@@ -15,7 +15,7 @@ const utils = require('./utils');
 
 // constants
 const ciDir = process.env['CI_DIRECTORY'];
-const repositoryDir = process.env.PWD;
+const rootRepositoryDir = process.env.PWD;
 
 class Echidna {
   constructor(name, scripts, workspaceDir) {
@@ -24,11 +24,11 @@ class Echidna {
     this.repositoryDir = workspaceDir + '/' + name;
 
     this.scripts = _.mapValues(scripts, (file, script) => {
-      let _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
+      const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
       try {
         return require(_requireFile);
       } catch(e) {
-        console.log(`WARNING: unable to add script "${script}" for project "${name}" because \
+        throw new Error(`Unable to add script "${script}" for project "${name}" because \
 file "${_requireFile}" was not found`);
       }
     });
@@ -44,9 +44,9 @@ file "${_requireFile}" was not found`);
    * @returns {undefined}
    */
   run(script, callback) {
-    let func = this.scripts[script];
+    const func = this.scripts[script];
     // save cwd
-    let currentWorkingDirectory = process.cwd();
+    const currentWorkingDirectory = process.cwd();
     // set the repository directory as cwd
     process.chdir(this.repositoryDir);
     if (func) {
@@ -66,8 +66,30 @@ file "${_requireFile}" was not found`);
    * @returns {Echidna} echidna object for the repository
    */
   get(repository) {
+    const projectName = repository.split('/')[1];
+
     utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, null, true);
-    process.chdir(this.workspaceDir + '/_tmp');
+
+    // clone the repository in a temporary folder
+    utils.changeDir(this.workspaceDir + '/_tmp', () => {
+      utils.exec(`git clone git@github.com:${repository}.git --branch ` + this.branch +
+        ' --single-branch');
+    });
+
+    const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
+
+    // read the echidna.json file
+    const echidnaJson = Echidna.validateEchidnaJson(tmpRepositoryDir);
+
+    // copy the repository in the workspace
+    utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${echidnaJson.name}`, null, true);
+
+    // remove the temporary folder
+    utils.exec('rm -rf _tmp', null, true);
+
+    const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
+
+    return echidna;
   }
 
   get npm() {
@@ -96,23 +118,19 @@ file "${_requireFile}" was not found`);
     try {
       echidnaJson = require(file);
     } catch(e) {
-      console.log(`"${file}" was not found`);
-      return;
+      throw new Error(`"${file}" was not found`);
     }
 
     if (echidnaJson.name === undefined || echidnaJson.name === null) {
-      console.log(`"${file}" requires a "name" field`);
-      return;
+      throw new Error(`"${file}" requires a "name" field`);
     }
 
     if (!(echidnaJson.name.length > 0)) {
-      console.log(`"name" field of "${file}" has to be non empty`);
-      return;
+      throw new Error(`"name" field of "${file}" has to be non empty`);
     }
 
     if (echidnaJson.scripts === undefined || echidnaJson.scripts === null) {
-      console.log(`"${file}" requires a "scripts" field`);
-      return;
+      throw new Error(`"${file}" requires a "scripts" field`);
     }
 
     return echidnaJson;
@@ -125,10 +143,7 @@ file "${_requireFile}" was not found`);
     /**
      * 1) read the echidna.json of the current project
      */
-    let echidnaJson = Echidna.validateEchidnaJson(repositoryDir);
-    if (!echidnaJson) {
-      process.exit(1);
-    }
+    const echidnaJson = Echidna.validateEchidnaJson(rootRepositoryDir);
 
     /**
      * 2) create a workspace directory
@@ -139,7 +154,7 @@ file "${_requireFile}" was not found`);
     /**
      * 3) copy the repository in the workspace
      */
-    utils.exec(`cp -al ${repositoryDir} ${workspaceDir}/${echidnaJson.name}`, null, true);
+    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${echidnaJson.name}`, null, true);
 
     /**
      * 4) parse command line arguments (only double-dash arguments are taken into account)
