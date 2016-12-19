@@ -17,7 +17,7 @@ rl.question('GitHub Client Secret: ', clientSecret => {
   exec('sudo service mongod start');
   exec('sudo service docker start');
   exec('sudo service nginx start');
-  exec('npm start >> strider.log 2>&1 & disown', {
+  exec('npm start >> strider.log 2>&1 & disown', false, {
     env:
       Object.assign({
         'SERVER_NAME': config.serverName,
