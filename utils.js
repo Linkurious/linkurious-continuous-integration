@@ -110,10 +110,10 @@ const deleteNullPropertiesDeep = obj => {
  * @returns {string} name of the current branch
  */
 const getCurrentBranch = () => {
-  const currentBranch = exec('git rev-parse --abbrev-ref HEAD', null, true);
+  let currentBranch = exec('git rev-parse --abbrev-ref HEAD', true);
 
   if (currentBranch.indexOf('HEAD') !== -1) { // we are in a detached head
-    const gitBranchOutput = exec('git branch', null, true).split('\n');
+    const gitBranchOutput = exec('git branch', true).split('\n');
     if (gitBranchOutput.length !== 3) {
       console.log('\x1b[31mCritical error: impossible to detect branch name among these:\x1b[0m');
       exec('git branch');
