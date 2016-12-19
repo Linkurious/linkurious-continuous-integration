@@ -147,7 +147,7 @@ file "${_requireFile}" was not found`);
 // flags are words prefixed with `run:` wrapped in square brackets, e.g.: '[run:build]'
     const commitFlags = commitMessage.match(/\[run:\w*]/g) || [];
     _.forEach(commitFlags, s => {
-      scriptsToRun.add(s);
+      scriptsToRun.add(s.substring(5, s.length - 1));
     });
 
     /**
