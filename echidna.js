@@ -163,8 +163,6 @@ file "${_requireFile}" was not found`);
     /**
      * 1) read the echidna.json of the current project
      */
-
-    throw new Error('prova');
     const echidnaJson = Echidna.validateEchidnaJson(rootRepositoryDir);
 
     /**
