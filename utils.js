@@ -14,11 +14,11 @@ const _ = require('lodash');
  * Execute `cmd` synchronously.
  *
  * @param {string} cmd        command to execute
- * @param {object} [options]  options to pass to child_process.execSync
  * @param {boolean} [silent]  whether to not print output to stdout/err but return it instead
+ * @param {object} [options]  options to pass to child_process.execSync
  * @returns {Buffer | String} stdout from the command
  */
-var exec = (cmd, options, silent) => {
+const exec = (cmd, silent, options) => {
   if (silent) {
     return require('child_process').execSync(cmd,
       _.defaults(options, {stdio: null, encoding: 'utf8'}));
@@ -36,7 +36,7 @@ var exec = (cmd, options, silent) => {
  * @param {object} [options] options to pass to child_process.exec
  * @returns {ChildProcess}   ChildProcess
  */
-var execAsync = (cmd, options) => {
+const execAsync = (cmd, options) => {
   console.log('\x1b[32m$ \x1b[0m' + cmd);
   return require('child_process').exec(cmd,
     _.defaults(options, {shell: '/bin/bash'}));
@@ -50,7 +50,7 @@ var execAsync = (cmd, options) => {
  * @param {object} [options] options to pass to child_process.execSync
  * @returns {Buffer|String}  stdout from the command
  */
-var execRetry = (cmd, nRetry, options) => {
+const execRetry = (cmd, nRetry, options) => {
   if (nRetry <= 0) {
     return exec(cmd, options);
   } else {
@@ -68,7 +68,7 @@ var execRetry = (cmd, nRetry, options) => {
  * @param {string} srcDir root directory
  * @returns {string[]}    subdirectories
  */
-var getSubDirectories = srcDir => {
+const getSubDirectories = srcDir => {
   return fs.readdirSync(srcDir).filter(file => {
     return fs.statSync(path.join(srcDir, file)).isDirectory();
   });
@@ -81,8 +81,8 @@ var getSubDirectories = srcDir => {
  * @param {function} func function to execute under `dir`
  * @returns {undefined}
  */
-var changeDir = (dir, func) => {
-  var currentDir = process.cwd();
+const changeDir = (dir, func) => {
+  const currentDir = process.cwd();
   process.chdir(dir);
   func();
   process.chdir(currentDir);
@@ -94,8 +94,8 @@ var changeDir = (dir, func) => {
  * @param {object} obj object
  * @returns {undefined}
  */
-var deleteNullPropertiesDeep = obj => {
-  for (var key of Object.keys(obj)) {
+const deleteNullPropertiesDeep = obj => {
+  for (let key of Object.keys(obj)) {
     if (obj[key] === null) {
       delete obj[key];
     } else if (typeof obj[key] === 'object') {
@@ -109,8 +109,8 @@ var deleteNullPropertiesDeep = obj => {
  *
  * @returns {string} name of the current branch
  */
-var getCurrentBranch = () => {
-  var currentBranch = exec('git rev-parse --abbrev-ref HEAD', null, true);
+const getCurrentBranch = () => {
+  const currentBranch = exec('git rev-parse --abbrev-ref HEAD', null, true);
 
   if (currentBranch.indexOf('HEAD') !== -1) { // we are in a detached head
     const gitBranchOutput = exec('git branch', null, true).split('\n');

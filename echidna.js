@@ -68,18 +68,18 @@ file "${_requireFile}" was not found`);
   get(repository) {
     const projectName = repository.split('/')[1];
 
-    utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, null, true);
+    utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, true);
 
     // decide whether to match the branch or to use 'develop'
     const branchToUse = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
-      this.branch + '" | wc -l', null, true).indexOf('1') === 0
+      this.branch + '" | wc -l', true).indexOf('1') === 0
       ? this.branch
       : 'develop';
 
     // clone the repository in a temporary folder
     utils.changeDir(this.workspaceDir + '/_tmp', () => {
       utils.exec(`git clone git@github.com:${repository}.git --branch "` + branchToUse +
-        '" --single-branch');
+        '" --single-branch', true);
     });
     const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
 
@@ -87,10 +87,10 @@ file "${_requireFile}" was not found`);
     const echidnaJson = Echidna.validateEchidnaJson(tmpRepositoryDir);
 
     // copy the repository in the workspace
-    utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${echidnaJson.name}`, null, true);
+    utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${echidnaJson.name}`, true);
 
     // remove the temporary folder
-    utils.exec('rm -rf _tmp', null, true);
+    utils.exec('rm -rf _tmp', true);
 
     return new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
   }
@@ -152,12 +152,12 @@ file "${_requireFile}" was not found`);
      * 2) create a workspace directory
      */
     const workspaceDir = ciDir + '/workspaces/' + shortid.generate();
-    utils.exec(`mkdir -p ${workspaceDir}`, null, true);
+    utils.exec(`mkdir -p ${workspaceDir}`, true);
 
     /**
      * 3) copy the repository in the workspace
      */
-    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${echidnaJson.name}`, null, true);
+    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${echidnaJson.name}`, true);
 
     /**
      * 4) parse command line arguments (only double-dash arguments are taken into account)
@@ -176,7 +176,7 @@ file "${_requireFile}" was not found`);
      *
      * e.g.: '#892 solved issues [run:build]'
      */
-    const commitMessage = utils.exec('git log -1 --pretty=%B', null, true);
+    const commitMessage = utils.exec('git log -1 --pretty=%B', true);
     // flags are words prefixed with `run:` wrapped in square brackets, e.g.: '[run:build]'
     const commitFlags = commitMessage.match(/\[run:\w*]/g) || [];
     _.forEach(commitFlags, s => {
@@ -193,7 +193,7 @@ file "${_requireFile}" was not found`);
       /**
        * 7) delete the workspace directory
        */
-      utils.exec(`rm -rf ${workspaceDir}`, null, true);
+      utils.exec(`rm -rf ${workspaceDir}`, true);
     });
   }
 }
