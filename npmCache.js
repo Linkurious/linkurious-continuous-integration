@@ -47,7 +47,7 @@ class npmCache {
 
     // download node globally
     utils.exec(`n ${nodeVersion} -d`, true);
-    const nodePath = utils.exec(`n bin ${nodeVersion}`, true);
+    const nodePath = utils.exec(`n bin ${nodeVersion}`, true).split('\n')[0];
     utils.exec(`cp -al ${nodePath} ${this.binDir}`, true);
   }
 
