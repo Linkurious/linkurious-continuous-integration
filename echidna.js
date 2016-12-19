@@ -43,6 +43,8 @@ file "${_requireFile}" was not found`);
   }
 
   /**
+   * Run `script` on the current project.
+   *
    * @param {string} script     script to execute
    * @param {function} callback cb
    * @returns {undefined}
@@ -76,8 +78,8 @@ file "${_requireFile}" was not found`);
   }
 
   /**
-   * @param {string} repository Github style repository name (e.g: "Linkurious/linkurious-server")
-   * @returns {Echidna} echidna object for the repository
+   * @param {string} repository Github style name (e.g: "Linkurious/linkurious-server")
+   * @returns {Echidna} echidna object of the newly cloned repository
    */
   get(repository) {
     const projectName = repository.split('/')[1];
@@ -109,6 +111,9 @@ file "${_requireFile}" was not found`);
     return new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
   }
 
+  /**
+   * @return {npmCache} npmCache of the current project
+   */
   get npm() {
     if (!this._npm) {
       this._npm = new npmCache(
@@ -120,10 +125,9 @@ file "${_requireFile}" was not found`);
     return this._npm;
   }
 
-  get bower() {
-    return 'TODO';
-  }
-
+  /**
+   * @return {object} utils collection of function
+   */
   get utils() {
     return utils;
   }

@@ -3,12 +3,8 @@
  */
 'use strict';
 
-const crypto = require('crypto');
-const fs = require('fs');
-
-const exec = require('./utils').exec;
-const execRetry = require('./utils').execRetry;
-const changeDir = require('./utils').changeDir;
+// locals
+const utils = require('./utils');
 
 const ciDir = process.env['CI_DIRECTORY'];
 
@@ -16,7 +12,7 @@ class npmCache {
   /**
    * @param {string} packageJsonFile path to the package.json file
    * @param {string} binDir          desired path for binaries
-   * @param {string} nodeModulesDir  destination path of npm.install
+   * @param {string} nodeModulesDir  destination path of npm install
    */
   constructor(packageJsonFile, binDir, nodeModulesDir) {
     this.packageJsonData = require(packageJsonFile);
@@ -24,16 +20,44 @@ class npmCache {
     this.nodeModulesDir = nodeModulesDir;
   }
 
+  /**
+   * @return {string | undefined} node version if defined
+   */
   get nodeVersion() {
     if (this.packageJsonData && this.packageJsonData.engines) {
       return this.packageJsonData.engines.node;
     }
   }
 
+  /**
+   * @return {string | undefined} npm version if defined
+   */
   get npmVersion() {
     if (this.packageJsonData && this.packageJsonData.engines) {
       return this.packageJsonData.engines.npm;
     }
+  }
+
+  /**
+   * Add in `this.binDir` a node binary of version `nodeVersion`.
+   * @param {string} [nodeVersion=this.nodeVersion] node version to use
+   */
+  setNodeVersion(nodeVersion) {
+    nodeVersion = nodeVersion || this.nodeVersion;
+
+    // download node globally
+    utils.exec(`n ${nodeVersion} -d`, true);
+    const nodePath = utils.exec(`n bin ${nodeVersion}`, true);
+    utils.exec(`cp -al ${nodePath} ${this.binDir}`);
+  }
+
+  /**
+   * Add in `this.binDir` a npm binary of version `npmVersion`.
+   * @param {string} [npmVersion=this.npmVersion] npm version to use
+   */
+  setNpmVersion(npmVersion) {
+    npmVersion = npmVersion || this.npmVersion;
+
   }
 }
 
