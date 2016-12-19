@@ -113,7 +113,7 @@ file "${_requireFile}" was not found`);
   }
 
   /**
-   * @return {npmCache} npmCache of the current project
+   * @returns {npmCache} npmCache of the current project
    */
   get npm() {
     if (!this._npm) {
@@ -127,7 +127,7 @@ file "${_requireFile}" was not found`);
   }
 
   /**
-   * @return {object} utils collection of function
+   * @returns {object} utils collection of function
    */
   get utils() {
     return utils;
@@ -135,7 +135,7 @@ file "${_requireFile}" was not found`);
 
   /**
    * @param {string} path where to look for the echidna.json file
-   * @return {object | undefined} object representation of the echidna.json file
+   * @returns {object | undefined} object representation of the echidna.json file
    */
   static validateEchidnaJson(path) {
     const file = path + '/echidna.json';

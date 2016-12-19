@@ -21,7 +21,7 @@ class npmCache {
   }
 
   /**
-   * @return {string | undefined} node version if defined
+   * @returns {string | undefined} node version if defined
    */
   get nodeVersion() {
     if (this.packageJsonData && this.packageJsonData.engines) {
@@ -30,7 +30,7 @@ class npmCache {
   }
 
   /**
-   * @return {string | undefined} npm version if defined
+   * @returns {string | undefined} npm version if defined
    */
   get npmVersion() {
     if (this.packageJsonData && this.packageJsonData.engines) {
@@ -40,7 +40,9 @@ class npmCache {
 
   /**
    * Add in `this.binDir` a node binary of version `nodeVersion`.
+   *
    * @param {string} [nodeVersion=this.nodeVersion] node version to use
+   * @returns {undefined}
    */
   setNodeVersion(nodeVersion) {
     nodeVersion = nodeVersion || this.nodeVersion;
@@ -48,16 +50,20 @@ class npmCache {
     // download node globally
     utils.exec(`n ${nodeVersion} -d`, true);
     const nodePath = utils.exec(`n bin ${nodeVersion}`, true).split('\n')[0];
-    utils.exec(`cp -al ${nodePath} ${this.binDir}`, true);
+    utils.exec(`ln -s ${nodePath} ${this.binDir}`, true);
   }
 
   /**
    * Add in `this.binDir` a npm binary of version `npmVersion`.
+   *
    * @param {string} [npmVersion=this.npmVersion] npm version to use
+   * @returns {undefined}
    */
   setNpmVersion(npmVersion) {
     npmVersion = npmVersion || this.npmVersion;
 
+    utils.exec(`npm install npm@${npmVersion}`);
+    utils.exec(`ln -s ./node_modules/.bin/npm ${this.binDir}`, true);
   }
 }
 
