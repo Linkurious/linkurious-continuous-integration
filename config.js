@@ -14,6 +14,8 @@ module.exports = {
   smtpUser: '<user>',
   smtpPass: '<pass>',
   smtpFrom: '<from>',
+  bodyParserLimit: '5mb',
+  concurrentJobs: 10,
   scpDestDir: '<destDir>',
   scpPort: '<port>',
   buildScpDestDir: '<buildDestDir>',

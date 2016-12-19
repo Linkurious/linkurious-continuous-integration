@@ -31,7 +31,8 @@ rl.question('GitHub Client Secret: ', clientSecret => {
         'SMTP_USER': config.smtpUser,
         'SMTP_PASS': config.smtpPass,
         'SMTP_FROM': config.smtpFrom,
-        'BODY_PARSER_LIMIT': '5mb'
+        'BODY_PARSER_LIMIT': config.bodyParserLimit,
+        'CONCURRENT_JOBS': config.concurrentJobs
       }, process.env),
     cwd: process.cwd() + '/strider',
     shell: '/bin/bash'});
