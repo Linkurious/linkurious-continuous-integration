@@ -75,7 +75,7 @@ var getSubDirectories = srcDir => {
 };
 
 /**
- * Execute a function under another directory.
+ * Execute a synchronous function under another directory.
  *
  * @param {string} dir    directory
  * @param {function} func function to execute under `dir`
@@ -110,10 +110,10 @@ var deleteNullPropertiesDeep = obj => {
  * @returns {string} name of the current branch
  */
 var getCurrentBranch = () => {
-  var currentBranch = exec('git rev-parse --abbrev-ref HEAD', {stdio: null}).toString('utf8');
+  var currentBranch = exec('git rev-parse --abbrev-ref HEAD', null, true);
 
   if (currentBranch.indexOf('HEAD') !== -1) { // we are in a detached head
-    const gitBranchOutput = exec('git branch', {stdio: null}).toString('utf8').split('\n');
+    const gitBranchOutput = exec('git branch', null, true).split('\n');
     if (gitBranchOutput.length !== 3) {
       console.log('\x1b[31mCritical error: impossible to detect branch name among these:\x1b[0m');
       exec('git branch');

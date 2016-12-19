@@ -21,6 +21,8 @@ class Echidna {
   constructor(name, scripts, workspaceDir) {
     this.name = name;
     this.workspaceDir = workspaceDir;
+    this.repositoryDir = workspaceDir + '/' + name;
+
     this.scripts = _.mapValues(scripts, (file, script) => {
       let _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
       try {
@@ -29,6 +31,10 @@ class Echidna {
         console.log(`WARNING: unable to add script "${script}" for project "${name}" because \
 file "${_requireFile}" was not found`);
       }
+    });
+
+    utils.changeDir(this.repositoryDir, () => {
+      this.branch = utils.getCurrentBranch();
     });
   }
 
@@ -42,7 +48,7 @@ file "${_requireFile}" was not found`);
     // save cwd
     let currentWorkingDirectory = process.cwd();
     // set the repository directory as cwd
-    process.chdir(this.workspaceDir + '/' + this.name);
+    process.chdir(this.repositoryDir);
     if (func) {
       func(this, () => {
         // restore previous cwd
@@ -60,7 +66,8 @@ file "${_requireFile}" was not found`);
    * @returns {Echidna} echidna object for the repository
    */
   get(repository) {
-    return 'TODO';
+    utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, null, true);
+    process.chdir(this.workspaceDir + '/_tmp');
   }
 
   get npm() {
