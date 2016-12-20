@@ -33,10 +33,10 @@ class Echidna {
     utils.exec(`mkdir -p ${this.binDir}`, true);
 
     // install dependencies (necessary for the scripts)
-    if (this.npm.hasPackageJson()) {
+    /*if (this.npm.hasPackageJson()) {
       this.npm.install();
     }
-
+*/
     this.scripts = _.mapValues(scripts, (file, script) => {
       const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
       try {
