@@ -27,7 +27,9 @@ class Echidna {
     this.scripts = _.mapValues(scripts, (file, script) => {
       const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
       try {
-        return require(_requireFile);
+        return utils.changeDir(this.repositoryDir, () => {
+          return require(_requireFile);
+        });
       } catch(e) {
         throw new Error(`Unable to add script "${script}" for project "${name}" because \
 file "${_requireFile}" was not found`);

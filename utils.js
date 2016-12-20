@@ -45,11 +45,11 @@ const execAsync = (cmd, options) => {
 /**
  * Execute `nRetry` times `cmd` synchronously.
  *
- * @param {string} cmd       command to execute
- * @param {number} nRetry    number of retries before throwing an error
- * @param {boolean} [silent] whether to not print output to stdout/err but return it instead
- * @param {object} [options] options to pass to child_process.execSync
- * @returns {Buffer | String}  stdout from the command
+ * @param {string} cmd        command to execute
+ * @param {number} nRetry     number of retries before throwing an error
+ * @param {boolean} [silent]  whether to not print output to stdout/err but return it instead
+ * @param {object} [options]  options to pass to child_process.execSync
+ * @returns {Buffer | String} stdout from the command
  */
 const execRetry = (cmd, nRetry, silent, options) => {
   if (nRetry <= 0) {
@@ -80,13 +80,14 @@ const getSubDirectories = srcDir => {
  *
  * @param {string} dir    directory
  * @param {function} func function to execute under `dir`
- * @returns {undefined}
+ * @returns {*}           whatever was retunred by `func`
  */
 const changeDir = (dir, func) => {
   const currentDir = process.cwd();
   process.chdir(dir);
-  func();
+  const res = func();
   process.chdir(currentDir);
+  return res;
 };
 
 /**
