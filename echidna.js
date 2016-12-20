@@ -41,6 +41,11 @@ file "${_requireFile}" was not found`);
     // directory containing desired node and npm (etc.) binaries
     this.binDir = this.repositoryDir + '/_bin';
     utils.exec(`mkdir -p ${this.binDir}`, true);
+
+    // install dependencies
+    if (this.npm.hasPackageJson()) {
+      this.npm.install();
+    }
   }
 
   /**

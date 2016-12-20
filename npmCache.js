@@ -21,9 +21,20 @@ class npmCache {
    */
   constructor(packageJsonFile, binDir, nodeModulesDir) {
     this.packageJsonFile = packageJsonFile;
-    this.packageJsonData = require(packageJsonFile);
+    try {
+      this.packageJsonData = require(packageJsonFile);
+    } catch(e) {
+      // knowing if `this.packageJsonData` is defined is enough
+    }
     this.binDir = binDir;
     this.nodeModulesDir = nodeModulesDir;
+  }
+
+  /**
+   * @return {boolean} whether it has or not a package.json file
+   */
+  hasPackageJson() {
+    return this.packageJsonData !== undefined;
   }
 
   /**
@@ -92,6 +103,10 @@ class npmCache {
    */
   install(options) {
     options = options || {};
+
+    if (!this.hasPackageJson()) {
+      return;
+    }
 
     // install desired npm version
     this.setNodeVersion();
