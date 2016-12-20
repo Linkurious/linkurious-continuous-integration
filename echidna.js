@@ -33,21 +33,15 @@ class Echidna {
     utils.exec(`mkdir -p ${this.binDir}`, true);
 
     // install dependencies (necessary for the scripts)
-    /*if (this.npm.hasPackageJson()) {
+    if (this.npm.hasPackageJson()) {
       this.npm.install();
     }
-*/
-    this.scripts = _.mapValues(scripts, (file, script) => {
+
+    this.scripts = _.mapValues(scripts, file => {
       const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
-      try {
-        return utils.changeDir(this.repositoryDir, () => {
-          return require(_requireFile);
-        });
-      } catch(e) {
-        console.log(e);
-        throw new Error(`Unable to add script "${script}" for project "${name}" because \
-file "${_requireFile}" was not found`);
-      }
+      return utils.changeDir(this.repositoryDir, () => {
+        return require(_requireFile);
+      });
     });
   }
 
