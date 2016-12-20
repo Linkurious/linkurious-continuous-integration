@@ -24,18 +24,6 @@ class Echidna {
     this.workspaceDir = workspaceDir;
     this.repositoryDir = workspaceDir + '/' + name;
 
-    this.scripts = _.mapValues(scripts, (file, script) => {
-      const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
-      try {
-        return utils.changeDir(this.repositoryDir, () => {
-          return require(_requireFile);
-        });
-      } catch(e) {
-        throw new Error(`Unable to add script "${script}" for project "${name}" because \
-file "${_requireFile}" was not found`);
-      }
-    });
-
     utils.changeDir(this.repositoryDir, () => {
       this.branch = utils.getCurrentBranch();
     });
@@ -44,10 +32,23 @@ file "${_requireFile}" was not found`);
     this.binDir = this.repositoryDir + '/_bin';
     utils.exec(`mkdir -p ${this.binDir}`, true);
 
-    // install dependencies
+    // install dependencies (necessary for the scripts)
     if (this.npm.hasPackageJson()) {
       this.npm.install();
     }
+
+    this.scripts = _.mapValues(scripts, (file, script) => {
+      const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
+      try {
+        return utils.changeDir(this.repositoryDir, () => {
+          return require(_requireFile);
+        });
+      } catch(e) {
+        console.log(e);
+        throw new Error(`Unable to add script "${script}" for project "${name}" because \
+file "${_requireFile}" was not found`);
+      }
+    });
   }
 
   /**
