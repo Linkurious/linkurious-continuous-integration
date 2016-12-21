@@ -74,7 +74,7 @@ class SemaphoreMap {
     let promises = [];
 
     for (let key of this._acquiredSemaphores.keys()) {
-      let count = this._acquiredSemaphores(key);
+      let count = this._acquiredSemaphores.get(key);
       if (count > 0) {
         promises.push(this.release(key, count));
       }
