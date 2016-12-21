@@ -51,13 +51,11 @@ class Echidna {
     this.binDir = this.repositoryDir + '/_bin';
     utils.exec(`mkdir -p ${this.binDir}`, true);
 
-    return Promise.resolve(() => {
+    return Promise.resolve().then(() => {
       // install dependencies (necessary for the scripts)
 
-      console.log('calling init on echidna 2');
       if (this.npm.hasPackageJson()) {
 
-        console.log('calling init on echidna 3');
         return this.npm.install();
       }
     }).then(() => {
