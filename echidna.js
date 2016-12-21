@@ -96,7 +96,7 @@ class Echidna {
   get(repository) {
     const projectName = repository.split('/')[1];
 
-    return semaphoreMap.get('_get:' + repository, 1).then(semaphore => {
+    return semaphoreMap.get('_get:' + repository, 0).then(semaphore => {
       return semaphore.acquire().then(() => {
 
         // if the project wasn't already cloned
