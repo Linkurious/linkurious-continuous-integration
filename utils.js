@@ -133,5 +133,21 @@ const getCurrentBranch = () => {
   return currentBranch.replace(/[\s]+/g, '');
 };
 
+/**
+ * Return the name of the repository in the current working directory.
+ *
+ * @returns {string} name of the repository
+ */
+const getRepositoryName = () => {
+  let remoteOriginUrl = exec('git config --get remote.origin.url', true);
+
+  if (remoteOriginUrl.indexOf('https://github.com/') === 0 &&
+    remoteOriginUrl.lastIndexOf('.git') === remoteOriginUrl.length - 4) {
+    return remoteOriginUrl.slice(19, remoteOriginUrl.length - 4);
+  } else {
+    throw new Error(remoteOriginUrl + ' is not a valid GitHub repository URL');
+  }
+};
+
 module.exports = {exec, execAsync, execRetry, getSubDirectories, changeDir,
-  deleteNullPropertiesDeep, getCurrentBranch};
+  deleteNullPropertiesDeep, getCurrentBranch, getRepositoryName};

@@ -18,9 +18,9 @@ class npmCache {
    * @param {string} packageJsonFile    path to the package.json file
    * @param {string} binDir             desired path for binaries
    * @param {string} nodeModulesDir     destination path of npm install
-   * @param {SemaphoreMap} semaphoreMap semaphore collection
+   * @param {SemaphoreMap} semaphores   semaphore collection
    */
-  constructor(packageJsonFile, binDir, nodeModulesDir, semaphoreMap) {
+  constructor(packageJsonFile, binDir, nodeModulesDir, semaphores) {
     this.packageJsonFile = packageJsonFile;
     try {
       this.packageJsonData = require(packageJsonFile);
@@ -30,7 +30,7 @@ class npmCache {
     this.binDir = binDir;
     this.nodeModulesDir = nodeModulesDir;
 
-    this.semaphoreMap = semaphoreMap;
+    this.semaphores = semaphores;
   }
 
   /**
@@ -107,7 +107,7 @@ class npmCache {
   install(options) {
     // Note: technically we could have a semaphore per bucket instead of a global one,
     // is it really necessary though?
-    return this.semaphoreMap.get('_npm', 1).then(semaphore => {
+    return this.semaphores.get('_npm', 1).then(semaphore => {
       return semaphore.acquire().then(() => {
         options = options || {};
 

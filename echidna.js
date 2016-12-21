@@ -94,33 +94,43 @@ class Echidna {
   get(repository) {
     const projectName = repository.split('/')[1];
 
-    utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, true);
+    return semaphoreMap.get('_get:' + repository, 1).then(semaphore => {
+      return semaphore.acquire().then(() => {
 
-    // decide whether to match the branch or to use 'develop'
-    const branchToUse = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
-      this.branch + '" | wc -l', true).indexOf('1') === 0
-      ? this.branch
-      : 'develop';
+        // if the project wasn't already cloned
+        if (utils.getSubDirectories(this.repositoryDir).indexOf(projectName) === -1) {
+          utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, true);
 
-    // clone the repository in a temporary directory
-    utils.changeDir(this.workspaceDir + '/_tmp', () => {
-      utils.exec(`git clone git@github.com:${repository}.git --branch "` + branchToUse +
-        '" --single-branch', true);
+          // decide whether to match the branch or to use 'develop'
+          const branch = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
+            this.branch + '" | wc -l', true).indexOf('1') === 0
+            ? this.branch
+            : 'develop';
+
+          // clone the repository in a temporary directory
+          utils.changeDir(this.workspaceDir + '/_tmp', () => {
+            utils.exec(`git clone git@github.com:${repository}.git --branch "` + branch +
+              '" --single-branch', true);
+          });
+          const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
+
+          // copy the repository in the workspace
+          utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${projectName}`, true);
+
+          // remove the temporary directory
+          utils.exec('rm -rf _tmp', true);
+        }
+      }).finally(() => {
+        semaphore.release();
+      });
+    }).then(() => {
+      // read the echidna.json file
+      const echidnaJson = Echidna.validateEchidnaJson(this.repositoryDir + '/' + projectName);
+
+      const echidna = new Echidna(projectName, echidnaJson.scripts, this.workspaceDir);
+
+      return echidna.init().return(echidna);
     });
-    const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
-
-    // read the echidna.json file
-    const echidnaJson = Echidna.validateEchidnaJson(tmpRepositoryDir);
-
-    // copy the repository in the workspace
-    utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${echidnaJson.name}`, true);
-
-    // remove the temporary directory
-    utils.exec('rm -rf _tmp', true);
-
-    const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
-
-    echidna.init().return(echidna);
   }
 
   /**
@@ -165,14 +175,6 @@ class Echidna {
       throw new Error(`"${file}" was not found`);
     }
 
-    if (echidnaJson.name === undefined || echidnaJson.name === null) {
-      throw new Error(`"${file}" requires a "name" field`);
-    }
-
-    if (!(echidnaJson.name.length > 0)) {
-      throw new Error(`"name" field of "${file}" has to be non empty`);
-    }
-
     if (echidnaJson.scripts === undefined || echidnaJson.scripts === null) {
       throw new Error(`"${file}" requires a "scripts" field`);
     }
@@ -190,18 +192,23 @@ class Echidna {
     const echidnaJson = Echidna.validateEchidnaJson(rootRepositoryDir);
 
     /**
-     * 2) create a workspace directory
+     * 2) get Github style repository name
+     */
+    const repositoryName = utils.getRepositoryName();
+
+    /**
+     * 3) create a workspace directory
      */
     const workspaceDir = ciDir + '/workspaces/' + shortid.generate();
     utils.exec(`mkdir -p ${workspaceDir}`, true);
 
     /**
-     * 3) copy the repository in the workspace
+     * 4) copy the repository in the workspace
      */
-    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${echidnaJson.name}`, true);
+    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${repositoryName}`, true);
 
     /**
-     * 4) parse command line arguments (only double-dash arguments are taken into account)
+     * 5) parse command line arguments (only double-dash arguments are taken into account)
      *
      * e.g.: ./echidna --build
      */
@@ -213,7 +220,7 @@ class Echidna {
     });
 
     /**
-     * 5) parse commit message arguments
+     * 6) parse commit message arguments
      *
      * e.g.: '#892 solved issues [run:build]'
      */
@@ -225,9 +232,9 @@ class Echidna {
     });
 
     /**
-     * 6) we first execute scripts coming from cla, then scripts coming from commits
+     * 7) we first execute scripts coming from cla, then scripts coming from commits
      */
-    const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, workspaceDir);
+    const echidna = new Echidna(repositoryName, echidnaJson.scripts, workspaceDir);
 
     return Promise.resolve().then(() => {
       return semaphoreMap.init();
@@ -237,7 +244,7 @@ class Echidna {
       return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1});
     }).finally(() => {
       /**
-       * 7) delete the workspace directory
+       * 8) delete the workspace directory
        */
       utils.exec(`rm -rf ${workspaceDir}`, true);
     });
