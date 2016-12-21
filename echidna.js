@@ -5,8 +5,6 @@
  */
 'use strict';
 
-const fs = require('fs');
-
 // external libs
 const Promise = require('bluebird');
 const _ = require('lodash');
@@ -266,7 +264,6 @@ class Echidna {
     // register a SIGINT/SIGTERM handler
     const exit = err => {
       if (err) {
-        fs.writeFileSync(ciDir + '/errfile', JSON.stringify(err));
         console.log('\x1b[31m' + err + '\x1b[0m');
       }
 
@@ -280,8 +277,8 @@ class Echidna {
         }
       });
     };
-    process.on('SIGINT', exit.bind(null, 'cancelled SIGINT!'));
-    process.on('SIGTERM', exit.bind(null, 'cancelled SIGTERM!'));
+    process.on('SIGINT', exit);
+    process.on('SIGTERM', exit);
 
     return Promise.resolve().then(() => {
       return semaphoreMap.init();

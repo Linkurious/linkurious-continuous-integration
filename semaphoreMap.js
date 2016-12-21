@@ -101,6 +101,9 @@ class SemaphoreMap {
       if (semaphores[semaphoreName] === undefined || semaphores[semaphoreName] === null) {
         // initialize the new semaphore
         semaphores[semaphoreName] = size;
+      } else {
+        // the semaphore value is set to the minimum among current value and desired size
+        semaphores[semaphoreName] = Math.min(semaphores[semaphoreName], size);
       }
 
       if (!this.queues.has(semaphoreName)) {
