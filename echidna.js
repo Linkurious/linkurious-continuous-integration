@@ -22,11 +22,21 @@ const rootRepositoryDir = process.env.PWD;
 const semaphoreMap = new SemaphoreMap('./semaphoreMap.json');
 
 class Echidna {
-  constructor(name, scriptPaths, workspaceDir) {
+  /**
+   *
+   * @param {string} name                    project name (e.g.: 'linkurious-server'), it has to match the GitHub repository name
+   * @param {object} scriptPaths             paths of script indexed by script name
+   * @param {string} workspaceDir            path to the workspace
+   * @param {object} [options]               options
+   * @param {number} [options.concurrency=1] number of same scripts that can run concurrently for this project
+   */
+  constructor(name, scriptPaths, workspaceDir, options) {
+    options = _.defaults(options, {concurrency: 1});
     this.name = name;
     this.workspaceDir = workspaceDir;
     this.repositoryDir = workspaceDir + '/' + name;
     this.scriptPaths = scriptPaths;
+    this.concurrency = options.concurrency;
   }
 
   /**
@@ -79,10 +89,19 @@ class Echidna {
     if (func) {
       console.log(`Running script \x1b[32m${script}\x1b[0m for project ` +
           `\x1b[32m${this.name}\x1b[0m, branch \x1b[32m${this.branch}\x1b[0m`);
-      return func(this).then(() => {
-        // restore previous cwd and PATH
-        process.chdir(currentWorkingDirectory);
-        process.env.PATH = pathEnv;
+      // the semaphore name includes both the project name and the script name
+      const semaphoreName = '_run:' + this.name + '_' + script;
+
+      return semaphoreMap.get(semaphoreName, this.concurrency).then(semaphore => {
+        return semaphore.acquire().then(() => {
+          return func(this).then(() => {
+            // restore previous cwd and PATH
+            process.chdir(currentWorkingDirectory);
+            process.env.PATH = pathEnv;
+          });
+        }).finally(() => {
+          semaphore.release();
+        });
       });
     } else {
       return Promise.reject(new Error(script + 'is not defined in echidna.json'));
@@ -129,7 +148,8 @@ class Echidna {
       // read the echidna.json file
       const echidnaJson = Echidna.validateEchidnaJson(this.workspaceDir + '/' + projectName);
 
-      const echidna = new Echidna(projectName, echidnaJson.scripts, this.workspaceDir);
+      const echidna = new Echidna(projectName, echidnaJson.scripts, this.workspaceDir,
+        {concurrency: echidnaJson.concurrency});
 
       return echidna.init().return(echidna);
     });
@@ -185,7 +205,7 @@ class Echidna {
   }
 
   /**
-   * @returns {undefined}
+   * @returns {Promise} promise
    */
   static main() {
     /**
@@ -236,7 +256,8 @@ class Echidna {
     /**
      * 7) we first execute scripts coming from cla, then scripts coming from commits
      */
-    const echidna = new Echidna(projectName, echidnaJson.scripts, workspaceDir);
+    const echidna = new Echidna(projectName, echidnaJson.scripts, workspaceDir,
+      {concurrency: echidnaJson.concurrency});
 
     return Promise.resolve().then(() => {
       return semaphoreMap.init();
