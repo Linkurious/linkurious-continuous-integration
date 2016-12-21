@@ -234,11 +234,11 @@ class SemaphoreMap {
   _readSemFile(func) {
     return this._underLock(() => {
       let filecontent = fs.readFileSync(this.semFile);
-      console.log(this.semFile);
-      console.log(filecontent);
+      console.log("old: " + filecontent.toString('utf-8'));
       let semaphores = JSON.parse(filecontent);
       let newSemaphores = func(_.clone(semaphores));
       if (!_.isEqual(semaphores, newSemaphores)) {
+        console.log("new: " + newSemaphores);
         fs.writeFileSync(this.semFile, JSON.stringify(newSemaphores));
       }
     });
