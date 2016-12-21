@@ -8,7 +8,6 @@
 
 const path = require('path');
 const fs = require('fs');
-const constants = require('constants');
 
 // external libs
 const _ = require('lodash');
@@ -240,7 +239,7 @@ class SemaphoreMap {
       let newSemaphores = func(_.clone(semaphores));
       if (!_.isEqual(semaphores, newSemaphores)) {
         console.log("new: " + JSON.stringify(newSemaphores));
-        fs.writeFileSync(this.semFile, JSON.stringify(newSemaphores), {flag: constants.O_WRONLY | constants.O_DIRECT | constants.O_SYNC});
+        fs.writeFileSync(this.semFile, JSON.stringify(newSemaphores), {flag: fs.constants.O_WRONLY | fs.constants.O_DIRECT | fs.constants.O_SYNC});
       }
     });
   }
