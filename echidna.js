@@ -19,7 +19,7 @@ const SemaphoreMap = require('./semaphoreMap');
 const ciDir = process.env['CI_DIRECTORY'];
 const rootRepositoryDir = process.env.PWD;
 
-const semaphoreMap = new SemaphoreMap('./semaphoreMap.json');
+const semaphoreMap = new SemaphoreMap(ciDir + '/semaphoreMap.json');
 
 class Echidna {
   /**
