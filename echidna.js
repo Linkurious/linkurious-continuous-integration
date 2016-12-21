@@ -8,7 +8,6 @@
 // external libs
 const _ = require('lodash');
 const shortid = require('shortid');
-const async = require('async');
 
 // locals
 const utils = require('./utils');
@@ -49,10 +48,9 @@ class Echidna {
    * Run `script` on the current project.
    *
    * @param {string} script     script to execute
-   * @param {function} callback cb
-   * @returns {undefined}
+   * @returns {Promise} promise
    */
-  run(script, callback) {
+  run(script) {
     const func = this.scripts[script];
 
     // save cwd
@@ -68,15 +66,13 @@ class Echidna {
     if (func) {
       console.log(`Running script \x1b[32m${script}\x1b[0m for project ` +
           `\x1b[32m${this.name}\x1b[0m, branch \x1b[32m${this.branch}\x1b[0m`);
-      func(this, err => {
+      return func(this).then(() => {
         // restore previous cwd and PATH
         process.chdir(currentWorkingDirectory);
         process.env.PATH = pathEnv;
-        callback(err);
       });
     } else {
-      console.log(`skipping script "${script}" because it's not defined in echidna.json`);
-      callback(1);
+      return Promise.reject(new Error(script + 'is not defined in echidna.json'));
     }
   }
 
@@ -133,6 +129,13 @@ class Echidna {
    */
   get utils() {
     return utils;
+  }
+
+  /**
+   * @returns {Semaphore} the collection of semaphores
+   */
+  get semaphores() {
+    return;
   }
 
   /**
@@ -211,9 +214,8 @@ class Echidna {
      * 6) we first execute scripts coming from cla, then scripts coming from commits
      */
     const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, workspaceDir);
-    const functionsToRun = Array.from(scriptsToRun).map(s => echidna.run.bind(echidna, s));
 
-    async.series(functionsToRun, () => {
+    Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1}).finally(() => {
       /**
        * 7) delete the workspace directory
        */

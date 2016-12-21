@@ -80,7 +80,7 @@ const getSubDirectories = srcDir => {
  *
  * @param {string} dir    directory
  * @param {function} func function to execute under `dir`
- * @returns {*}           whatever was retunred by `func`
+ * @returns {*}           whatever was returned by `func`
  */
 const changeDir = (dir, func) => {
   const currentDir = process.cwd();
