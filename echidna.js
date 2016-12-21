@@ -271,6 +271,8 @@ class Echidna {
       // close semaphores
       return semaphoreMap.close().then(() => {
         if (err) {
+          console.log('test');
+          console.log(err);
           process.exit(1);
         }
       });
