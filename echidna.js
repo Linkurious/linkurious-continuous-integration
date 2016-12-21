@@ -53,7 +53,11 @@ class Echidna {
 
     return Promise.resolve(() => {
       // install dependencies (necessary for the scripts)
+
+      console.log('calling init on echidna 2');
       if (this.npm.hasPackageJson()) {
+
+        console.log('calling init on echidna 3');
         return this.npm.install();
       }
     }).then(() => {
@@ -281,6 +285,7 @@ class Echidna {
     return Promise.resolve().then(() => {
       return semaphoreMap.init();
     }).then(() => {
+      console.log('calling init on echidna');
       return echidna.init();
     }).then(() => {
       return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1})
