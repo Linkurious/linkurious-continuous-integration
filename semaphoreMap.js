@@ -238,7 +238,7 @@ class SemaphoreMap {
       let semaphores = JSON.parse(filecontent);
       let newSemaphores = func(_.clone(semaphores));
       if (!_.isEqual(semaphores, newSemaphores)) {
-        console.log("new: " + newSemaphores);
+        console.log("new: " + JSON.stringify(newSemaphores));
         fs.writeFileSync(this.semFile, JSON.stringify(newSemaphores));
       }
     });
