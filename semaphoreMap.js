@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const path = require('path');
 const fs = require('fs');
 
 // external libs
@@ -34,8 +35,8 @@ class SemaphoreMap {
    * @param {string} semFile path to the json file
    */
   constructor(semFile) {
-    this.semFile = semFile;
-    this.lockFile = semFile + '.lock';
+    this.semFile = path.resolve(semFile);
+    this.lockFile = this.semFile + '.lock';
 
     // we have 1 queue for each semaphore
     this.queues = new Map();
