@@ -275,8 +275,8 @@ class Echidna {
         }
       });
     };
-    process.on('SIGINT', exit);
-    process.on('SIGTERM', exit);
+    process.on('SIGINT', exit.bind(null, 'cancelled!'));
+    process.on('SIGTERM', exit.bind(null, 'cancelled!'));
 
     return Promise.resolve().then(() => {
       return semaphoreMap.init();
