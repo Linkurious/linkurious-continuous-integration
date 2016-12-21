@@ -127,7 +127,7 @@ class Echidna {
       });
     }).then(() => {
       // read the echidna.json file
-      const echidnaJson = Echidna.validateEchidnaJson(this.repositoryDir + '/' + projectName);
+      const echidnaJson = Echidna.validateEchidnaJson(this.workspaceDir + '/' + projectName);
 
       const echidna = new Echidna(projectName, echidnaJson.scripts, this.workspaceDir);
 
