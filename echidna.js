@@ -250,6 +250,9 @@ class Echidna {
        */
       utils.exec(`rm -rf ${workspaceDir}`, true);
       semaphoreMap.close();
+    }).catch(err => {
+      console.log('\x1b[31m' + err + '\x1b[0m');
+      process.exit(1);
     });
   }
 }
