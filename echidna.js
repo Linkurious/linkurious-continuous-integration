@@ -13,11 +13,13 @@ const shortid = require('shortid');
 // locals
 const utils = require('./utils');
 const npmCache = require('./npmCache');
-const semaphoreMap = (new require('./semaphoreMap'))('./semaphoreMap.json');
+const SemaphoreMap = require('./semaphoreMap');
 
 // constants
 const ciDir = process.env['CI_DIRECTORY'];
 const rootRepositoryDir = process.env.PWD;
+
+const semaphoreMap = new SemaphoreMap('./semaphoreMap.json');
 
 class Echidna {
   constructor(name, scriptPaths, workspaceDir) {
