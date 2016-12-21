@@ -19,7 +19,14 @@ const LOCK_FILE_OPTS = {
   stale: 1000 // 1 sec, timeout after which the lockfile is considered freed
 };
 
-class Semaphore {
+/**
+ * Semaphore
+ * @typedef  {Object} Semaphore
+ * @property {function} acquire
+ * @property {function} release
+ */
+
+class SemaphoreMap {
   /**
    * Create a collection of semaphores on file. The file is going to be a json file with a property
    * for each semaphore.
@@ -55,7 +62,7 @@ class Semaphore {
    * Create the semaphore if it doesn't exist.
    *
    * @param {string} semaphoreName key of the semaphore
-   * @param {string} size          initial value for them semaphore
+   * @param {number} size          initial value for them semaphore
    * @returns {Promise} promise
    */
   create(semaphoreName, size) {
@@ -113,6 +120,23 @@ class Semaphore {
   }
 
   /**
+   * Create the semaphore if it doesn't exist.
+   * Return an object with 2 functions,`acquire` and `release`, that don't take any argument.
+   *
+   * @param {string} semaphoreName key of the semaphore
+   * @param {number} size          initial value for them semaphore
+   * @returns {Promise.<Semaphore>} promise
+   */
+  get(semaphoreName, size) {
+    return this.create(semaphoreName, size).then(() => {
+      return {
+        acquire: this.acquire.bind(this, semaphoreName),
+        release: this.release.bind(this, semaphoreName)
+      };
+    });
+  }
+
+  /**
    * Execute a synchronous function under file lock.
    *
    * @param {function} func function
@@ -164,4 +188,4 @@ class Semaphore {
   }
 }
 
-module.exports = Semaphore;
+module.exports = SemaphoreMap;

@@ -13,17 +13,24 @@ const shortid = require('shortid');
 // locals
 const utils = require('./utils');
 const npmCache = require('./npmCache');
+const semaphoreMap = new require('./semaphoreMap')('./semaphoreMap.json');
 
 // constants
 const ciDir = process.env['CI_DIRECTORY'];
 const rootRepositoryDir = process.env.PWD;
 
 class Echidna {
-  constructor(name, scripts, workspaceDir) {
+  constructor(name, scriptPaths, workspaceDir) {
     this.name = name;
     this.workspaceDir = workspaceDir;
     this.repositoryDir = workspaceDir + '/' + name;
+    this.scriptPaths = scriptPaths;
+  }
 
+  /**
+   * @returns {Promise} promise
+   */
+  init() {
     utils.changeDir(this.repositoryDir, () => {
       this.branch = utils.getCurrentBranch();
     });
@@ -32,15 +39,18 @@ class Echidna {
     this.binDir = this.repositoryDir + '/_bin';
     utils.exec(`mkdir -p ${this.binDir}`, true);
 
-    // install dependencies (necessary for the scripts)
-    if (this.npm.hasPackageJson()) {
-      this.npm.install();
-    }
-
-    this.scripts = _.mapValues(scripts, file => {
-      const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
-      return utils.changeDir(this.repositoryDir, () => {
-        return require(_requireFile);
+    return Promise.resolve(() => {
+      // install dependencies (necessary for the scripts)
+      if (this.npm.hasPackageJson()) {
+        return this.npm.install();
+      }
+    }).then(() => {
+      // load scripts
+      this.scripts = _.mapValues(this.scriptPaths, file => {
+        const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
+        return utils.changeDir(this.repositoryDir, () => {
+          return require(_requireFile);
+        });
       });
     });
   }
@@ -79,7 +89,7 @@ class Echidna {
 
   /**
    * @param {string} repository Github style name (e.g: "Linkurious/linkurious-server")
-   * @returns {Echidna} echidna object of the newly cloned repository
+   * @returns {Promise.<Echidna>} echidna object of the newly cloned repository
    */
   get(repository) {
     const projectName = repository.split('/')[1];
@@ -108,7 +118,9 @@ class Echidna {
     // remove the temporary directory
     utils.exec('rm -rf _tmp', true);
 
-    return new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
+    const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, this.workspaceDir);
+
+    echidna.init().return(echidna);
   }
 
   /**
@@ -119,7 +131,8 @@ class Echidna {
       this._npm = new npmCache(
         this.repositoryDir + '/package.json',
         this.binDir,
-        this.repositoryDir + '/node_modules'
+        this.repositoryDir + '/node_modules',
+        semaphoreMap
       );
     }
     return this._npm;
@@ -133,10 +146,10 @@ class Echidna {
   }
 
   /**
-   * @returns {Semaphore} the collection of semaphores
+   * @returns {SemaphoreMap} the collection of semaphoreMap
    */
   get semaphores() {
-    return;
+    return semaphoreMap;
   }
 
   /**
@@ -216,7 +229,13 @@ class Echidna {
      */
     const echidna = new Echidna(echidnaJson.name, echidnaJson.scripts, workspaceDir);
 
-    Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1}).finally(() => {
+    return Promise.resolve().then(() => {
+      return semaphoreMap.init();
+    }).then(() => {
+      return echidna.init();
+    }).then(() => {
+      return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1});
+    }).finally(() => {
       /**
        * 7) delete the workspace directory
        */

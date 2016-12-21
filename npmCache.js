@@ -15,11 +15,12 @@ const BUCKETS_ROOT_DIR = ciDir + '/tmp/npm-cache';
 
 class npmCache {
   /**
-   * @param {string} packageJsonFile path to the package.json file
-   * @param {string} binDir          desired path for binaries
-   * @param {string} nodeModulesDir  destination path of npm install
+   * @param {string} packageJsonFile    path to the package.json file
+   * @param {string} binDir             desired path for binaries
+   * @param {string} nodeModulesDir     destination path of npm install
+   * @param {SemaphoreMap} semaphoreMap semaphore collection
    */
-  constructor(packageJsonFile, binDir, nodeModulesDir) {
+  constructor(packageJsonFile, binDir, nodeModulesDir, semaphoreMap) {
     this.packageJsonFile = packageJsonFile;
     try {
       this.packageJsonData = require(packageJsonFile);
@@ -28,6 +29,8 @@ class npmCache {
     }
     this.binDir = binDir;
     this.nodeModulesDir = nodeModulesDir;
+
+    this.semaphoreMap = semaphoreMap;
   }
 
   /**
@@ -99,61 +102,68 @@ class npmCache {
    * Create and populate `this.nodeModulesDir` with the result of npm install.
    * @param {object} [options] options
    * @param {boolean} [options.ignoreScripts=false] whether to call npm install with the flag --ignore-scripts
-   * @returns {undefined}
+   * @returns {Promise} promise
    */
   install(options) {
-    options = options || {};
+    // Note: technically we could have a semaphore per bucket instead of a global one,
+    // is it really necessary though?
+    return this.semaphoreMap.get('_npm', 1).then(semaphore => {
+      return semaphore.acquire().then(() => {
+        options = options || {};
 
-    if (!this.hasPackageJson()) {
-      return;
-    }
-
-    // install desired npm version
-    this.setNodeVersion();
-    this.setNpmVersion();
-
-    const hashPackageJson = crypto.createHash('md5')
-      .update(JSON.stringify(this.packageJsonData)).digest('hex');
-
-    const bucketDir = BUCKETS_ROOT_DIR + '/' + hashPackageJson;
-
-    let packageJsonDir = this.packageJsonFile.substring(
-      0, this.packageJsonFile.lastIndexOf('/'));
-
-    if (packageJsonDir === '') { packageJsonDir = '.'; }
-
-    try {
-      // does this directory exist?
-      fs.lstatSync(bucketDir + '/node_modules');
-
-      // copy from the bucket to the packageJsonDir
-      utils.exec(`cp -r ${bucketDir}/node_modules ${packageJsonDir}/node_modules`, true);
-    } catch(e) {
-      if (e.code !== 'ENOENT') {
-        throw e;
-      }
-      // it doesn't exist we have to run npm install for this package.json
-
-      utils.exec('mkdir -p ' + bucketDir, true);
-
-      utils.changeDir(packageJsonDir, () => {
-        let flags = '';
-
-        if (options.ignoreScripts) {
-          flags += ' --ignore-scripts';
+        if (!this.hasPackageJson()) {
+          return;
         }
 
-        // we run npm install (the right node version is in /usr/local/bin)
-        utils.execRetry('npm install' + flags, 5);
+        // install desired npm version
+        this.setNodeVersion();
+        this.setNpmVersion();
 
-        // we copy the node_modules directory in our bucket
-        utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
+        const hashPackageJson = crypto.createHash('md5')
+          .update(JSON.stringify(this.packageJsonData)).digest('hex');
 
-        // there is no need to copy from the bucket to the repository since node_modules
-        // was created there
+        const bucketDir = BUCKETS_ROOT_DIR + '/' + hashPackageJson;
+
+        let packageJsonDir = this.packageJsonFile.substring(
+          0, this.packageJsonFile.lastIndexOf('/'));
+
+        if (packageJsonDir === '') { packageJsonDir = '.'; }
+
+        try {
+          // does this directory exist?
+          fs.lstatSync(bucketDir + '/node_modules');
+
+          // copy from the bucket to the packageJsonDir
+          utils.exec(`cp -r ${bucketDir}/node_modules ${packageJsonDir}/node_modules`, true);
+        } catch(e) {
+          if (e.code !== 'ENOENT') {
+            throw e;
+          }
+          // it doesn't exist we have to run npm install for this package.json
+
+          utils.exec('mkdir -p ' + bucketDir, true);
+
+          utils.changeDir(packageJsonDir, () => {
+            let flags = '';
+
+            if (options.ignoreScripts) {
+              flags += ' --ignore-scripts';
+            }
+
+            // we run npm install (the right node version is in /usr/local/bin)
+            utils.execRetry('npm install' + flags, 5);
+
+            // we copy the node_modules directory in our bucket
+            utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
+
+            // there is no need to copy from the bucket to the repository since node_modules
+            // was created there
+          });
+        }
+      }).finally(() => {
+        semaphore.release();
       });
-    }
-
+    });
   }
 }
 
