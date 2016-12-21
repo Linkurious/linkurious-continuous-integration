@@ -196,7 +196,7 @@ class Echidna {
     /**
      * 2) get Github style repository name
      */
-    const repositoryName = utils.getRepositoryName();
+    const projectName = utils.getRepositoryName().split('/')[1];
 
     /**
      * 3) create a workspace directory
@@ -207,7 +207,7 @@ class Echidna {
     /**
      * 4) copy the repository in the workspace
      */
-    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${repositoryName}`, true);
+    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
 
     /**
      * 5) parse command line arguments (only double-dash arguments are taken into account)
@@ -236,7 +236,7 @@ class Echidna {
     /**
      * 7) we first execute scripts coming from cla, then scripts coming from commits
      */
-    const echidna = new Echidna(repositoryName, echidnaJson.scripts, workspaceDir);
+    const echidna = new Echidna(projectName, echidnaJson.scripts, workspaceDir);
 
     return Promise.resolve().then(() => {
       return semaphoreMap.init();
