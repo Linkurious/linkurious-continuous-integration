@@ -144,6 +144,11 @@ const getRepositoryName = () => {
   if (remoteOriginUrl.indexOf('https://github.com/') === 0 &&
     remoteOriginUrl.lastIndexOf('.git') === remoteOriginUrl.length - 4) {
     return remoteOriginUrl.slice(19, remoteOriginUrl.length - 4);
+
+  } else if (remoteOriginUrl.indexOf('git@github.com:') === 0 &&
+    remoteOriginUrl.lastIndexOf('.git') === remoteOriginUrl.length - 4) {
+    return remoteOriginUrl.slice(15, remoteOriginUrl.length - 4);
+
   } else {
     throw new Error(remoteOriginUrl + ' is not a valid GitHub repository URL');
   }
