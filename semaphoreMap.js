@@ -233,7 +233,10 @@ class SemaphoreMap {
    */
   _readSemFile(func) {
     return this._underLock(() => {
-      let semaphores = JSON.parse(fs.readFileSync(this.semFile));
+      let filecontent = fs.readFileSync(this.semFile);
+      console.log(this.semFile);
+      console.log(filecontent);
+      let semaphores = JSON.parse(filecontent);
       let newSemaphores = func(_.clone(semaphores));
       if (!_.isEqual(semaphores, newSemaphores)) {
         fs.writeFileSync(this.semFile, JSON.stringify(newSemaphores));
