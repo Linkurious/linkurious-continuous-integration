@@ -13,7 +13,7 @@ const shortid = require('shortid');
 // locals
 const utils = require('./utils');
 const npmCache = require('./npmCache');
-const semaphoreMap = new require('./semaphoreMap')('./semaphoreMap.json');
+const semaphoreMap = (new require('./semaphoreMap'))('./semaphoreMap.json');
 
 // constants
 const ciDir = process.env['CI_DIRECTORY'];
