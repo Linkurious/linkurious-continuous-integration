@@ -70,18 +70,17 @@ class SemaphoreMap {
   close() {
     this.watcher.close();
     // we have to release all semaphores in `this._acquiredSemaphores`
+    // we use this._isClosed to avoid later releases to occur
+    this._isClosed = true;
 
     let promises = [];
 
     for (let key of this._acquiredSemaphores.keys()) {
       let count = this._acquiredSemaphores.get(key);
       if (count > 0) {
-        promises.push(this.release(key, count));
+        promises.push(this._releaseOnClose(key, count));
       }
     }
-
-    // we use this._isClosed to avoid later releases to occur
-    this._isClosed = true;
 
     return Promise.all(promises);
   }
@@ -94,11 +93,10 @@ class SemaphoreMap {
    * @returns {Promise} promise
    */
   create(semaphoreName, size) {
-    if (this._isClosed) {
-      return Promise.reject(new Error('SemaphoreMap is closed'));
-    }
-
     return this._readSemFile(semaphores => {
+      if (this._isClosed) {
+        return semaphores;
+      }
       // if it doesn't exist in the json file
       if (semaphores[semaphoreName] === undefined || semaphores[semaphoreName] === null) {
         // initialize the new semaphore
@@ -134,12 +132,11 @@ class SemaphoreMap {
    * @returns {Promise} promise
    */
   acquire(semaphoreName) {
-    if (this._isClosed) {
-      return Promise.reject(new Error('SemaphoreMap is closed'));
-    }
-
     return new Promise(resolve => {
       this._readSemFile(semaphores => {
+        if (this._isClosed) {
+          return semaphores;
+        }
         // if we can acquire the semaphore immediately
         if (semaphores[semaphoreName] > 0) {
           semaphores[semaphoreName]--;
@@ -163,19 +160,29 @@ class SemaphoreMap {
 
   /**
    * @param {string} semaphoreName key of the semaphore
-   * @param {number} [count=1]     how many releases
    * @returns {Promise} promise
    */
-  release(semaphoreName, count) {
-    if (this._isClosed) {
-      return Promise.reject(new Error('SemaphoreMap is closed'));
-    }
+  release(semaphoreName) {
+    return this._readSemFile(semaphores => {
+      if (this._isClosed) {
+        return semaphores;
+      }
+      // we only increase value of the semaphore
+      semaphores[semaphoreName]++;
+      this._countAcquiredSemaphore(semaphoreName, -1);
+      return semaphores;
+    });
+  }
 
-    count = count || 1;
+  /**
+   * @param {string} semaphoreName key of the semaphore
+   * @param {number} count         how many releases for the same key
+   * @returns {Promise} promise
+   */
+  _releaseOnClose(semaphoreName, count) {
     return this._readSemFile(semaphores => {
       // we only increase value of the semaphore
       semaphores[semaphoreName] += count;
-      this._countAcquiredSemaphore(semaphoreName, -1);
       return semaphores;
     });
   }
@@ -237,6 +244,9 @@ class SemaphoreMap {
    */
   _onSemFileChange() {
     this._readSemFile(semaphores => {
+      if (this._isClosed) {
+        return semaphores;
+      }
       // check if we can fire one of the function in this.queues
       for (let key of this.queues.keys()) {
         while (semaphores[key] > 0 && this.queues.get(key).length > 0) {
