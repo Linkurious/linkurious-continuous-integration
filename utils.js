@@ -139,7 +139,7 @@ const getCurrentBranch = () => {
  * @returns {string} name of the repository
  */
 const getRepositoryName = () => {
-  let remoteOriginUrl = exec('git config --get remote.origin.url', true);
+  let remoteOriginUrl = exec('git config --get remote.origin.url', true).trim();
 
   if (remoteOriginUrl.indexOf('https://github.com/') === 0 &&
     remoteOriginUrl.lastIndexOf('.git') === remoteOriginUrl.length - 4) {
