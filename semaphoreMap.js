@@ -239,7 +239,9 @@ class SemaphoreMap {
       let newSemaphores = func(_.clone(semaphores));
       if (!_.isEqual(semaphores, newSemaphores)) {
         console.log("new: " + JSON.stringify(newSemaphores));
-        fs.writeFileSync(this.semFile, JSON.stringify(newSemaphores), {flag: fs.constants.O_WRONLY | fs.constants.O_DIRECT | fs.constants.O_SYNC});
+        var fd = fs.openSync(this.semFile, fs.constants.O_WRONLY | fs.constants.O_DIRECT | fs.constants.O_SYNC);
+        fs.writeFileSync(fd, JSON.stringify(newSemaphores));
+        fd.closeSync();
       }
     });
   }
