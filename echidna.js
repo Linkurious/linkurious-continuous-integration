@@ -271,8 +271,6 @@ class Echidna {
       // close semaphores
       return semaphoreMap.close().then(() => {
         if (err) {
-          console.log('test');
-          console.log(err);
           process.exit(1);
         }
       });
@@ -286,7 +284,7 @@ class Echidna {
       return echidna.init();
     }).then(() => {
       return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1})
-        .then(exit);
+        .return().then(exit);
     }).catch(err => {
       return exit(err);
     });
