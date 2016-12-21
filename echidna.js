@@ -19,7 +19,7 @@ const SemaphoreMap = require('./semaphoreMap');
 const ciDir = process.env['CI_DIRECTORY'];
 const rootRepositoryDir = process.env.PWD;
 
-const semaphoreMap = new SemaphoreMap(ciDir + '/semaphoreMap.json');
+const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 
 class Echidna {
   /**
@@ -259,21 +259,34 @@ class Echidna {
     const echidna = new Echidna(projectName, echidnaJson.scripts, workspaceDir,
       {concurrency: echidnaJson.concurrency});
 
+    // register a SIGINT/SIGTERM handler
+    const exit = err => {
+      if (err) {
+        console.log('\x1b[31m' + err + '\x1b[0m');
+      }
+
+      // delete the workspace directory
+      utils.exec(`rm -rf ${workspaceDir}`, true);
+
+      // close semaphores
+      return semaphoreMap.close().then(() => {
+        if (err) {
+          process.exit(1);
+        }
+      });
+    };
+    process.on('SIGINT', exit);
+    process.on('SIGTERM', exit);
+
     return Promise.resolve().then(() => {
       return semaphoreMap.init();
     }).then(() => {
       return echidna.init();
     }).then(() => {
-      return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1});
-    }).finally(() => {
-      /**
-       * 8) delete the workspace directory
-       */
-      utils.exec(`rm -rf ${workspaceDir}`, true);
-      semaphoreMap.close();
+      return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1})
+        .then(exit);
     }).catch(err => {
-      console.log('\x1b[31m' + err + '\x1b[0m');
-      process.exit(1);
+      return exit(err);
     });
   }
 }
