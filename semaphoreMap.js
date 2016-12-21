@@ -55,8 +55,17 @@ class SemaphoreMap {
       }
 
       // watch the file for changes
-      fs.watch(this.semFile, {persistent: false}, this._onSemFileChange.bind(this));
+      this.watcher = fs.watch(this.semFile, this._onSemFileChange.bind(this));
     });
+  }
+
+  /**
+   * Stop watching on `this.semFile`.
+   *
+   * @returns {undefined}
+   */
+  close() {
+    this.watcher.close();
   }
 
   /**
