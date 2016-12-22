@@ -9,7 +9,7 @@ const crypto = require('crypto');
 // locals
 const utils = require('./utils');
 
-const ciDir = process.env['CI_DIRECTORY'];
+const ciDir = '/ci';
 
 const BUCKETS_ROOT_DIR = ciDir + '/tmp/npm-cache';
 
