@@ -7,7 +7,7 @@ module.exports = {
   githubClientId: '<clientId>',
   serverName: 'https://ci.linkurio.us',
   host: 'localhost',
-  port: 8080,
+  port: 8081,
   smtpHost: 'smtp.gmail.com',
   smtpPort: 465,
   smtpSecure: true,

@@ -69,9 +69,9 @@ server {
     location / {
         # Set this server up as a reverse-proxy for the given address.
         # We configure our reverse-proxy to always connect over plain HTTP on a specific port.
-        proxy_pass http://localhost:8080;
+        proxy_pass http://localhost:8081;
         # Rewrite Location and Refresh HTTP headers, so that the client sees the address they requested.
-        proxy_redirect http://localhost:8080 https://ci.linkurio.us;
+        proxy_redirect http://localhost:8081 https://ci.linkurio.us;
 
         # Our server should set the Host HTTP header to the name of this virtual server if the header is not present.
         # In practise, the value of the header should always be the name of the virtual server, because, otherwise
@@ -94,7 +94,7 @@ server {
     location /socket.io/ {
         # Requests to this location should be proxied to the address given below.
         # This directive may actually be redundant, given the configuration for the root above.
-        proxy_pass http://localhost:8080;
+        proxy_pass http://localhost:8081;
         # Because websockets use keepalive, we need to make sure HTTP version 1.1 is used.
         proxy_http_version 1.1;
         # To allow websocket proxying, we need to forward the Upgrade and Connection HTTP headers.
