@@ -325,7 +325,7 @@ class Echidna {
     } else {
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
 
-      utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
+      utils.exec('docker run --user `id -u` -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
         ` echidna sh -c "env IN_DOCKER=1 /ci/echidna.js ${cla}"`);
