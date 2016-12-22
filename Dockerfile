@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y docker.io
 
 # Install stuff
 RUN apt-get install -y curl git
+RUN apt-get install -y build-essential
 
 # Install node.js
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
