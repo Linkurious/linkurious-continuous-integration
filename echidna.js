@@ -321,10 +321,8 @@ class Echidna {
    */
   static dockerize() {
     if (process.env['IN_DOCKER']) {
-      console.log('in_docker');
       Echidna.main();
     } else {
-      console.log('out_of_docker');
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
 
       utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
