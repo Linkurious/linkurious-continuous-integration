@@ -231,16 +231,22 @@ class Echidna {
     /**
      * 1) read the echidna.json of the current project
      */
+
+    console.log('in_docker 1');
     const echidnaJson = Echidna.validateEchidnaJson(rootRepositoryDir);
 
     /**
      * 2) get Github style repository name
      */
+
+    console.log('in_docker 2');
     const projectName = utils.getRepositoryName().split('/')[1];
 
     /**
      * 3) create a workspace directory
      */
+
+    console.log('in_docker 3');
     const workspaceDir = ciDir + '/workspaces/' + shortid.generate();
     utils.exec(`mkdir -p ${workspaceDir}`, true);
 
@@ -316,6 +322,7 @@ class Echidna {
    */
   static dockerize() {
     if (process.env['IN_DOCKER']) {
+      console.log('in_docker');
       Echidna.main();
     } else {
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
