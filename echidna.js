@@ -247,7 +247,7 @@ class Echidna {
     /**
      * 4) copy the repository in the workspace
      */
-    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
+    utils.exec(`cp -a ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
 
     /**
      * 5) parse command line arguments (only double-dash arguments are taken into account)
