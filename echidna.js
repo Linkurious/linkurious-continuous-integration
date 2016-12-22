@@ -16,8 +16,8 @@ const npmCache = require('./npmCache');
 const SemaphoreMap = require('./semaphoreMap');
 
 // constants
-const ciDir = process.env['CI_DIRECTORY'];
-const rootRepositoryDir = process.env.PWD;
+const ciDir = process.env['IN_DOCKER'] ? '/ci' : process.env['CI_DIRECTORY'];
+const rootRepositoryDir = process.env['IN_DOCKER'] ? '/repo' : process.env.PWD;
 
 const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 
@@ -156,7 +156,7 @@ class Echidna {
           const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
 
           // copy the repository in the workspace
-          utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${projectName}`, true);
+          utils.exec(`cp -a ${tmpRepositoryDir} ${this.workspaceDir}/${projectName}`, true);
 
           // remove the temporary directory
           utils.exec('rm -rf _tmp', true);
@@ -247,7 +247,7 @@ class Echidna {
     /**
      * 4) copy the repository in the workspace
      */
-    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
+    utils.exec(`cp -a ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
 
     /**
      * 5) parse command line arguments (only double-dash arguments are taken into account)
@@ -319,12 +319,13 @@ class Echidna {
       console.log('in_docker');
       Echidna.main();
     } else {
-      const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
       console.log('out_of_docker');
+      const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
 
       utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
-        ` -v ${ciDir}:/ci echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=/ci /ci/echidna.js ${cla}"`,
-      false);
+        ` -v ${rootRepositoryDir}:/repo` +
+        ` -v ${ciDir}:/ci` +
+        ` echidna sh -c "env IN_DOCKER=1 /ci/echidna.js ${cla}"`);
     }
   }
 }
