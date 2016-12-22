@@ -16,8 +16,8 @@ const npmCache = require('./npmCache');
 const SemaphoreMap = require('./semaphoreMap');
 
 // constants
-const ciDir = process.env['IN_DOCKER'] ? process.env['CI_DIRECTORY'] : '/ci';
-const rootRepositoryDir = process.env['IN_DOCKER'] ? process.env.PWD : '/repo';
+const ciDir = process.env['IN_DOCKER'] ? '/ci' : process.env['CI_DIRECTORY'];
+const rootRepositoryDir = process.env['IN_DOCKER'] ? '/repo' : process.env.PWD;
 
 const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 
@@ -324,7 +324,7 @@ class Echidna {
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
         ` echidna sh -c "env IN_DOCKER=1 /ci/echidna.js ${cla}"`,
-      false);
+      true);
     }
   }
 }
