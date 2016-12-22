@@ -16,8 +16,8 @@ const npmCache = require('./npmCache');
 const SemaphoreMap = require('./semaphoreMap');
 
 // constants
-const ciDir = process.env['CI_DIRECTORY'];
-const rootRepositoryDir = process.env.PWD;
+const ciDir = process.env['IN_DOCKER'] ? process.env['CI_DIRECTORY'] : '/ci';
+const rootRepositoryDir = process.env['IN_DOCKER'] ? process.env.PWD : '/repo';
 
 const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 
@@ -323,7 +323,7 @@ class Echidna {
       utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
-        ` echidna sh -c "env PWD=/repo IN_DOCKER=1 CI_DIRECTORY=/ci /ci/echidna.js ${cla}"`,
+        ` echidna sh -c "env IN_DOCKER=1 /ci/echidna.js ${cla}"`,
       false);
     }
   }
