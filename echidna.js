@@ -156,7 +156,7 @@ class Echidna {
           const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
 
           // copy the repository in the workspace
-          utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${projectName}`, true);
+          utils.exec(`cp -a ${tmpRepositoryDir} ${this.workspaceDir}/${projectName}`, true);
 
           // remove the temporary directory
           utils.exec('rm -rf _tmp', true);
