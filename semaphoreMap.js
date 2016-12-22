@@ -234,14 +234,10 @@ class SemaphoreMap {
   _readSemFile(func) {
     return this._underLock(() => {
       let filecontent = fs.readFileSync(this.semFile);
-      console.log("old: " + filecontent.toString('utf-8'));
       let semaphores = JSON.parse(filecontent);
       let newSemaphores = func(_.clone(semaphores));
       if (!_.isEqual(semaphores, newSemaphores)) {
-        console.log("new: " + JSON.stringify(newSemaphores));
-        var fd = fs.openSync(this.semFile, fs.constants.O_WRONLY | fs.constants.O_DIRECT | fs.constants.O_SYNC);
-        fs.writeFileSync(fd, JSON.stringify(newSemaphores));
-        fd.closeSync();
+        fs.writeFileSync(this.semFile, JSON.stringify(newSemaphores));
       }
     });
   }
