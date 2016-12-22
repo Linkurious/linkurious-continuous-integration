@@ -312,14 +312,20 @@ class Echidna {
 
   /**
    * Run itself in a docker container.
+   * @returns {undefined}
    */
   static dockerize() {
-    if (process.argv.indexOf('-docker') !== -1) {
-      Echidna.main();
+    if (process.env['IN_DOCKER']) {
+      console.log('in_docker');
+      //Echidna.main();
     } else {
-      utils.exec('');
+      const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
+      console.log('out_of_docker');
+
+      utils.exec('docker run -it -v /var/run/docker.sock:/var/run/docker.sock' +
+        ` -v ${ciDir}:/ci echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=/ci ./echidna.js ${cla}"`);
     }
   }
 }
 
-Echidna.main();
+Echidna.dockerize();
