@@ -229,28 +229,33 @@ class Echidna {
    */
   static main() {
     /**
-     * 1) read the echidna.json of the current project
+     * 1) set CWD to the repository
+     */
+    process.chdir(rootRepositoryDir);
+
+    /**
+     * 2) read the echidna.json of the current project
      */
     const echidnaJson = Echidna.validateEchidnaJson(rootRepositoryDir);
 
     /**
-     * 2) get Github style repository name
+     * 3) get Github style repository name
      */
     const projectName = utils.getRepositoryName().split('/')[1];
 
     /**
-     * 3) create a workspace directory
+     * 4) create a workspace directory
      */
     const workspaceDir = ciDir + '/workspaces/' + shortid.generate();
     utils.exec(`mkdir -p ${workspaceDir}`, true);
 
     /**
-     * 4) copy the repository in the workspace
+     * 5) copy the repository in the workspace
      */
     utils.exec(`cp -a ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
 
     /**
-     * 5) parse command line arguments (only double-dash arguments are taken into account)
+     * 6) parse command line arguments (only double-dash arguments are taken into account)
      *
      * e.g.: ./echidna --build
      */
@@ -262,7 +267,7 @@ class Echidna {
     });
 
     /**
-     * 6) parse commit message arguments
+     * 7) parse commit message arguments
      *
      * e.g.: '#892 solved issues [run:build]'
      */
@@ -274,7 +279,7 @@ class Echidna {
     });
 
     /**
-     * 7) we first execute scripts coming from cla, then scripts coming from commits
+     * 8) we first execute scripts coming from cla, then scripts coming from commits
      */
     const echidna = new Echidna(projectName, echidnaJson.scripts, workspaceDir,
       {concurrency: echidnaJson.concurrency});
