@@ -55,7 +55,6 @@ class Echidna {
       // install dependencies (necessary for the scripts)
 
       if (this.npm.hasPackageJson()) {
-
         return this.npm.install();
       }
     }).then(() => {
@@ -63,7 +62,17 @@ class Echidna {
       this.scripts = _.mapValues(this.scriptPaths, file => {
         const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
         return utils.changeDir(this.repositoryDir, () => {
-          return require(_requireFile);
+          try {
+            return require(_requireFile);
+          } catch(e) {
+            // lof check if .js file but require failed
+            return () => {
+              return new Promise(resolve => {
+                utils.exec(_requireFile);
+                resolve();
+              });
+            };
+          }
         });
       });
     });
