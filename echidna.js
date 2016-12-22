@@ -60,19 +60,28 @@ class Echidna {
     }).then(() => {
       // load scripts
       this.scripts = _.mapValues(this.scriptPaths, file => {
-        const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
-        return utils.changeDir(this.repositoryDir, () => {
-          try {
-            return require(_requireFile);
-          } catch(e) {
-            // lof check if .js file but require failed
-            return () => {
-              return new Promise(resolve => {
-                utils.exec(file);
-                resolve();
-              });
-            };
+        return Promise.resolve().then(() => {
+          // if the script is a .js file
+          if (file.lastIndexOf('.js') === file.length - 3) {
+            const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
+            return utils.changeDir(this.repositoryDir, () => {
+              return require(_requireFile);
+            });
+          } else {
+            // not a .js file, fallback to 'utils.exec(file)'
+            return Promise.reject();
           }
+        }).catch(err => {
+          if (err) {
+            console.log('\x1b[31m' + err + '\x1b[0m');
+          }
+
+          return () => {
+            return new Promise(resolve => {
+              utils.exec(file);
+              resolve();
+            });
+          };
         });
       });
     });
@@ -299,6 +308,17 @@ class Echidna {
     }).catch(err => {
       return exit(err);
     });
+  }
+
+  /**
+   * Run itself in a docker container.
+   */
+  static dockerize() {
+    if (process.argv.indexOf('-docker') !== -1) {
+      Echidna.main();
+    } else {
+      utils.exec('');
+    }
   }
 }
 
