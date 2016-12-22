@@ -316,14 +316,13 @@ class Echidna {
    */
   static dockerize() {
     if (process.env['IN_DOCKER']) {
-      console.log('in_docker');
-      //Echidna.main();
+      Echidna.main();
     } else {
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
-      console.log('out_of_docker');
 
       utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
-        ` -v ${ciDir}:/ci echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=/ci /ci/echidna.js ${cla}"`);
+        ` -v ${ciDir}:/ci echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=/ci /ci/echidna.js ${cla}"`,
+      false);
     }
   }
 }
