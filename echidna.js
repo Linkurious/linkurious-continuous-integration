@@ -60,6 +60,13 @@ class Echidna {
     }).then(() => {
       // load scripts
       this.scripts = _.mapValues(this.scriptPaths, file => {
+        return () => {
+          return new Promise(resolve => {
+            utils.exec(file);
+            resolve();
+          });
+        };
+
         return Promise.resolve().then(() => {
           // if the script is a .js file
           if (file.lastIndexOf('.js') === file.length - 3) {
@@ -76,7 +83,6 @@ class Echidna {
             console.log('\x1b[31m' + err + '\x1b[0m');
           }
 
-          console.log('teeeest');
           return () => {
             return new Promise(resolve => {
               utils.exec(file);
