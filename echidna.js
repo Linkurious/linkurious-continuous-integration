@@ -5,8 +5,6 @@
  */
 'use strict';
 
-console.log("prova");
-
 // external libs
 const Promise = require('bluebird');
 const _ = require('lodash');
@@ -18,8 +16,8 @@ const npmCache = require('./npmCache');
 const SemaphoreMap = require('./semaphoreMap');
 
 // constants
-const ciDir = process.env['IN_DOCKER'] ? '/ci' : process.env['CI_DIRECTORY'];
-const rootRepositoryDir = process.env['IN_DOCKER'] ? '/repo' : process.env.PWD;
+const ciDir = process.env['CI_DIRECTORY'];
+const rootRepositoryDir = process.env.PWD;
 
 const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 
@@ -158,7 +156,7 @@ class Echidna {
           const tmpRepositoryDir = this.workspaceDir + '/_tmp/' + projectName;
 
           // copy the repository in the workspace
-          utils.exec(`cp -a ${tmpRepositoryDir} ${this.workspaceDir}/${projectName}`, true);
+          utils.exec(`cp -al ${tmpRepositoryDir} ${this.workspaceDir}/${projectName}`, true);
 
           // remove the temporary directory
           utils.exec('rm -rf _tmp', true);
@@ -233,29 +231,23 @@ class Echidna {
     /**
      * 1) read the echidna.json of the current project
      */
-
-    console.log('in_docker 1');
     const echidnaJson = Echidna.validateEchidnaJson(rootRepositoryDir);
 
     /**
      * 2) get Github style repository name
      */
-
-    console.log('in_docker 2');
     const projectName = utils.getRepositoryName().split('/')[1];
 
     /**
      * 3) create a workspace directory
      */
-
-    console.log('in_docker 3');
     const workspaceDir = ciDir + '/workspaces/' + shortid.generate();
     utils.exec(`mkdir -p ${workspaceDir}`, true);
 
     /**
      * 4) copy the repository in the workspace
      */
-    utils.exec(`cp -a ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
+    utils.exec(`cp -al ${rootRepositoryDir} ${workspaceDir}/${projectName}`, true);
 
     /**
      * 5) parse command line arguments (only double-dash arguments are taken into account)
@@ -327,14 +319,12 @@ class Echidna {
       console.log('in_docker');
       Echidna.main();
     } else {
-      console.log('out_of_docker');
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
+      console.log('out_of_docker');
 
       utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
-        ` -v ${rootRepositoryDir}:/repo` +
-        ` -v ${ciDir}:/ci` +
-        ` echidna sh -c "env IN_DOCKER=1 /ci/echidna.js ${cla}"`,
-      true);
+        ` -v ${ciDir}:/ci echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=/ci /ci/echidna.js ${cla}"`,
+      false);
     }
   }
 }
