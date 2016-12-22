@@ -5,6 +5,8 @@
  */
 'use strict';
 
+console.log("prova");
+
 // external libs
 const Promise = require('bluebird');
 const _ = require('lodash');
