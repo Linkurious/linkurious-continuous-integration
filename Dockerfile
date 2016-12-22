@@ -15,6 +15,7 @@ RUN apt-get install -y nodejs
 # Install other stuff
 RUN npm install -g grunt
 RUN npm install -g n
+RUN npm install -g wget
 
 # Install phantomjs
 RUN apt-get install -y libfontconfig
