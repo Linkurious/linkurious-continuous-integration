@@ -68,7 +68,7 @@ class Echidna {
             // lof check if .js file but require failed
             return () => {
               return new Promise(resolve => {
-                utils.exec(_requireFile);
+                utils.exec(file);
                 resolve();
               });
             };
