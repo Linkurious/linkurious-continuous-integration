@@ -3,6 +3,7 @@
  */
 'use strict';
 
+const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
@@ -91,10 +92,7 @@ class npmCache {
     }
 
     utils.exec(`npm install npm@${npmVersion}`);
-    utils.exec(`ln -sf ./node_modules/.bin/npm ${this.binDir}`);
-    utils.exec(`npm -v`);
-    utils.exec(`./node_modules/.bin/npm -v`);
-    utils.exec(`${this.binDir}/npm -v`);
+    utils.exec(`ln -sf ${path.resolve('./node_modules/.bin/npm')} ${this.binDir}`);
   }
 
   /**
