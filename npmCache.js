@@ -76,6 +76,17 @@ class npmCache {
     utils.exec(`n ${nodeVersion} -d`, true);
     const nodePath = utils.exec(`n bin ${nodeVersion}`, true).split('\n')[0];
     utils.exec(`ln -sf ${nodePath} ${this.binDir}`, true);
+
+    utils.exec(`npm -v`);
+    utils.exec(`${this.binDir}/npm -v`);
+    utils.exec(`npm -v`, false, {
+      env:
+        Object.assign({
+          'PATH': this.binDir + ':' + process.env.PATH
+        }, process.env)
+    });
+    process.env.PATH = this.binDir + ':' + process.env.PATH;
+    utils.exec(`npm -v`);
   }
 
   /**
