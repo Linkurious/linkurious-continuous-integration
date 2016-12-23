@@ -150,6 +150,18 @@ class npmCache {
               flags += ' --ignore-scripts';
             }
 
+            utils.exec('npm -v', false, {
+              env:
+                Object.assign({
+                  'PATH': this.binDir + ':' + process.env.PATH
+                }, process.env)
+            });
+
+            utils.exec('npm -v', false);
+
+            process.env.PATH = this.binDir + ':' + process.env.PATH;
+            utils.exec('npm -v', false);
+
             // we run npm install (the right node version is in /usr/local/bin)
             utils.execRetry('npm install' + flags, 5, false, {
               env:
