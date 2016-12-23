@@ -5,6 +5,8 @@
  */
 'use strict';
 
+const path = require('path');
+
 // external libs
 const Promise = require('bluebird');
 const _ = require('lodash');
@@ -61,9 +63,8 @@ class Echidna {
       this.scripts = _.mapValues(this.scriptPaths, file => {
         // if the script is a .js file (end with '.js', no advanced checks)
         if (file.lastIndexOf('.js') === file.length - 3) {
-          const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
           return utils.changeDir(this.repositoryDir, () => {
-            return require(_requireFile);
+            return require(path.resolve(file));
           });
         } else {
           // not a .js file, fallback to 'utils.exec(file)'
