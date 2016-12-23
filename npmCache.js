@@ -151,7 +151,12 @@ class npmCache {
             }
 
             // we run npm install (the right node version is in /usr/local/bin)
-            utils.execRetry('npm install' + flags, 5);
+            utils.execRetry('npm install' + flags, 5, false, {
+              env:
+                Object.assign({
+                  'PATH': this.binDir + ':' + process.env.PATH
+                }, process.env)
+            });
 
             // we copy the node_modules directory in our bucket
             utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
