@@ -93,17 +93,6 @@ class npmCache {
 
     utils.exec(`npm install npm@${npmVersion}`);
     utils.exec(`ln -sf ${path.resolve('./node_modules/.bin/npm')} ${this.binDir}`);
-
-    utils.exec(`npm -v`);
-    utils.exec(`${this.binDir}/npm -v`);
-    utils.exec(`npm -v`, false, {
-      env:
-        Object.assign({
-          'PATH': this.binDir + ':' + process.env.PATH
-        }, process.env)
-    });
-    process.env.PATH = this.binDir + ':' + process.env.PATH;
-    utils.exec(`npm -v`);
   }
 
   /**
@@ -162,13 +151,17 @@ class npmCache {
               flags += ' --ignore-scripts';
             }
 
+            // save current PATH environment variable
+            const pathEnv = process.env.PATH;
+
+            // add 'this.binDir' to PATH
+            process.env.PATH = this.binDir + ':' + pathEnv;
+
             // we run npm install (the right node version is in /usr/local/bin)
-            utils.execRetry('npm install' + flags, 5, false, {
-              env:
-                Object.assign({
-                  'PATH': this.binDir + ':' + process.env.PATH
-                }, process.env)
-            });
+            utils.execRetry('npm install' + flags, 5);
+
+            // restore previous PATH
+            process.env.PATH = pathEnv;
 
             // we copy the node_modules directory in our bucket
             utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
