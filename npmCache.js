@@ -92,6 +92,9 @@ class npmCache {
 
     utils.exec(`npm install npm@${npmVersion}`);
     utils.exec(`ln -sf ./node_modules/.bin/npm ${this.binDir}`);
+    utils.exec(`npm -v`);
+    utils.exec(`./node_modules/.bin/npm -v`);
+    utils.exec(`${this.binDir}/npm -v`);
   }
 
   /**
@@ -149,18 +152,6 @@ class npmCache {
             if (options.ignoreScripts) {
               flags += ' --ignore-scripts';
             }
-
-            utils.exec('npm -v', false, {
-              env:
-                Object.assign({
-                  'PATH': this.binDir + ':' + process.env.PATH
-                }, process.env)
-            });
-
-            utils.exec('npm -v', false);
-
-            process.env.PATH = this.binDir + ':' + process.env.PATH;
-            utils.exec('npm -v', false);
 
             // we run npm install (the right node version is in /usr/local/bin)
             utils.execRetry('npm install' + flags, 5, false, {
