@@ -90,8 +90,8 @@ class npmCache {
       return;
     }
 
-    utils.exec(`npm install npm@${npmVersion}`, true);
-    utils.exec(`ln -sf ./node_modules/.bin/npm ${this.binDir}`, true);
+    utils.exec(`npm install npm@${npmVersion}`);
+    utils.exec(`ln -sf ./node_modules/.bin/npm ${this.binDir}`);
   }
 
   /**
