@@ -6,7 +6,9 @@ RUN apt-get update && apt-get install -y docker.io
 # Install stuff
 RUN apt-get install -y curl git
 RUN apt-get install -y build-essential
+RUN apt-get install -y apt-utils
 RUN apt-get install -y python
+RUN apt-get install -y python-pip
 
 # Install node.js
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
@@ -23,11 +25,9 @@ RUN apt-get install -y nano
 RUN apt-get install -y libfontconfig
 RUN npm install -g phantomjs-prebuilt
 
-# Install docker-compose 1.8 // TODO unsure if necessary to install docker-compose1.5
-RUN apt-get install -y docker-compose
-RUN apt-get install -y python-pip
-RUN mv /usr/bin/docker-compose /usr/bin/docker-compose1.5
-RUN pip install docker-compose
+# Install docker-compose 1.9
+RUN curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
 
 # Set user linkurious as sudoer
 RUN apt-get install -y sudo
