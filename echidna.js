@@ -53,43 +53,27 @@ class Echidna {
 
     return Promise.resolve().then(() => {
       // install dependencies (necessary for the scripts)
-
       if (this.npm.hasPackageJson()) {
         return this.npm.install();
       }
     }).then(() => {
       // load scripts
       this.scripts = _.mapValues(this.scriptPaths, file => {
-        return () => {
-          return new Promise(resolve => {
-            utils.exec(file);
-            resolve();
+        // if the script is a .js file (end with '.js', no advanced checks)
+        if (file.lastIndexOf('.js') === file.length - 3) {
+          const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
+          return utils.changeDir(this.repositoryDir, () => {
+            return require(_requireFile);
           });
-        };
-
-        return Promise.resolve().then(() => {
-          // if the script is a .js file
-          if (file.lastIndexOf('.js') === file.length - 3) {
-            const _requireFile = this.workspaceDir + '/' + this.name + '/' + file;
-            return utils.changeDir(this.repositoryDir, () => {
-              return require(_requireFile);
-            });
-          } else {
-            // not a .js file, fallback to 'utils.exec(file)'
-            return Promise.reject();
-          }
-        }).catch(err => {
-          if (err) {
-            console.log('\x1b[31m' + err + '\x1b[0m');
-          }
-
+        } else {
+          // not a .js file, fallback to 'utils.exec(file)'
           return () => {
             return new Promise(resolve => {
               utils.exec(file);
               resolve();
             });
           };
-        });
+        }
       });
     });
   }
