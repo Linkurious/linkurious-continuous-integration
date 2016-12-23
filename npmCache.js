@@ -69,7 +69,7 @@ class npmCache {
       return; // desired version is not specified, system version is ok
     }
 
-    utils.exec(`n ${nodeVersion}`, true);
+    utils.exec(`n ${nodeVersion} 2>&1`, true);
   }
 
   /**
