@@ -158,7 +158,7 @@ class npmCache {
             process.env.PATH = this.binDir + ':' + pathEnv;
 
             // we run npm install (the right node version is in /usr/local/bin)
-            utils.exec('npm -v');
+            utils.execRetry('npm -v', 1);
 
             // restore previous PATH
             process.env.PATH = pathEnv;
