@@ -85,7 +85,7 @@ class npmCache {
       return;
     }
 
-    utils.exec(`npm install -g npm@${npmVersion}`);
+    utils.exec(`npm install -g npm@${npmVersion}`, true);
   }
 
   /**
