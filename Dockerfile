@@ -23,7 +23,13 @@ RUN apt-get install -y nano
 RUN apt-get install -y libfontconfig
 RUN npm install -g phantomjs-prebuilt
 
-# Set user
+# Install docker-compose 1.8 // TODO unsure if necessary to install docker-compose1.5
+RUN apt-get install -y docker-compose
+RUN apt-get install -y python-pip
+RUN mv /usr/bin/docker-compose /usr/bin/docker-compose1.5
+RUN pip install docker-compose
+
+# Set user linkurious as sudoer
 RUN apt-get install -y sudo
 RUN adduser --disabled-password --gecos '' linkurious --uid 1000
 RUN echo "linkurious ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
