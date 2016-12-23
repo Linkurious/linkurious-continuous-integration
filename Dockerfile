@@ -26,5 +26,5 @@ RUN npm install -g phantomjs-prebuilt
 # Set user
 RUN apt-get install -y sudo
 RUN adduser --disabled-password --gecos '' linkurious --uid 1000
-RUN echo "linkurious ALL=(ALL) ALL" >> /etc/sudoers
+RUN echo "linkurious ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 USER linkurious
