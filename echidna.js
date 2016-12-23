@@ -49,10 +49,6 @@ class Echidna {
       this.branch = utils.getCurrentBranch();
     });
 
-    // directory containing desired node and npm (etc.) binaries
-    this.binDir = this.repositoryDir + '/_bin';
-    utils.exec(`mkdir -p ${this.binDir}`, true);
-
     return Promise.resolve().then(() => {
       // install dependencies (necessary for the scripts)
       if (this.npm.hasPackageJson()) {
@@ -90,13 +86,9 @@ class Echidna {
 
     // save cwd
     const currentWorkingDirectory = process.cwd();
-    // save current PATH environment variable
-    const pathEnv = process.env.PATH;
 
     // set the repository directory as cwd
     process.chdir(this.repositoryDir);
-    // add 'this.binDir' to PATH
-    process.env.PATH = this.binDir + ':' + pathEnv;
 
     if (func) {
       console.log(`Running script \x1b[32m${script}\x1b[0m for project ` +
@@ -107,9 +99,8 @@ class Echidna {
       return semaphoreMap.get(semaphoreName, this.concurrency).then(semaphore => {
         return semaphore.acquire().then(() => {
           return func(this).then(() => {
-            // restore previous cwd and PATH
+            // restore previous cwd
             process.chdir(currentWorkingDirectory);
-            process.env.PATH = pathEnv;
           });
         }).finally(() => {
           semaphore.release();
@@ -174,7 +165,6 @@ class Echidna {
     if (!this._npm) {
       this._npm = new npmCache(
         this.repositoryDir + '/package.json',
-        this.binDir,
         this.repositoryDir + '/node_modules',
         semaphoreMap
       );
@@ -283,7 +273,7 @@ class Echidna {
       }
 
       // delete the workspace directory
-      // utils.exec(`rm -rf ${workspaceDir}`, true);
+      utils.exec(`rm -rf ${workspaceDir}`, true);
 
       // close semaphores
       return semaphoreMap.close().then(() => {
@@ -317,7 +307,7 @@ class Echidna {
     } else {
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
 
-      utils.exec('docker run --user `id -u` -v /var/run/docker.sock:/var/run/docker.sock' +
+      utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
         ` echidna sh -c "env IN_DOCKER=1 /ci/echidna.js ${cla}"`);

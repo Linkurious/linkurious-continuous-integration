@@ -3,7 +3,6 @@
  */
 'use strict';
 
-const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
@@ -17,18 +16,16 @@ const BUCKETS_ROOT_DIR = ciDir + '/tmp/npm-cache';
 class npmCache {
   /**
    * @param {string} packageJsonFile    path to the package.json file
-   * @param {string} binDir             desired path for binaries
    * @param {string} nodeModulesDir     destination path of npm install
    * @param {SemaphoreMap} semaphores   semaphore collection
    */
-  constructor(packageJsonFile, binDir, nodeModulesDir, semaphores) {
+  constructor(packageJsonFile, nodeModulesDir, semaphores) {
     this.packageJsonFile = packageJsonFile;
     try {
       this.packageJsonData = require(packageJsonFile);
     } catch(e) {
       // knowing if `this.packageJsonData` is defined is enough
     }
-    this.binDir = binDir;
     this.nodeModulesDir = nodeModulesDir;
 
     this.semaphores = semaphores;
@@ -60,7 +57,7 @@ class npmCache {
   }
 
   /**
-   * Add in `this.binDir` a node binary of version `nodeVersion`.
+   * Set globally a node binary of version `nodeVersion`.
    *
    * @param {string} [nodeVersion=this.nodeVersion] node version to use
    * @returns {undefined}
@@ -72,14 +69,11 @@ class npmCache {
       return; // desired version is not specified, system version is ok
     }
 
-    // download node globally
-    utils.exec(`n ${nodeVersion} -d`);
-    const nodePath = utils.exec(`n bin ${nodeVersion}`, true).split('\n')[0];
-    utils.exec(`ln -sf ${nodePath} ${this.binDir}`);
+    utils.exec(`n ${nodeVersion}`, true);
   }
 
   /**
-   * Add in `this.binDir` a npm binary of version `npmVersion`.
+   * Set globally a npm binary of version `npmVersion`.
    *
    * @param {string} [npmVersion=this.npmVersion] npm version to use
    * @returns {undefined}
@@ -91,8 +85,7 @@ class npmCache {
       return;
     }
 
-    utils.exec(`npm install npm@${npmVersion}`);
-    utils.exec(`ln -sf ${path.resolve('./node_modules/.bin/npm')} ${this.binDir}`);
+    utils.exec(`npm install -g npm@${npmVersion}`);
   }
 
   /**
@@ -151,17 +144,8 @@ class npmCache {
               flags += ' --ignore-scripts';
             }
 
-            // save current PATH environment variable
-            const pathEnv = process.env.PATH;
-
-            // add 'this.binDir' to PATH
-            process.env.PATH = this.binDir + ':' + pathEnv;
-
             // we run npm install (the right node version is in /usr/local/bin)
             utils.execRetry('npm install' + flags, 5);
-
-            // restore previous PATH
-            process.env.PATH = pathEnv;
 
             // we copy the node_modules directory in our bucket
             utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);

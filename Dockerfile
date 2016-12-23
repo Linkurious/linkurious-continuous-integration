@@ -17,7 +17,11 @@ RUN npm install -g grunt
 RUN npm install -g n
 RUN apt-get install -y wget
 RUN apt-get install -y unzip
+RUN apt-get install -y nano
 
 # Install phantomjs
 RUN apt-get install -y libfontconfig
 RUN npm install -g phantomjs-prebuilt
+
+RUN adduser --disabled-password --gecos '' linkurious --uid 1000
+USER linkurious
