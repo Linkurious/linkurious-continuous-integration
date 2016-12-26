@@ -198,6 +198,13 @@ class Echidna {
   }
 
   /**
+   * @returns {string} path of the workspace directory in the host system
+   */
+  get workspaceDirHost() {
+    return this.ciDirHost + '/' + this.workspaceDir.split('/').slice(-1)[0];
+  }
+
+  /**
    * @param {string} path where to look for the echidna.json file
    * @returns {object | undefined} object representation of the echidna.json file
    */
