@@ -187,6 +187,17 @@ class Echidna {
   }
 
   /**
+   * Return the path of the ci directory in the host OS. This is needed to allow mounting volumes
+   * in secondary docker containers. Secondary docker container are spawned from the main docker
+   * container on the host system, so their mounting points have to be relative to it.
+   *
+   * @returns {string} path of the ci directory in the host system
+   */
+  get ciDirHost() {
+    return process.env['CI_DIRECTORY'];
+  }
+
+  /**
    * @param {string} path where to look for the echidna.json file
    * @returns {object | undefined} object representation of the echidna.json file
    */
