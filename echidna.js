@@ -310,7 +310,7 @@ class Echidna {
       utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
-        ` echidna sh -c "env IN_DOCKER=1 /ci/echidna.js ${cla}"`);
+        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`);
     }
   }
 }
