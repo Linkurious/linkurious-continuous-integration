@@ -14,11 +14,14 @@ const _ = require('lodash');
 const Promise = require('bluebird');
 const lockfile = require('lockfile');
 
+/*
 const LOCK_FILE_OPTS = {
   retries: 5, // 5 times
+  retryWait: 1000,
   wait: 1000 // 1 sec, timeout after which we give up to acquire the lock
   // stale: 1000 // 1 sec, timeout after which the lockfile is considered freed
 };
+*/
 
 /**
  * Semaphore
@@ -216,15 +219,13 @@ class SemaphoreMap {
    */
   _underLock(func) {
     return new Promise((resolve, reject) => {
-      lockfile.lock(this.lockFile, LOCK_FILE_OPTS, err => {
+      lockfile.lock(this.lockFile, err => {
         if (err) {
-          console.log('_underLock:lock' + err);
           reject(err);
         }
         func();
         lockfile.unlock(this.lockFile, err => {
           if (err) {
-            console.log('_underLock:unlock' + err);
             reject(err);
           }
           resolve();
