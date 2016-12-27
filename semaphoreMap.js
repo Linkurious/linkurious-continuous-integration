@@ -14,15 +14,6 @@ const _ = require('lodash');
 const Promise = require('bluebird');
 const lockfile = require('lockfile');
 
-/*
-const LOCK_FILE_OPTS = {
-  retries: 5, // 5 times
-  retryWait: 1000,
-  wait: 1000 // 1 sec, timeout after which we give up to acquire the lock
-  // stale: 1000 // 1 sec, timeout after which the lockfile is considered freed
-};
-*/
-
 /**
  * Semaphore
  * @typedef  {Object} Semaphore
@@ -219,7 +210,7 @@ class SemaphoreMap {
    */
   _underLock(func) {
     return new Promise((resolve, reject) => {
-      lockfile.lock(this.lockFile, err => {
+      lockfile.lock(this.lockFile, {wait: 60 * 1000}, err => { // 60 sec wait time
         if (err) {
           reject(err);
         }
