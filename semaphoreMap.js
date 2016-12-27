@@ -16,8 +16,8 @@ const lockfile = require('lockfile');
 
 const LOCK_FILE_OPTS = {
   retries: 5, // 5 times
-  wait: 1000, // 1 sec, timeout after which we give up to acquire the lock
-  stale: 1000 // 1 sec, timeout after which the lockfile is considered freed
+  wait: 1000 // 1 sec, timeout after which we give up to acquire the lock
+  // stale: 1000 // 1 sec, timeout after which the lockfile is considered freed
 };
 
 /**
@@ -215,10 +215,20 @@ class SemaphoreMap {
    * @private
    */
   _underLock(func) {
-    return new Promise(resolve => {
-      lockfile.lock(this.lockFile, LOCK_FILE_OPTS, () => {
+    return new Promise((resolve, reject) => {
+      lockfile.lock(this.lockFile, LOCK_FILE_OPTS, err => {
+        if (err) {
+          console.log('_underLock:lock' + err);
+          reject(err);
+        }
         func();
-        lockfile.unlock(this.lockFile, resolve);
+        lockfile.unlock(this.lockFile, err => {
+          if (err) {
+            console.log('_underLock:unlock' + err);
+            reject(err);
+          }
+          resolve();
+        });
       });
     });
   }
