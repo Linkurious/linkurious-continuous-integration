@@ -291,7 +291,7 @@ class Echidna {
       }
 
       // delete the workspace directory
-      // utils.exec(`rm -rf ${workspaceDir}`, true); // TODO restore this
+      utils.exec(`rm -rf ${workspaceDir}`, true);
 
       // close semaphores
       return semaphoreMap.close().then(() => {
