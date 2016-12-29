@@ -186,7 +186,7 @@ class SemaphoreMap {
 
   /**
    * Create the semaphore if it doesn't exist.
-   * Return an object with 2 functions,`acquire` and `release`, that don't take any argument.
+   * Return an object with 2 functions, `acquire` and `release`, that don't take any argument.
    *
    * @param {string} semaphoreName key of the semaphore
    * @param {number} size          initial value for them semaphore
@@ -210,7 +210,7 @@ class SemaphoreMap {
    */
   _underLock(func) {
     return new Promise((resolve, reject) => {
-      lockfile.lock(this.lockFile, {wait: 60 * 1000}, err => { // 60 sec wait time
+      lockfile.lock(this.lockFile, {wait: 30 * 60 * 1000}, err => { // 30 min wait time
         if (err) {
           reject(err);
         }

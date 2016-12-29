@@ -9,15 +9,15 @@ const crypto = require('crypto');
 // locals
 const utils = require('./utils');
 
-const ciDir = '/ci';
+const CI_DIR = '/ci';
 
-const BUCKETS_ROOT_DIR = ciDir + '/tmp/npm-cache';
+const BUCKETS_ROOT_DIR = CI_DIR + '/tmp/npm-cache';
 
 class npmCache {
   /**
-   * @param {string} packageJsonFile    path to the package.json file
-   * @param {string} nodeModulesDir     destination path of npm install
-   * @param {SemaphoreMap} semaphores   semaphore collection
+   * @param {string} packageJsonFile  path to the package.json file
+   * @param {string} nodeModulesDir   destination path of npm install
+   * @param {SemaphoreMap} semaphores semaphore collection
    */
   constructor(packageJsonFile, nodeModulesDir, semaphores) {
     this.packageJsonFile = packageJsonFile;
@@ -120,7 +120,6 @@ class npmCache {
 
         let packageJsonDir = this.packageJsonFile.substring(
           0, this.packageJsonFile.lastIndexOf('/'));
-
         if (packageJsonDir === '') { packageJsonDir = '.'; }
 
         try {
@@ -151,7 +150,7 @@ class npmCache {
             utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
 
             // there is no need to copy from the bucket to the repository since node_modules
-            // was created there
+            // was installed there
           });
         }
       }).finally(() => {
