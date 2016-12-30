@@ -17,6 +17,7 @@ RUN apt-get install -y nodejs
 # Install other stuff
 RUN npm install -g grunt
 RUN npm install -g n
+RUN npm install -g typescript
 RUN apt-get install -y wget
 RUN apt-get install -y unzip
 RUN apt-get install -y nano
