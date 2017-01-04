@@ -21,6 +21,7 @@ RUN npm install -g typescript
 RUN npm install -g bower
 RUN apt-get install -y wget
 RUN apt-get install -y unzip
+RUN apt-get install -y redir
 RUN apt-get install -y nano
 
 # Install phantomjs
