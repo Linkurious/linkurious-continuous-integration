@@ -78,6 +78,9 @@ class bowerCache {
 
           utils.changeDir(bowerJsonDir, () => {
 
+            // TODO we remove the .bowerrc file because it screws with the directory destination. Find another fix
+            utils.exec('rm .bowerrc', true);
+
             // we run bower install
             utils.execRetry('bower install', 5);
 
