@@ -26,7 +26,8 @@ RUN apt-get install -y nano
 
 # Install Java
 RUN apt-get install -y software-properties-common # for add-apt-repository
-RUN add-apt-repository ppa:webupd8team/java
+RUN add-apt-repository -y ppa:webupd8team/java
+RUN apt-get update
 RUN apt-get install -y oracle-java8-installer
 
 # Install phantomjs
