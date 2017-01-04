@@ -149,7 +149,7 @@ class Echidna {
       });
     }).then(() => {
       // read the echidna.json file
-      const echidnaJson = Echidna.validateEchidnaJson(this.workspaceDir + '/' + projectName);
+      const echidnaJson = Echidna.validateEchidnaJson(this.workspaceDir + '/' + projectName, true);
 
       const echidna = new Echidna(projectName, echidnaJson.scripts, this.workspaceDir,
         {concurrency: echidnaJson.concurrency});
@@ -206,15 +206,22 @@ class Echidna {
 
   /**
    * @param {string} path where to look for the echidna.json file
+   * @param {boolean} [dontThrow=false] whether to throw an error if the file doesn't exist
    * @returns {object | undefined} object representation of the echidna.json file
    */
-  static validateEchidnaJson(path) {
+  static validateEchidnaJson(path, dontThrow) {
     const file = path + '/echidna.json';
     let echidnaJson;
     try {
       echidnaJson = require(file);
     } catch(e) {
-      throw new Error(`"${file}" was not found`);
+      if (!dontThrow) {
+        throw new Error(`"${file}" was not found`);
+      } else {
+        return {
+          scripts: {}
+        };
+      }
     }
 
     if (echidnaJson.scripts === undefined || echidnaJson.scripts === null) {
