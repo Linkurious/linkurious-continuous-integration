@@ -57,7 +57,7 @@ class Echidna {
       if (this.npm.hasPackageJson()) {
         return this.npm.install({ignoreScripts: this.npmIgnoreScripts});
       }
-
+    }).then(() => {
       if (this.bower.hasBowerJson()) {
         return this.bower.install();
       }
