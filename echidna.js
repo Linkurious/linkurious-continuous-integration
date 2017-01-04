@@ -17,6 +17,7 @@ const utils = require('./utils');
 const npmCache = require('./npmCache');
 const bowerCache = require('./bowerCache');
 const SemaphoreMap = require('./semaphoreMap');
+const configuration = require('./config');
 
 // constants
 const ciDir = process.env['IN_DOCKER'] ? '/ci' : process.env['CI_DIRECTORY'];
@@ -28,6 +29,10 @@ const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 // duplication. This is useful if, for example, we first call the 'test' and then the 'build' script
 // that depends on 'test' (doing so we avoid to call 'test' twice)
 const executedScripts = new Set();
+
+// we use this global map to store the names of the cloned repositories in the workspace along with
+// their branch names. Useful to TODO
+const clonedRepos = new Map();
 
 class Echidna {
   /**
@@ -55,6 +60,9 @@ class Echidna {
   init() {
     utils.changeDir(this.repositoryDir, () => {
       this.branch = utils.getCurrentBranch();
+
+      clonedRepos.set(this.name, this.branch);
+      // TODO verify that there are no strange cases where different branches of the same repo are required
     });
 
     return Promise.resolve().then(() => {
@@ -346,7 +354,17 @@ class Echidna {
       return echidna.init();
     }).then(() => {
       return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1})
-        .return().then(exit);
+        .return().then(() => {
+          // upload the content of `_to_dev_` remotely
+          // TODO if _to_dev_ is not empty
+          var userAtHost = configuration.scpDestDir.split(':')[0];
+          var baseDir = configuration.scpDestDir.split(':')[1];
+          // TODO generate a proper name
+          var branchDir = 'tmp_name';
+          var dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
+          utils.exec(`ssh -p ${configuration.scpPort} ${userAtHost} "mkdir -p '${dir}'"`, true);
+          utils.exec(`scp -P ${configuration.scpPort} ./*.zip ${userAtHost}:'${dir}'`, true);
+        }).then(exit);
     }).catch(err => {
       return exit(err);
     });

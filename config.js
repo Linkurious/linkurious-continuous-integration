@@ -17,7 +17,5 @@ module.exports = {
   bodyParserLimit: '5mb',
   concurrentJobs: 10,
   scpDestDir: '<destDir>',
-  scpPort: '<port>',
-  buildScpDestDir: '<buildDestDir>',
-  buildScpPort: '<buildPort>'
+  scpPort: '<port>'
 };
