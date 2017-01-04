@@ -24,6 +24,11 @@ const rootRepositoryDir = process.env['IN_DOCKER'] ? '/repo' : process.env.PWD;
 
 const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 
+// we use this global set to store the names of the scripts that were already executed to avoid
+// duplication. This is useful if, for example, we first call the 'test' and then the 'build' script
+// that depends on 'test' (doing so we avoid to call 'test' twice)
+const executedScripts = new Set();
+
 class Echidna {
   /**
    *
@@ -102,6 +107,12 @@ class Echidna {
           `\x1b[32m${this.name}\x1b[0m, branch \x1b[32m${this.branch}\x1b[0m`);
       // the semaphore name includes both the project name and the script name
       const semaphoreName = '_run:' + this.name + '_' + script;
+
+      if (executedScripts.has(semaphoreName)) {
+        return Promise.resolve();
+      }
+
+      executedScripts.add(semaphoreName);
 
       return semaphoreMap.get(semaphoreName, this.concurrency).then(semaphore => {
         return semaphore.acquire().then(() => {
