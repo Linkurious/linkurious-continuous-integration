@@ -3,74 +3,161 @@
  */
 'use strict';
 
-const crypto = require('crypto');
 const fs = require('fs');
+const crypto = require('crypto');
 
-const exec = require('./utils').exec;
-const execRetry = require('./utils').execRetry;
-const changeDir = require('./utils').changeDir;
+// locals
+const utils = require('./utils');
 
-const ciDir = process.env['CI_DIRECTORY'];
+const CI_DIR = '/ci';
 
-/**
- * First, switch to the right node and npm version.
- * Hash the package.json file and look up if its node_modules directory was already cached.
- * If not, run npm install on this package.json.
- *
- * Return the absolute path to the node_modules directory.
- *
- * @param {string} packageJsonFile  path to the package.json file
- * @param {string} [nodeVersion]    node version
- * @param {string} [npmVersion]     npm version
- * @param {boolean} [ignoreScripts] whether to call npm install with the flag --ignore-scripts
- * @returns {string} absolute       path to the node_modules directory
- */
-module.exports = (packageJsonFile, nodeVersion, npmVersion, ignoreScripts) => {
-  // we install the desired node version
-  if (nodeVersion) {
-    exec('n ' + nodeVersion);
-  }
+const BUCKETS_ROOT_DIR = CI_DIR + '/tmp/npm-cache';
 
-  // we install the desired npm version
-  if (npmVersion) {
-    execRetry('export PATH=/usr/local/bin:${PATH}; npm install -g npm@' + npmVersion, 5);
-  }
-
-  // hash the package.json file
-  var data = fs.readFileSync(packageJsonFile, 'utf8');
-  var hashPackageJson = crypto.createHash('md5').update(data).digest('hex');
-
-  // bucket containing the node_modules directory for this package.json
-  var directory = ciDir + '/tmp/npm-cache/' + hashPackageJson;
-
-  try {
-    // does this directory exist?
-    fs.lstatSync(directory + '/node_modules');
-  } catch(e) {
-    if (e.code !== 'ENOENT') {
-      throw e;
+class npmCache {
+  /**
+   * @param {string} packageJsonFile  path to the package.json file
+   * @param {string} nodeModulesDir   destination path of npm install
+   * @param {SemaphoreMap} semaphores semaphore collection
+   */
+  constructor(packageJsonFile, nodeModulesDir, semaphores) {
+    this.packageJsonFile = packageJsonFile;
+    try {
+      this.packageJsonData = require(packageJsonFile);
+    } catch(e) {
+      // knowing if `this.packageJsonData` is defined is enough
     }
-    // it doesn't exist so we have to run npm install for this package.json
+    this.nodeModulesDir = nodeModulesDir;
 
-    exec('mkdir -p ' + directory);
+    this.semaphores = semaphores;
+  }
 
-    var packageJsonFolder = packageJsonFile.substring(0, packageJsonFile.lastIndexOf('/'));
-    if (packageJsonFolder === '') { packageJsonFolder = '.'; }
+  /**
+   * @return {boolean} whether it has or not a package.json file
+   */
+  hasPackageJson() {
+    return this.packageJsonData !== undefined;
+  }
 
-    changeDir(packageJsonFolder, () => {
-      var flags = '';
+  /**
+   * @returns {string | undefined} node version if defined
+   */
+  get nodeVersion() {
+    if (this.packageJsonData && this.packageJsonData.engines) {
+      return this.packageJsonData.engines.node;
+    }
+  }
 
-      if (ignoreScripts) {
-        flags += ' --ignore-scripts';
-      }
+  /**
+   * @returns {string | undefined} npm version if defined
+   */
+  get npmVersion() {
+    if (this.packageJsonData && this.packageJsonData.engines) {
+      return this.packageJsonData.engines.npm;
+    }
+  }
 
-      // we run npm install (the right node version is in /usr/local/bin)
-      execRetry('export PATH=/usr/local/bin:${PATH}; npm install' + flags, 5);
+  /**
+   * Set globally a node binary of version `nodeVersion`.
+   *
+   * @param {string} [nodeVersion=this.nodeVersion] node version to use
+   * @returns {undefined}
+   */
+  setNodeVersion(nodeVersion) {
+    nodeVersion = nodeVersion || this.nodeVersion;
 
-      // we copy the node_modules directory in our bucket
-      exec(`cp -r ${packageJsonFolder}/node_modules ${directory}/node_modules`);
+    if (!nodeVersion) {
+      return; // desired version is not specified, system version is ok
+    }
+
+    utils.exec(`n ${nodeVersion} 2>&1`, true);
+  }
+
+  /**
+   * Set globally a npm binary of version `npmVersion`.
+   *
+   * @param {string} [npmVersion=this.npmVersion] npm version to use
+   * @returns {undefined}
+   */
+  setNpmVersion(npmVersion) {
+    npmVersion = npmVersion || this.npmVersion;
+
+    if (!npmVersion) {
+      return;
+    }
+
+    utils.exec(`npm install -g npm@${npmVersion}`, true);
+  }
+
+  /**
+   * Implicitly set the desired node and npm version.
+   * Look in the global cache if the same `package.json` file produced a previous
+   * node_modules directory. If not, run npm install on this package.json.
+   *
+   * Create and populate `this.nodeModulesDir` with the result of npm install.
+   * @param {object} [options] options
+   * @param {boolean} [options.ignoreScripts=false] whether to call npm install with the flag --ignore-scripts
+   * @returns {Promise} promise
+   */
+  install(options) {
+    // Note: technically we could have a semaphore per bucket instead of a global one,
+    // is it really necessary though?
+    return this.semaphores.get('_npm', 1).then(semaphore => {
+      return semaphore.acquire().then(() => {
+        options = options || {};
+
+        if (!this.hasPackageJson()) {
+          return;
+        }
+
+        // install desired npm version
+        this.setNodeVersion();
+        this.setNpmVersion();
+
+        const hashPackageJson = crypto.createHash('md5')
+          .update(JSON.stringify(this.packageJsonData)).digest('hex');
+
+        const bucketDir = BUCKETS_ROOT_DIR + '/' + hashPackageJson;
+
+        let packageJsonDir = this.packageJsonFile.substring(
+          0, this.packageJsonFile.lastIndexOf('/'));
+        if (packageJsonDir === '') { packageJsonDir = '.'; }
+
+        try {
+          // does this directory exist?
+          fs.lstatSync(bucketDir + '/node_modules');
+
+          // copy from the bucket to the packageJsonDir
+          utils.exec(`cp -r ${bucketDir}/node_modules ${packageJsonDir}/node_modules`, true);
+        } catch(e) {
+          if (e.code !== 'ENOENT') {
+            throw e;
+          }
+          // it doesn't exist we have to run npm install for this package.json
+
+          utils.exec('mkdir -p ' + bucketDir, true);
+
+          utils.changeDir(packageJsonDir, () => {
+            let flags = '';
+
+            if (options.ignoreScripts) {
+              flags += ' --ignore-scripts';
+            }
+
+            // we run npm install (the right node version is in /usr/local/bin)
+            utils.execRetry('npm install' + flags, 5);
+
+            // we copy the node_modules directory in our bucket
+            utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
+
+            // there is no need to copy from the bucket to the repository since node_modules
+            // was installed there
+          });
+        }
+      }).finally(() => {
+        semaphore.release();
+      });
     });
   }
+}
 
-  return directory + '/node_modules';
-};
+module.exports = npmCache;

@@ -90,7 +90,7 @@ exec('sudo apt-get install -y nginx');
 exec('sudo apt-get install -y letsencrypt');
 exec('sudo cp nginx_sites_available /etc/nginx/sites-available/default');
 exec('sudo letsencrypt certonly --standalone -d ci.linkurio.us');
-exec('sudo cp renew_cert.sh /etc/cron.daily');
+exec('sudo cp renew_cert /etc/cron.daily');
 
 /**
  * (8) Install Grunt

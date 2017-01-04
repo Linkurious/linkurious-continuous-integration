@@ -17,7 +17,7 @@ rl.question('GitHub Client Secret: ', clientSecret => {
   exec('sudo service mongod start');
   exec('sudo service docker start');
   exec('sudo service nginx start');
-  exec('npm start >> strider.log 2>&1 & disown', {
+  exec('npm start >> strider.log 2>&1 & disown', false, {
     env:
       Object.assign({
         'SERVER_NAME': config.serverName,
@@ -30,7 +30,9 @@ rl.question('GitHub Client Secret: ', clientSecret => {
         'SMTP_SECURE': config.smtpSecure,
         'SMTP_USER': config.smtpUser,
         'SMTP_PASS': config.smtpPass,
-        'SMTP_FROM': config.smtpFrom
+        'SMTP_FROM': config.smtpFrom,
+        'BODY_PARSER_LIMIT': config.bodyParserLimit,
+        'CONCURRENT_JOBS': config.concurrentJobs
       }, process.env),
     cwd: process.cwd() + '/strider',
     shell: '/bin/bash'});
