@@ -16,17 +16,15 @@ const BUCKETS_ROOT_DIR = CI_DIR + '/tmp/npm-cache';
 class npmCache {
   /**
    * @param {string} packageJsonFile  path to the package.json file
-   * @param {string} nodeModulesDir   destination path of npm install
    * @param {SemaphoreMap} semaphores semaphore collection
    */
-  constructor(packageJsonFile, nodeModulesDir, semaphores) {
+  constructor(packageJsonFile, semaphores) {
     this.packageJsonFile = packageJsonFile;
     try {
       this.packageJsonData = require(packageJsonFile);
     } catch(e) {
       // knowing if `this.packageJsonData` is defined is enough
     }
-    this.nodeModulesDir = nodeModulesDir;
 
     this.semaphores = semaphores;
   }
@@ -93,7 +91,6 @@ class npmCache {
    * Look in the global cache if the same `package.json` file produced a previous
    * node_modules directory. If not, run npm install on this package.json.
    *
-   * Create and populate `this.nodeModulesDir` with the result of npm install.
    * @param {object} [options] options
    * @param {boolean} [options.ignoreScripts=false] whether to call npm install with the flag --ignore-scripts
    * @returns {Promise} promise

@@ -15,6 +15,7 @@ const shortid = require('shortid');
 // locals
 const utils = require('./utils');
 const npmCache = require('./npmCache');
+const bowerCache = require('./bowerCache');
 const SemaphoreMap = require('./semaphoreMap');
 
 // constants
@@ -55,6 +56,10 @@ class Echidna {
       // install dependencies (necessary for the scripts)
       if (this.npm.hasPackageJson()) {
         return this.npm.install({ignoreScripts: this.npmIgnoreScripts});
+      }
+
+      if (this.bower.hasBowerJson()) {
+        return this.bower.install();
       }
     }).then(() => {
       // load scripts
@@ -168,11 +173,23 @@ class Echidna {
     if (!this._npm) {
       this._npm = new npmCache(
         this.repositoryDir + '/package.json',
-        this.repositoryDir + '/node_modules',
         semaphoreMap
       );
     }
     return this._npm;
+  }
+
+  /**
+   * @returns {bowerCache} bowerCache of the current project
+   */
+  get bower() {
+    if (!this._bower) {
+      this._bower = new bowerCache(
+        this.repositoryDir + '/bower.json',
+        semaphoreMap
+      );
+    }
+    return this._bower;
   }
 
   /**

@@ -3,50 +3,97 @@
  */
 'use strict';
 
-const crypto = require('crypto');
 const fs = require('fs');
+const crypto = require('crypto');
 
-const exec = require('./utils').exec;
-const execRetry = require('./utils').execRetry;
-const changeDir = require('./utils').changeDir;
+// locals
+const utils = require('./utils');
 
-const ciDir = process.env['CI_DIRECTORY'];
+const CI_DIR = '/ci';
+
+const BUCKETS_ROOT_DIR = CI_DIR + '/tmp/bower-cache';
 
 /**
- * Hash the bower.json file and look up if its bower_components was already cached.
- * If not, run bower install on this bower.json.
- *
- * Return the absolute path to the bower_components directory.
- *
- * @param {string}   bowerJsonFile path to the bower.json file
- * @returns {string} absolute path to the bower_components directory
+ * TODO this code is 100% taken from npmCache.js. Avoid the duplication?
  */
-module.exports = (bowerJsonFile) => {
-  // hash the bower.json file
-  var data = fs.readFileSync(bowerJsonFile, 'utf8');
-  var hashBowerJson = crypto.createHash('md5').update(data).digest('hex');
-
-  // bucket containing the bower_components directory for this bower.json
-  var directory = ciDir + '/tmp/bower-cache/' + hashBowerJson;
-
-  try {
-    // does this directory exist?
-    fs.lstatSync(directory + '/bower_components');
-  } catch(e) {
-    if (e.code !== 'ENOENT') {
-      throw e;
+class bowerCache {
+  /**
+   * @param {string} bowerJsonFile path to the bower.json file
+   * @param {SemaphoreMap} semaphores semaphore collection
+   */
+  constructor(bowerJsonFile, semaphores) {
+    this.bowerJsonFile = bowerJsonFile;
+    try {
+      this.bowerJsonData = require(bowerJsonFile);
+    } catch(e) {
+      // knowing if `this.bowerJsonData` is defined is enough
     }
-    // it doesn't exist so we have to run bower install for this bower.json
 
-    exec('mkdir -p ' + directory);
-
-    exec('cp ' + bowerJsonFile + ' ' + directory);
-
-    changeDir(directory, () => {
-      // we run bower install
-      execRetry('bower install', 5);
-    });
+    this.semaphores = semaphores;
   }
 
-  return directory + '/bower_components';
-};
+  /**
+   * @return {boolean} whether it has or not a bower.json file
+   */
+  hasBowerJson() {
+    return this.bowerJsonData !== undefined;
+  }
+
+  /**
+   * Look in the global cache if the same `bower.json` file produced a previous
+   * bower_components directory. If not, run bower install on this bower.json.
+   *
+   * @returns {Promise} promise
+   */
+  install() {
+    return this.semaphores.get('_bower', 1).then(semaphore => {
+      return semaphore.acquire().then(() => {
+
+        if (!this.hasBowerJson()) {
+          return;
+        }
+
+        const hashBowerJson = crypto.createHash('md5')
+          .update(JSON.stringify(this.bowerJsonData)).digest('hex');
+
+        const bucketDir = BUCKETS_ROOT_DIR + '/' + hashBowerJson;
+
+        let bowerJsonDir = this.bowerJsonFile.substring(
+          0, this.bowerJsonFile.lastIndexOf('/'));
+        if (bowerJsonDir === '') { bowerJsonDir = '.'; }
+
+        try {
+          // does this directory exist?
+          fs.lstatSync(bucketDir + '/bower_components');
+
+          // copy from the bucket to the bowerJsonDir
+          utils.exec(`cp -r ${bucketDir}/bower_components ${bowerJsonDir}/bower_components`, true);
+        } catch(e) {
+          if (e.code !== 'ENOENT') {
+            throw e;
+          }
+          // it doesn't exist we have to run bower install for this bower.json
+
+          utils.exec('mkdir -p ' + bucketDir, true);
+
+          utils.changeDir(bowerJsonDir, () => {
+
+            // we run bower install
+            utils.execRetry('bower install', 5);
+
+            // we copy the bower_components directory in our bucket
+            utils.exec(`cp -r ${bowerJsonDir}/bower_components ${bucketDir}/bower_components`,
+              true);
+
+            // there is no need to copy from the bucket to the repository since bower_components
+            // was installed there
+          });
+        }
+      }).finally(() => {
+        semaphore.release();
+      });
+    });
+  }
+}
+
+module.exports = bowerCache;
