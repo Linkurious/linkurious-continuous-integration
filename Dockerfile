@@ -18,6 +18,7 @@ RUN apt-get install -y nodejs
 RUN npm install -g grunt
 RUN npm install -g n
 RUN npm install -g typescript
+RUN npm install -g bower
 RUN apt-get install -y wget
 RUN apt-get install -y unzip
 RUN apt-get install -y nano
