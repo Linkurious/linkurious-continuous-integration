@@ -27,18 +27,18 @@ class Echidna {
   /**
    *
    * @param {string} name                    project name (e.g.: 'linkurious-server'), it has to match the GitHub repository name
-   * @param {object} scriptPaths             paths of script indexed by script name
    * @param {string} workspaceDir            path to the workspace
-   * @param {object} [options]               options
+   * @param {object} options                 options
+   * @param {object} options.scripts     paths of script indexed by script name
    * @param {boolean} [options.npmIgnoreScripts=false] whether to call npm install with the flag --ignore-scripts
    * @param {number} [options.concurrency=1] number of same scripts that can run concurrently for this project
    */
-  constructor(name, scriptPaths, workspaceDir, options) {
+  constructor(name, workspaceDir, options) {
     options = _.defaults(options, {concurrency: 1, npmIgnoreScripts: false});
     this.name = name;
     this.workspaceDir = workspaceDir;
     this.repositoryDir = workspaceDir + '/' + name;
-    this.scriptPaths = scriptPaths;
+    this.scriptPaths = options.scripts;
     this.concurrency = options.concurrency;
     this.npmIgnoreScripts = options.npmIgnoreScripts;
   }
@@ -155,8 +155,7 @@ class Echidna {
       // read the echidna.json file
       const echidnaJson = Echidna.validateEchidnaJson(this.workspaceDir + '/' + projectName, true);
 
-      const echidna = new Echidna(projectName, echidnaJson.scripts, this.workspaceDir,
-        _.defaults(options, {concurrency: echidnaJson.concurrency}));
+      const echidna = new Echidna(projectName, this.workspaceDir, _.defaults(options, echidnaJson));
 
       return echidna.init().return(echidna);
     });
@@ -292,8 +291,7 @@ class Echidna {
     /**
      * 8) we first execute scripts coming from cla, then scripts coming from commits
      */
-    const echidna = new Echidna(projectName, echidnaJson.scripts, workspaceDir,
-      {concurrency: echidnaJson.concurrency});
+    const echidna = new Echidna(projectName, workspaceDir, echidnaJson);
 
     // register a SIGINT/SIGTERM handler
     const exit = err => {
