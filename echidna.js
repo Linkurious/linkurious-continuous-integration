@@ -30,15 +30,17 @@ class Echidna {
    * @param {object} scriptPaths             paths of script indexed by script name
    * @param {string} workspaceDir            path to the workspace
    * @param {object} [options]               options
+   * @param {boolean} [options.npmIgnoreScripts=false] whether to call npm install with the flag --ignore-scripts
    * @param {number} [options.concurrency=1] number of same scripts that can run concurrently for this project
    */
   constructor(name, scriptPaths, workspaceDir, options) {
-    options = _.defaults(options, {concurrency: 1});
+    options = _.defaults(options, {concurrency: 1, npmIgnoreScripts: false});
     this.name = name;
     this.workspaceDir = workspaceDir;
     this.repositoryDir = workspaceDir + '/' + name;
     this.scriptPaths = scriptPaths;
     this.concurrency = options.concurrency;
+    this.npmIgnoreScripts = options.npmIgnoreScripts;
   }
 
   /**
@@ -52,7 +54,7 @@ class Echidna {
     return Promise.resolve().then(() => {
       // install dependencies (necessary for the scripts)
       if (this.npm.hasPackageJson()) {
-        return this.npm.install();
+        return this.npm.install({ignoreScripts: this.npmIgnoreScripts});
       }
     }).then(() => {
       // load scripts
@@ -113,9 +115,11 @@ class Echidna {
 
   /**
    * @param {string} repository Github style name (e.g: "Linkurious/linkurious-server")
+   * @param {object} [options] options
+   * @param {boolean} [options.npmIgnoreScripts=false] whether to call npm install with the flag --ignore-scripts
    * @returns {Promise.<Echidna>} echidna object of the newly cloned repository
    */
-  get(repository) {
+  get(repository, options) {
     const projectName = repository.split('/')[1];
 
     return semaphoreMap.get('_get:' + repository, 1).then(semaphore => {
@@ -152,7 +156,7 @@ class Echidna {
       const echidnaJson = Echidna.validateEchidnaJson(this.workspaceDir + '/' + projectName, true);
 
       const echidna = new Echidna(projectName, echidnaJson.scripts, this.workspaceDir,
-        {concurrency: echidnaJson.concurrency});
+        _.defaults(options, {concurrency: echidnaJson.concurrency}));
 
       return echidna.init().return(echidna);
     });
