@@ -44,4 +44,5 @@ RUN apt-get install -y sudo
 RUN adduser --disabled-password --gecos '' linkurious --uid 1000
 RUN echo "linkurious ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN chown -R linkurious /usr/local/
+RUN gpasswd -a linkurious docker
 USER linkurious
