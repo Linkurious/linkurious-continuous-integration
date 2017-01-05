@@ -139,7 +139,7 @@ class Echidna {
       return semaphore.acquire().then(() => {
 
         // if the project wasn't already cloned
-        if (utils.getSubDirectories(this.repositoryDir).indexOf(projectName) === -1) {
+        if (utils.getSubDirectories(this.workspaceDir).indexOf(projectName) === -1) {
           utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, true);
 
           // decide whether to match the branch or to use 'develop'
