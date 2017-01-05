@@ -21,7 +21,6 @@ RUN npm install -g typescript
 RUN npm install -g bower
 RUN apt-get install -y wget
 RUN apt-get install -y unzip
-RUN apt-get install -y zip
 RUN apt-get install -y redir
 RUN apt-get install -y nano
 
@@ -39,6 +38,9 @@ RUN npm install -g phantomjs-prebuilt
 # Install docker-compose 1.9
 RUN curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 RUN chmod +x /usr/local/bin/docker-compose
+
+# Install other stuff
+RUN apt-get install -y zip
 
 # Set user linkurious as sudoer
 RUN apt-get install -y sudo
