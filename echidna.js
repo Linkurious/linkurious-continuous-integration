@@ -40,7 +40,7 @@ function getClonedRepos() {
     result.push(projectName + ':' + branch);
   }
 
-  return result.join('_');
+  return _.sortBy(result).join('_');
 }
 
 class Echidna {
