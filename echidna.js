@@ -233,6 +233,13 @@ class Echidna {
   }
 
   /**
+   * @returns {string} path of the directory carrying the content that will be copied on the dev machine
+   */
+  get toDevDir() {
+    return this.workspaceDir + '/_to_dev_';
+  }
+
+  /**
    * @param {string} path where to look for the echidna.json file
    * @param {boolean} [dontThrow=false] whether to throw an error if the file doesn't exist
    * @returns {object | undefined} object representation of the echidna.json file
@@ -345,7 +352,7 @@ class Echidna {
       return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1})
         .return().then(() => {
           // upload the content of `_to_dev_` remotely
-          if (fs.existsSync(workspaceDir + '/_to_dev_')) {
+          if (fs.existsSync(echidna.toDevDir)) {
             let userAtHost = configuration.scpDestDir.split(':')[0];
             let baseDir = configuration.scpDestDir.split(':')[1];
             // TODO generate a proper name
@@ -353,7 +360,7 @@ class Echidna {
             let dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
             let port = configuration.scpPort;
             utils.exec(`ssh -p ${port} ${userAtHost} "mkdir -p '${dir}'"`, true);
-            utils.exec(`scp -P ${port} ${workspaceDir}/_to_dev_/* ${userAtHost}:'${dir}'`, true);
+            utils.exec(`scp -P ${port} ${echidna.toDevDir}/* ${userAtHost}:'${dir}'`, true);
           }
         }).then(exit);
     }).catch(err => {
