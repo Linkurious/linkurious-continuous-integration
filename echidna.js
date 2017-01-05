@@ -30,6 +30,19 @@ const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 // their branch names. Useful to generate the list of used branch in a test run
 const clonedRepos = new Map();
 
+/**
+ * @returns {string} the join of keys and values of clonedRepos
+ */
+function getClonedRepos() {
+  let result = [];
+  for (let [projectName, branch] of clonedRepos.entries()) {
+    projectName = projectName.split('-').slice(-1)[0]; // trick to remove 'linkurious' from each project name
+    result.push(projectName + ':' + branch);
+  }
+
+  return result.join('_');
+}
+
 class Echidna {
   /**
    *
@@ -355,9 +368,7 @@ class Echidna {
           if (fs.existsSync(echidna.toDevDir)) {
             let userAtHost = configuration.scpDestDir.split(':')[0];
             let baseDir = configuration.scpDestDir.split(':')[1];
-            // TODO generate a proper name
-            let branchDir = 'tmp_name_branches';
-            let dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
+            let dir = baseDir + '/' + getClonedRepos() + '/' + new Date().toISOString();
             let port = configuration.scpPort;
             utils.exec(`ssh -p ${port} ${userAtHost} "mkdir -p '${dir}'"`, true);
             utils.exec(`scp -rP ${port} ${echidna.toDevDir}/* ${userAtHost}:'${dir}'`, true);
