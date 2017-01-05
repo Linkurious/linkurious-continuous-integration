@@ -1,5 +1,7 @@
 FROM ubuntu:16.04
 
+RUN apt-get update
+
 # Install Java
 RUN apt-get install -y software-properties-common # for add-apt-repository
 RUN add-apt-repository -y ppa:webupd8team/java
