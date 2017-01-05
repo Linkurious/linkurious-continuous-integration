@@ -117,4 +117,9 @@ exec('sudo apt-get install oracle-java8-installer');
  */
 exec('sudo apt-get install -y zip');
 
+/**
+ * (13) Set a fixed value for docker group id. (It has to match with the one in the docker containers)
+ */
+exec('sudo groupmod -g 999 docker');
+
 exec('echo Please re-login');
