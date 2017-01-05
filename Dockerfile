@@ -1,25 +1,14 @@
 FROM ubuntu:16.04
 
-RUN apt-get update
-
-# Install Java
-RUN apt-get install -y software-properties-common # for add-apt-repository
-RUN add-apt-repository -y ppa:webupd8team/java
-RUN apt-get update
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-RUN apt-get install -y oracle-java8-installer
-
 # Install docker
-RUN apt-get install -y docker.io
+RUN apt-get update && apt-get install -y docker.io
 
 # Install stuff
-RUN apt-get install -y wget curl git
+RUN apt-get install -y curl git
 RUN apt-get install -y build-essential
 RUN apt-get install -y apt-utils
-RUN apt-get install -y python python-pip
-RUN apt-get install -y zip unzip
-RUN apt-get install -y redir
-RUN apt-get install -y nano
+RUN apt-get install -y python
+RUN apt-get install -y python-pip
 
 # Install node.js
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
@@ -30,6 +19,17 @@ RUN npm install -g grunt
 RUN npm install -g n
 RUN npm install -g typescript
 RUN npm install -g bower
+RUN apt-get install -y wget
+RUN apt-get install -y zip unzip
+RUN apt-get install -y redir
+RUN apt-get install -y nano
+
+# Install Java
+RUN apt-get install -y software-properties-common # for add-apt-repository
+RUN add-apt-repository -y ppa:webupd8team/java
+RUN apt-get update
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+RUN apt-get install -y oracle-java8-installer
 
 # Install phantomjs
 RUN apt-get install -y libfontconfig
@@ -43,5 +43,4 @@ RUN chmod +x /usr/local/bin/docker-compose
 RUN apt-get install -y sudo
 RUN adduser --disabled-password --gecos '' linkurious --uid 1000
 RUN echo "linkurious ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN chown -R linkurious /usr/local/
 USER linkurious
