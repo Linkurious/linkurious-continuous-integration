@@ -62,18 +62,11 @@ class bowerCache {
           0, this.bowerJsonFile.lastIndexOf('/'));
         if (bowerJsonDir === '') { bowerJsonDir = '.'; }
 
-        try {
-          // does this directory exist?
-          fs.lstatSync(bucketDir + '/bower_components');
-
+        // does this directory exist?
+        if (fs.existsSync(bucketDir + '/bower_components')) {
           // copy from the bucket to the bowerJsonDir
           utils.exec(`cp -r ${bucketDir}/bower_components ${bowerJsonDir}/bower_components`, true);
-        } catch(e) {
-          if (e.code !== 'ENOENT') {
-            throw e;
-          }
-          // it doesn't exist we have to run bower install for this bower.json
-
+        } else {
           utils.exec('mkdir -p ' + bucketDir, true);
 
           utils.changeDir(bowerJsonDir, () => {

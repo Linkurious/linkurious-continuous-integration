@@ -119,18 +119,11 @@ class npmCache {
           0, this.packageJsonFile.lastIndexOf('/'));
         if (packageJsonDir === '') { packageJsonDir = '.'; }
 
-        try {
-          // does this directory exist?
-          fs.lstatSync(bucketDir + '/node_modules');
-
+        // does this directory exist?
+        if (fs.existsSync(bucketDir + '/node_modules')) {
           // copy from the bucket to the packageJsonDir
           utils.exec(`cp -r ${bucketDir}/node_modules ${packageJsonDir}/node_modules`, true);
-        } catch(e) {
-          if (e.code !== 'ENOENT') {
-            throw e;
-          }
-          // it doesn't exist we have to run npm install for this package.json
-
+        } else {
           utils.exec('mkdir -p ' + bucketDir, true);
 
           utils.changeDir(packageJsonDir, () => {

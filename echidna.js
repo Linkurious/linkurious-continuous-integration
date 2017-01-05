@@ -5,6 +5,7 @@
  */
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 
 // external libs
@@ -25,13 +26,8 @@ const rootRepositoryDir = process.env['IN_DOCKER'] ? '/repo' : process.env.PWD;
 
 const semaphoreMap = new SemaphoreMap(ciDir + '/_semaphores.json');
 
-// we use this global set to store the names of the scripts that were already executed to avoid
-// duplication. This is useful if, for example, we first call the 'test' and then the 'build' script
-// that depends on 'test' (doing so we avoid to call 'test' twice)
-const executedScripts = new Set();
-
 // we use this global map to store the names of the cloned repositories in the workspace along with
-// their branch names. Useful to TODO
+// their branch names. Useful to generate the list of used branch in a test run
 const clonedRepos = new Map();
 
 class Echidna {
@@ -62,7 +58,6 @@ class Echidna {
       this.branch = utils.getCurrentBranch();
 
       clonedRepos.set(this.name, this.branch);
-      // TODO verify that there are no strange cases where different branches of the same repo are required
     });
 
     return Promise.resolve().then(() => {
@@ -115,12 +110,6 @@ class Echidna {
           `\x1b[32m${this.name}\x1b[0m, branch \x1b[32m${this.branch}\x1b[0m`);
       // the semaphore name includes both the project name and the script name
       const semaphoreName = '_run:' + this.name + '_' + script;
-
-      if (executedScripts.has(semaphoreName)) {
-        return Promise.resolve();
-      }
-
-      executedScripts.add(semaphoreName);
 
       return semaphoreMap.get(semaphoreName, this.concurrency).then(semaphore => {
         return semaphore.acquire().then(() => {
@@ -356,14 +345,16 @@ class Echidna {
       return Promise.map(Array.from(scriptsToRun), s => echidna.run(s), {concurrency: 1})
         .return().then(() => {
           // upload the content of `_to_dev_` remotely
-          // TODO if _to_dev_ is not empty
-          var userAtHost = configuration.scpDestDir.split(':')[0];
-          var baseDir = configuration.scpDestDir.split(':')[1];
-          // TODO generate a proper name
-          var branchDir = 'tmp_name';
-          var dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
-          utils.exec(`ssh -p ${configuration.scpPort} ${userAtHost} "mkdir -p '${dir}'"`, true);
-          utils.exec(`scp -P ${configuration.scpPort} ./*.zip ${userAtHost}:'${dir}'`, true);
+          if (fs.existsSync(workspaceDir + '/_to_dev_')) {
+            let userAtHost = configuration.scpDestDir.split(':')[0];
+            let baseDir = configuration.scpDestDir.split(':')[1];
+            // TODO generate a proper name
+            let branchDir = 'tmp_name_branches';
+            let dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
+            let port = configuration.scpPort;
+            utils.exec(`ssh -p ${port} ${userAtHost} "mkdir -p '${dir}'"`, true);
+            utils.exec(`scp -P ${port} ${workspaceDir}/_to_dev_/* ${userAtHost}:'${dir}'`, true);
+          }
         }).then(exit);
     }).catch(err => {
       return exit(err);
