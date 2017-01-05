@@ -360,7 +360,7 @@ class Echidna {
             let dir = baseDir + '/' + branchDir + '/' + new Date().toISOString();
             let port = configuration.scpPort;
             utils.exec(`ssh -p ${port} ${userAtHost} "mkdir -p '${dir}'"`, true);
-            utils.exec(`scp -P ${port} ${echidna.toDevDir}/* ${userAtHost}:'${dir}'`, true);
+            utils.exec(`scp -rP ${port} ${echidna.toDevDir}/* ${userAtHost}:'${dir}'`, true);
           }
         }).then(exit);
     }).catch(err => {
