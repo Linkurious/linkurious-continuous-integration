@@ -393,7 +393,6 @@ class Echidna {
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
         ' -v ~/.ssh:/home/linkurious/.ssh' +
-        ' --cap-add=SYS_ADMIN' +
         ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`);
     }
   }
