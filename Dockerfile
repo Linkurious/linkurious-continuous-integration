@@ -11,7 +11,7 @@ RUN apt-get install -y python
 RUN apt-get install -y python-pip
 
 # Install node.js
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_7.x | bash
 RUN apt-get install -y nodejs
 
 # Install other stuff
