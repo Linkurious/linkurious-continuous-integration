@@ -143,9 +143,10 @@ class Echidna {
    * @param {string} repository Github style name (e.g: "Linkurious/linkurious-server")
    * @param {object} [options] options
    * @param {boolean} [options.npmIgnoreScripts=false] whether to call npm install with the flag --ignore-scripts
+   * @param {string} [branch] branch name to clone
    * @returns {Promise.<Echidna>} echidna object of the newly cloned repository
    */
-  get(repository, options) {
+  get(repository, options, branch) {
     const projectName = repository.split('/')[1];
 
     return semaphoreMap.get('_get:' + repository, 1).then(semaphore => {
@@ -156,14 +157,16 @@ class Echidna {
           utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, true);
 
           // decide whether to match the branch or to use 'develop'
-          let branch = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
-            this.branch + '" | wc -l', true).indexOf('1') === 0
-            ? this.branch
-            : 'develop';
+          if (branch === undefined || branch === null) {
+            branch = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
+                this.branch + '" | wc -l', true).indexOf('1') === 0
+                ? this.branch
+                : 'develop';
 
-          // We never want to use master, always develop
-          if (branch === 'master') {
-            branch = 'develop';
+            // We never want to use master, always develop
+            if (branch === 'master') {
+              branch = 'develop';
+            }
           }
 
           // clone the repository in a temporary directory
