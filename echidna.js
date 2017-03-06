@@ -156,10 +156,15 @@ class Echidna {
           utils.exec(`mkdir -p ${this.workspaceDir}/_tmp`, true);
 
           // decide whether to match the branch or to use 'develop'
-          const branch = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
+          let branch = utils.exec(`git ls-remote --heads git@github.com:${repository}.git "` +
             this.branch + '" | wc -l', true).indexOf('1') === 0
             ? this.branch
             : 'develop';
+
+          // We never want to use master, always develop
+          if (branch === 'master') {
+            branch = 'develop';
+          }
 
           // clone the repository in a temporary directory
           utils.changeDir(this.workspaceDir + '/_tmp', () => {
