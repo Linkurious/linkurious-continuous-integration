@@ -397,11 +397,34 @@ class Echidna {
     } else {
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
 
-      utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
+      const dockerContainerId = shortid.generate();
+
+      // register a SIGINT/SIGTERM handler
+      const exit = () => {
+        require('child_process').exec('docker rm -vf ' + dockerContainerId);
+        process.exit(1);
+      };
+
+      process.on('SIGINT', exit);
+      process.on('SIGTERM', exit);
+
+      utils.execAsync('docker run --name ' + dockerContainerId +
+        ' -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
         ' -v ~/.ssh:/home/linkurious/.ssh' +
-        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`);
+        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`,
+          {stdio: [0, 1, 2]});
+
+      (function wait () {
+        let isExit = utils.exec('docker inspect --format=\'{{.State.Running}}\' ' +
+            dockerContainerId).startsWith('true');
+        if (isExit) {
+          // we exit with the exit code of the docker container
+          process.exit(utils.exec('docker wait ' + dockerContainerId));
+        }
+        setTimeout(wait, 1000);
+      })();
     }
   }
 }
