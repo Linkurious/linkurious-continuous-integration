@@ -7,8 +7,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const spawn = require('child_process').spawn;
-const exec = require('child_process').exec;
 
 // external libs
 const Promise = require('bluebird');
@@ -399,41 +397,11 @@ class Echidna {
     } else {
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
 
-      const dockerContainerId = shortid.generate();
-
-      // register a SIGINT/SIGTERM handler
-      const exit = () => {
-        exec('docker rm -vf ' + dockerContainerId);
-        process.exit(1);
-      };
-
-      process.on('SIGINT', exit);
-      process.on('SIGTERM', exit);
-
-      let childProcess = spawn('docker run --name ' + dockerContainerId +
-        ' -v /var/run/docker.sock:/var/run/docker.sock' +
+      utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
         ' -v ~/.ssh:/home/linkurious/.ssh' +
-        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`,
-          [], {shell: '/bin/bash'});
-
-      childProcess.stdout.on('data', data => {
-        console.log(data);
-      });
-      childProcess.stderr.on('data', data => {
-        console.log(data);
-      });
-
-      (function wait () {
-        let isExit = utils.exec('docker inspect --format=\'{{.State.Running}}\' ' +
-            dockerContainerId + ' || true', true) === 'true';
-        if (isExit) {
-          // we exit with the exit code of the docker container
-          process.exit(utils.exec('docker wait ' + dockerContainerId));
-        }
-        setTimeout(wait, 1000);
-      })();
+        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`);
     }
   }
 }
