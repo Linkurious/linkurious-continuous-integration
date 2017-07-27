@@ -397,6 +397,13 @@ class Echidna {
     } else {
       const cla = _.filter(process.argv, arg => arg.indexOf('--') === 0).join(' ');
 
+      // register a SIGINT/SIGTERM handler
+      const exit = err => {
+        process.exit(1);
+      };
+      process.on('SIGINT', exit);
+      process.on('SIGTERM', exit);
+
       utils.exec('docker run -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
