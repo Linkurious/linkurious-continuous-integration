@@ -415,7 +415,8 @@ class Echidna {
         ` -v ${rootRepositoryDir}:/repo` +
         ` -v ${ciDir}:/ci` +
         ' -v ~/.ssh:/home/linkurious/.ssh' +
-        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`);
+        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}"`,
+          [], {shell: '/bin/bash'});
 
       childProcess.stdout.on('data', data => {
         console.log(data);
