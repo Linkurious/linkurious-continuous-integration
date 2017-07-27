@@ -91,10 +91,10 @@ class Echidna {
             return require(path.resolve(file));
           });
         } else {
-          // not a .js file, fallback to 'utils.exec(file)'
+          // not a .js file, fallback to 'utils.exec(path.resolve(file))'
           return () => {
             return new Promise(resolve => {
-              utils.exec(file);
+              utils.exec(path.resolve(file));
               resolve();
             });
           };
