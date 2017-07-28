@@ -418,7 +418,7 @@ class Echidna {
 
       (function wait () {
         let isExit = utils.exec('docker inspect --format=\'{{.State.Running}}\' ' +
-            dockerContainerId + ' 2>/dev/null || true', true) === 'true';
+            dockerContainerId + ' 2>/dev/null || true', true).includes('true');
         if (isExit) {
           // we exit with the exit code of the docker container
           process.exit(utils.exec('docker wait ' + dockerContainerId));
