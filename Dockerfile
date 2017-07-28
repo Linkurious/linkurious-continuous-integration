@@ -35,6 +35,10 @@ RUN apt-get install -y oracle-java8-installer
 RUN apt-get install -y libfontconfig
 RUN npm install -g phantomjs-prebuilt
 
+# Install chrome
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN dpkg -i google-chrome*.deb
+
 # Install docker-compose 1.9
 RUN curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 RUN chmod +x /usr/local/bin/docker-compose
