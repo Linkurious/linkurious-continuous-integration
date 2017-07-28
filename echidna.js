@@ -401,7 +401,7 @@ class Echidna {
 
       // register a SIGINT/SIGTERM handler
       const exit = () => {
-        utils.exec('docker rm -vf ' + dockerContainerId);
+        utils.exec('docker kill ' + dockerContainerId);
         process.exit(1);
       };
 
