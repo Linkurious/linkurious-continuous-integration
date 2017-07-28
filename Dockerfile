@@ -36,7 +36,7 @@ RUN apt-get install -y libfontconfig
 RUN npm install -g phantomjs-prebuilt
 
 # Install xvfb
-RUN apt-get install xvfb
+RUN apt-get install -y xvfb
 
 # Install chrome
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
