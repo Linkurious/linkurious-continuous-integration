@@ -421,7 +421,13 @@ class Echidna {
             dockerContainerId + ' 2>/dev/null || true', true).includes('false');
         if (isExit) {
           // we exit with the exit code of the docker container
-          process.exit(utils.exec('docker wait ' + dockerContainerId));
+          let statusCode = utils.exec('docker wait ' + dockerContainerId);
+
+          if (statusCode.startsWith('0')) {
+            process.exit(0);
+          } else {
+            process.exit(1);
+          }
         }
         setTimeout(wait, 1000);
       })();
