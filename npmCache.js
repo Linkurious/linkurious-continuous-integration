@@ -93,6 +93,7 @@ class npmCache {
    *
    * @param {object} [options] options
    * @param {boolean} [options.ignoreScripts=false] whether to call npm install with the flag --ignore-scripts
+   * @param {boolean} [options.noCache=false]       whether to call npm install even if the node_modules folder was already cached
    * @returns {Promise} promise
    */
   install(options) {
@@ -120,11 +121,13 @@ class npmCache {
         if (packageJsonDir === '') { packageJsonDir = '.'; }
 
         // does this directory exist?
-        if (fs.existsSync(bucketDir + '/node_modules')) {
+        if (!options.noCache && fs.existsSync(bucketDir + '/node_modules')) {
           // copy from the bucket to the packageJsonDir
           utils.exec(`cp -r ${bucketDir}/node_modules ${packageJsonDir}/node_modules`, true);
         } else {
-          utils.exec('mkdir -p ' + bucketDir, true);
+          if (!options.noCache) {
+            utils.exec('mkdir -p ' + bucketDir, true);
+          }
 
           utils.changeDir(packageJsonDir, () => {
             let flags = '';
@@ -137,7 +140,9 @@ class npmCache {
             utils.execRetry('npm install' + flags, 5);
 
             // we copy the node_modules directory in our bucket
-            utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
+            if (!options.noCache) {
+              utils.exec(`cp -r ${packageJsonDir}/node_modules ${bucketDir}/node_modules`, true);
+            }
 
             // there is no need to copy from the bucket to the repository since node_modules
             // was installed there

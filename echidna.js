@@ -49,18 +49,20 @@ class Echidna {
    * @param {string} name                    project name (e.g.: 'linkurious-server'), it has to match the GitHub repository name
    * @param {string} workspaceDir            path to the workspace
    * @param {object} options                 options
-   * @param {object} options.scripts     paths of script indexed by script name
+   * @param {object} options.scripts                   paths of script indexed by script name
    * @param {boolean} [options.npmIgnoreScripts=false] whether to call npm install with the flag --ignore-scripts
+   * @param {boolean} [options.npmNoCache=false]       whether to call npm install even if the node_modules folder was already cached
    * @param {number} [options.concurrency=1] number of same scripts that can run concurrently for this project
    */
   constructor(name, workspaceDir, options) {
-    options = _.defaults(options, {concurrency: 1, npmIgnoreScripts: false});
+    options = _.defaults(options, {concurrency: 1, npmIgnoreScripts: false, npmNoCache: false});
     this.name = name;
     this.workspaceDir = workspaceDir;
     this.repositoryDir = workspaceDir + '/' + name;
     this.scriptPaths = options.scripts;
     this.concurrency = options.concurrency;
     this.npmIgnoreScripts = options.npmIgnoreScripts;
+    this.npmNoCache = options.npmNoCache;
   }
 
   /**
@@ -76,7 +78,7 @@ class Echidna {
     return Promise.resolve().then(() => {
       // install dependencies (necessary for the scripts)
       if (this.npm.hasPackageJson()) {
-        return this.npm.install({ignoreScripts: this.npmIgnoreScripts});
+        return this.npm.install({ignoreScripts: this.npmIgnoreScripts, noCache: this.npmNoCache});
       }
     }).then(() => {
       if (this.bower.hasBowerJson()) {
@@ -143,6 +145,7 @@ class Echidna {
    * @param {string} repository Github style name (e.g: "Linkurious/linkurious-server")
    * @param {object} [options] options
    * @param {boolean} [options.npmIgnoreScripts=false] whether to call npm install with the flag --ignore-scripts
+   * @param {boolean} [options.npmNoCache=false]       whether to call npm install even if the node_modules folder was already cached
    * @param {string} [branch] branch name to clone
    * @returns {Promise.<Echidna>} echidna object of the newly cloned repository
    */
