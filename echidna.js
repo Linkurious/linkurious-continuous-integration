@@ -414,10 +414,12 @@ class Echidna {
       utils.exec('docker run --name ' + dockerContainerId +
         ' -v /var/run/docker.sock:/var/run/docker.sock' +
         ` -v ${rootRepositoryDir}:/repo` +
-        ' --security-opt seccomp=$CI_DIRECTORY/chrome.json' +
+        ' --security-opt seccomp=' + process.env['CI_DIRECTORY'] + '/chrome.json' +
         ` -v ${ciDir}:/ci` +
         ' -v ~/.ssh:/home/linkurious/.ssh' +
-        ` echidna sh -c "env IN_DOCKER=1 CI_DIRECTORY=$CI_DIRECTORY /ci/echidna.js ${cla}" &`);
+        ' -e IN_DOCKER=1 ' +
+        ' -e CI_DIRECTORY=' + process.env['CI_DIRECTORY'] +
+        ` echidna node /ci/echidna.js ${cla} &`);
 
       (function wait () {
         let isExit = utils.exec('docker inspect --format=\'{{.State.Running}}\' ' +
