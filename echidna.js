@@ -165,11 +165,6 @@ class Echidna {
                 this.branch + '" | wc -l', true).indexOf('1') === 0
                 ? this.branch
                 : 'develop';
-
-            // We never want to use master, always develop
-            if (branch === 'master') {
-              branch = 'develop';
-            }
           }
 
           // clone the repository in a temporary directory
