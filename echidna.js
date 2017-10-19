@@ -320,7 +320,7 @@ class Echidna {
      *
      * e.g.: ./echidna --build
      */
-    const scriptsToRun = new Set();
+    let scriptsToRun = new Set();
     const commandLineArguments = _.filter(process.argv, arg => arg.indexOf('--') === 0)
       .map(arg => arg.slice(2));
     _.forEach(commandLineArguments, s => {
@@ -335,6 +335,10 @@ class Echidna {
     const commitMessage = utils.exec('git log -1 --pretty=%B', true);
     // flags are words prefixed with `run:` wrapped in square brackets, e.g.: '[run:build]'
     const commitFlags = commitMessage.match(/\[run:\w*]/g) || [];
+    if (commitFlags.length > 0) {
+      scriptsToRun = new Set();
+    }
+
     _.forEach(commitFlags, s => {
       scriptsToRun.add(s.substring(5, s.length - 1));
     });
